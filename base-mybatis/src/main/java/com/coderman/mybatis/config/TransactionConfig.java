@@ -1,5 +1,6 @@
 package com.coderman.mybatis.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.aop.Advisor;
@@ -30,6 +31,8 @@ import java.util.List;
  */
 @Aspect
 @Configuration
+@SuppressWarnings("all")
+@Slf4j
 public class TransactionConfig {
 
     @Autowired
@@ -96,6 +99,7 @@ public class TransactionConfig {
         readOnlyTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
         transactionAttributeSource.addTransactionalMethod("*", readOnlyTx);
 
+        log.info("============================自定义事务拦截器创建============================");
         return new TransactionInterceptor(transactionManager, transactionAttributeSource);
     }
 
@@ -105,7 +109,6 @@ public class TransactionConfig {
 
         AspectJExpressionPointcut aspectJExpressionPointcut = new AspectJExpressionPointcut();
         aspectJExpressionPointcut.setExpression("execution(* com.coderman..service..*(..))");
-
         DefaultPointcutAdvisor defaultPointcutAdvisor = new DefaultPointcutAdvisor(aspectJExpressionPointcut, advice);
         defaultPointcutAdvisor.setOrder(5);
 

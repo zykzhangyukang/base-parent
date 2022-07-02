@@ -13,6 +13,7 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -39,6 +40,9 @@ public class RocketMqServiceImpl implements RocketMqService {
 
     @Autowired
     private DefaultMQProducer defaultMQProducer;
+
+    @Value("${spring.application.name}")
+    private String applicationName;
 
 
     private final ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
@@ -99,7 +103,7 @@ public class RocketMqServiceImpl implements RocketMqService {
                 mqMsgDAO.updateByPrimaryKeySelective(model);
 
                 // 发送消息,没有抛出异常说明消息发送成功
-                Message message = new Message("coderman_topic", msg.getTag(), StringUtils.EMPTY, msg.getMsg().getBytes(StandardCharsets.UTF_8));
+                Message message = new Message(applicationName + "_topic", msg.getTag(), StringUtils.EMPTY, msg.getMsg().getBytes(StandardCharsets.UTF_8));
                 SendResult sendResult = defaultMQProducer.send(message);
 
 
@@ -125,6 +129,7 @@ public class RocketMqServiceImpl implements RocketMqService {
 
                 mqMsgDAO.updateByPrimaryKeySelective(model);
 
+                log.error("send rocket error:{}",e.getMessage());
             }
         });
 

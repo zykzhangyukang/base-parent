@@ -21,7 +21,6 @@
             <artifactId>base-api</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>com.coderman</groupId>
             <artifactId>base-mybatis</artifactId>

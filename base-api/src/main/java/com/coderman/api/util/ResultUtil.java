@@ -15,7 +15,7 @@ import java.util.List;
 public class ResultUtil {
 
 
-    public static <T> ResultVO<T> getResult(Class<T> clazz, int code, String msg, T vo){
+    public static <T> ResultVO<T> getResult(Class<T> clazz, int code, String msg, T vo) {
 
         ResultVO<T> t = new ResultVO<>();
         t.setCode(code);
@@ -41,12 +41,12 @@ public class ResultUtil {
      *
      * @return
      */
-    public static  ResultVO<Void> getSuccess(String msg) {
-       ResultVO<Void> t = new ResultVO<>();
-       t.setCode(ResultConstant.RESULT_CODE_200);
-       t.setMsg(msg);
-       t.setResult(null);
-       return t;
+    public static ResultVO<Void> getSuccess(String msg) {
+        ResultVO<Void> t = new ResultVO<>();
+        t.setCode(ResultConstant.RESULT_CODE_200);
+        t.setMsg(msg);
+        t.setResult(null);
+        return t;
     }
 
 
@@ -55,7 +55,7 @@ public class ResultUtil {
      *
      * @return
      */
-    public static  <T>ResultVO<T> getSuccess(Class<T> clazz, T vo) {
+    public static <T> ResultVO<T> getSuccess(Class<T> clazz, T vo) {
         ResultVO<T> t = new ResultVO<>();
         t.setCode(ResultConstant.RESULT_CODE_200);
         t.setMsg(null);
@@ -64,13 +64,12 @@ public class ResultUtil {
     }
 
 
-
     /**
      * 返回成功并携带数据
      *
      * @return
      */
-    public static  <T>ResultVO<T> getFail(String msg) {
+    public static <T> ResultVO<T> getFail(String msg) {
         ResultVO<T> t = new ResultVO<>();
         t.setCode(ResultConstant.RESULT_CODE_402);
         t.setMsg(msg);
@@ -84,7 +83,7 @@ public class ResultUtil {
      *
      * @return
      */
-    public static  <T>ResultVO<T> getWarn(String msg) {
+    public static <T> ResultVO<T> getWarn(String msg) {
         ResultVO<T> t = new ResultVO<>();
         t.setCode(ResultConstant.RESULT_CODE_405);
         t.setMsg(msg);
@@ -98,7 +97,7 @@ public class ResultUtil {
      *
      * @return
      */
-    public static  <T>ResultVO<T> getFail(int code, String msg) {
+    public static <T> ResultVO<T> getFail(int code, String msg) {
         ResultVO<T> t = new ResultVO<>();
         t.setCode(code);
         t.setMsg(msg);
@@ -112,7 +111,7 @@ public class ResultUtil {
      *
      * @return
      */
-    public static  <T>ResultVO<T> getFail(Class<T> clazz, T vo, String msg) {
+    public static <T> ResultVO<T> getFail(Class<T> clazz, T vo, String msg) {
         ResultVO<T> t = new ResultVO<>();
         t.setCode(ResultConstant.RESULT_CODE_402);
         t.setMsg(msg);
@@ -126,7 +125,7 @@ public class ResultUtil {
      *
      * @return
      */
-    public static  <T>ResultVO<T> getWarn(Class<T> clazz, T vo, String msg) {
+    public static <T> ResultVO<T> getWarn(Class<T> clazz, T vo, String msg) {
         ResultVO<T> t = new ResultVO<>();
         t.setCode(ResultConstant.RESULT_CODE_405);
         t.setMsg(msg);
@@ -134,10 +133,10 @@ public class ResultUtil {
         return t;
     }
 
-    public static <T> ResultVO<List<T>> getList(Class<T> clazz, int code, String msg,List<T> list){
+    public static <T> ResultVO<List<T>> getList(Class<T> clazz, int code, String msg, List<T> list) {
 
 
-        ResultVO<List<T>> t =  new ResultVO<>();
+        ResultVO<List<T>> t = new ResultVO<>();
 
         t.setCode(code);
         t.setMsg(msg);
@@ -147,23 +146,23 @@ public class ResultUtil {
     }
 
 
-    public static <T> ResultVO<List<T>> getSuccessList(Class<T> clazz,List<T> list){
+    public static <T> ResultVO<List<T>> getSuccessList(Class<T> clazz, List<T> list) {
 
-        return getList(clazz,ResultConstant.RESULT_CODE_200,null,list);
+        return getList(clazz, ResultConstant.RESULT_CODE_200, null, list);
     }
 
 
-    public static <T> ResultVO<List<T>> getFailList(Class<T> clazz,List<T> list,String msg){
+    public static <T> ResultVO<List<T>> getFailList(Class<T> clazz, List<T> list, String msg) {
 
-        return getList(clazz,ResultConstant.RESULT_CODE_402,msg,list);
+        return getList(clazz, ResultConstant.RESULT_CODE_402, msg, list);
     }
 
-    public static <T> ResultVO<List<T>> getWarnList(Class<T> clazz,List<T> list,String msg){
+    public static <T> ResultVO<List<T>> getWarnList(Class<T> clazz, List<T> list, String msg) {
 
-        return getList(clazz,ResultConstant.RESULT_CODE_405,msg,list);
+        return getList(clazz, ResultConstant.RESULT_CODE_405, msg, list);
     }
 
-    public static <T> ResultVO<PageVO<List<T>>> getPage(Class<T> clazz, int code, String msg, PageVO<List<T>> page){
+    public static <T> ResultVO<PageVO<List<T>>> getPage(Class<T> clazz, int code, String msg, PageVO<List<T>> page) {
 
         ResultVO<PageVO<List<T>>> t = new ResultVO<>();
 
@@ -175,20 +174,24 @@ public class ResultUtil {
     }
 
 
-
-    public static <T> ResultVO<PageVO<List<T>>> getSuccessPage(Class<T> clazz,PageVO<List<T>> page){
-        return getPage(clazz,ResultConstant.RESULT_CODE_200,null,page);
+    public static <T> ResultVO<PageVO<List<T>>> getSuccessPage(Class<T> clazz, PageVO<List<T>> page) {
+        return getPage(clazz, ResultConstant.RESULT_CODE_200, null, page);
     }
 
-    public static <T> ResultVO<PageVO<List<T>>> getFailPage(Class<T> clazz,PageVO<List<T>> page){
+    public static <T> ResultVO<PageVO<List<T>>> getFailPage(Class<T> clazz, PageVO<List<T>> page) {
 
 
-
-        return getPage(clazz,ResultConstant.RESULT_CODE_402,null,page);
+        return getPage(clazz, ResultConstant.RESULT_CODE_402, null, page);
     }
 
-    public static <T> ResultVO<PageVO<List<T>>> getWarnPage(Class<T> clazz,PageVO<List<T>> page){
+    public static <T> ResultVO<PageVO<List<T>>> getWarnPage(Class<T> clazz, PageVO<List<T>> page) {
 
-        return getPage(clazz,ResultConstant.RESULT_CODE_405,null,page);
+        return getPage(clazz, ResultConstant.RESULT_CODE_405, null, page);
     }
+
+
+    public static boolean isSuccess(ResultVO<?> resultVO) {
+        return ResultConstant.RESULT_CODE_200.equals(resultVO.getCode());
+    }
+
 }

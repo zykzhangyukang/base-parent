@@ -1,4 +1,4 @@
-package com.coderman.dbqueue.config;
+package com.coderman.dbqueue.configure;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  * @date 2022/6/1814:41
  */
 @Configuration
-public class NamedJdbcTemplateConfig {
+@SuppressWarnings("all")
+public class NamedJdbcTemplateConfigure {
 
 
     @Bean

@@ -12,7 +12,6 @@
         <module>base-serial</module>
         <module>base-db-queue</module>
         <module>base-rocketmq</module>
-        <module>base-rocket-sync</module>
     </modules>
 
     <parent>
@@ -61,11 +60,6 @@
                 <version>${base.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.coderman</groupId>
-                <artifactId>base-rocket-sync</artifactId>
-                <version>${base.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.coderman</groupId>

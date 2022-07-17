@@ -5,7 +5,6 @@ import com.coderman.rocketmq.enums.MsgStatus;
 import com.coderman.rocketmq.model.MqMsgExample;
 import com.coderman.rocketmq.model.MqMsgModel;
 import com.coderman.rocketmq.service.RocketMqService;
-import com.coderman.service.util.LoggerUtils;
 import com.coderman.service.util.UUIDUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -72,13 +71,13 @@ public class RocketMqServiceImpl implements RocketMqService {
                 @Override
                 public void afterCommit() {
 
-                    LoggerUtils.printIfInfoEnabled(log, "rocket send after tx,msg:{}", msg);
+                    log.info("rocket send after tx,msg:{}", msg);
                     sendMsg0(msgModel);
                 }
             });
         } else {
 
-            LoggerUtils.printIfInfoEnabled(log, "rocket send after no tx,msg:{}", msg);
+            log.info("rocket send after no tx,msg:{}", msg);
             sendMsg0(msgModel);
         }
 

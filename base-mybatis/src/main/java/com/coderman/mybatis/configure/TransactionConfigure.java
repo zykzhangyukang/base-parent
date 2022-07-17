@@ -1,4 +1,4 @@
-package com.coderman.mybatis.config;
+package com.coderman.mybatis.configure;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
@@ -33,7 +33,7 @@ import java.util.List;
 @Configuration
 @SuppressWarnings("all")
 @Slf4j
-public class TransactionConfig {
+public class TransactionConfigure {
 
     @Autowired
     private DataSource dataSource;

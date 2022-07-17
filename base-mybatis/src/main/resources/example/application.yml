@@ -6,10 +6,14 @@ spring:
   datasource:
     username: root
     password: zhangyukang
-    url: jdbc:mysql://localhost:3306/project_user?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+#rocketmq:
+#  nameServer: 127.0.0.1:9876
+#  producer:
+#    group: boot-demo

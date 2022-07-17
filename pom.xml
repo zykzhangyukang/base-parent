@@ -12,6 +12,7 @@
         <module>base-serial</module>
         <module>base-db-queue</module>
         <module>base-rocketmq</module>
+        <module>base-auth</module>
     </modules>
 
     <parent>

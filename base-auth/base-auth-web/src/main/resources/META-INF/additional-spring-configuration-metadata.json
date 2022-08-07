@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "domain",
+      "type": "java.lang.String",
+      "description": "权限系统项目域名."
+  }
+] }

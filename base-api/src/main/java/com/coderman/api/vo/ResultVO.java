@@ -1,5 +1,6 @@
 package com.coderman.api.vo;
 
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.model.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,4 +34,23 @@ public class ResultVO<T> extends BaseModel {
      * 响应结果
      */
     private T result;
+
+
+    /**
+     * 响应成功
+     *
+     * @return
+     */
+    public boolean isSuccess() {
+        return ResultConstant.RESULT_CODE_200.equals(this.code);
+    }
+
+    /**
+     * 响应失败
+     *
+     * @return
+     */
+    public boolean isFail() {
+        return !ResultConstant.RESULT_CODE_200.equals(code);
+    }
 }

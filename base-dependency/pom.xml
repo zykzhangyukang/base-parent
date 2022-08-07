@@ -25,6 +25,7 @@
         <collections4.version>4.4</collections4.version>
         <rocketmq.boot.version>2.1.1</rocketmq.boot.version>
         <rocketmq.client.version>4.7.0</rocketmq.client.version>
+        <jsoup.version>1.12.1</jsoup.version>
     </properties>
 
 
@@ -82,6 +83,13 @@
                 <artifactId>rocketmq-client</artifactId>
                 <version>${rocketmq.client.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

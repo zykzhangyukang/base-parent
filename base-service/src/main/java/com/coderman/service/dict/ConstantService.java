@@ -1,5 +1,6 @@
 package com.coderman.service.dict;
 
+import com.coderman.api.anntation.ConstantList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;

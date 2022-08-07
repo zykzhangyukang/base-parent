@@ -255,4 +255,32 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
+
+
+  <resultMap id="pageBaseResultMap" extends="BaseResultMap" type="com.coderman.auth.vo.user.UserVO">
+    <result column="dept_name" property="deptName"/>
+  </resultMap>
+
+  <!-- 用户列表 -->
+  <select id="page" resultMap="pageBaseResultMap" resultType="com.coderman.auth.vo.user.UserVO">
+    select
+    u.user_id, u.username, u.real_name, u.password, u.dept_code, u.user_status, u.create_time, u.update_time,d.dept_name
+    from tb_user u
+    left join tb_dept d on u.dept_code  = d.dept_code
+    <where>
+      <if test="queryVO.username!=null and queryVO.username!=''">
+        and username like concat('%',#{queryVO.username},'%')
+      </if>
+      <if test="queryVO.realName!=null and queryVO.realName!=''">
+        and real_name like concat('%',#{queryVO.realName},'%')
+      </if>
+      <if test="queryVO.userStatus!=null">
+        and user_status = #{queryVO.userStatus}
+      </if>
+      <if test="queryVO.deptCode!=null and queryVO.deptCode!=''">
+        and u.dept_code = #{queryVO.deptCode}
+      </if>
+    </where>
+    order by u.create_time desc
+  </select>
 </mapper>

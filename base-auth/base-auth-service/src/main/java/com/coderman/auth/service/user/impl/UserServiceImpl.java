@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     public ResultVO<PageVO<List<UserVO>>> page(Integer currentPage, Integer pageSize, UserVO queryVO) {
 
         PageHelper.startPage(currentPage, pageSize);
-        List<UserVO> userVOList=null; //= this.userDAO.page(queryVO);
+        List<UserVO> userVOList = this.userDAO.page(queryVO);
 
         PageInfo<UserVO> pageInfo = new PageInfo<>(userVOList);
         PageVO<List<UserVO>> pageVO = new PageVO<>(pageInfo.getTotal(), pageInfo.getList());
@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("用户不存在!");
         }
 
-        if(UserConstant.USER_STATUS_ENABLE.equals(db.getUserStatus())){
+        if (UserConstant.USER_STATUS_ENABLE.equals(db.getUserStatus())) {
             return ResultUtil.getWarn("用户已经是启用状态");
         }
 
@@ -289,7 +289,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("用户不存在!");
         }
 
-        if(UserConstant.USER_STATUS_DISABLE.equals(db.getUserStatus())){
+        if (UserConstant.USER_STATUS_DISABLE.equals(db.getUserStatus())) {
             return ResultUtil.getWarn("用户已经是禁用状态");
         }
 

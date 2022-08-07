@@ -1,4 +1,4 @@
-package com.coderman.service.dict;
+package com.coderman.api.anntation;
 
 import java.lang.annotation.*;
 

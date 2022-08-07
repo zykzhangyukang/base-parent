@@ -15,12 +15,6 @@
         <module>base-auth</module>
     </modules>
 
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <groupId>org.springframework.boot</groupId>
-        <version>2.2.4.RELEASE</version>
-    </parent>
-
     <groupId>com.coderman</groupId>
     <artifactId>base-parent</artifactId>
     <version>1.0.0</version>
@@ -31,55 +25,65 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 基础项目版本 -->
         <base.version>1.0.0-${base.env}-SNAPSHOT</base.version>
+        <!-- 项目版本 -->
+        <i.project.version>1.0.0-${base.env}-SNAPSHOT</i.project.version>
         <!-- 第三方包依赖 -->
         <dependency.version>1.0.0</dependency.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- 基础api模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-api</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 基础mybatis模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-mybatis</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 基础swagger模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-swagger</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 基础service模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-service</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
-
+            <!-- 基础db队列模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-db-queue</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 基础rocketmq模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-rocketmq</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 基础id生成器模块 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-serial</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 依赖模块引入 -->
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-dependency</artifactId>
@@ -152,6 +156,15 @@
                         <source>1.8</source>
                         <target>1.8</target>
                         <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>1.5.4.RELEASE</version>
+                    <configuration>
+                        <includeSystemScope>true</includeSystemScope>
                     </configuration>
                 </plugin>
             </plugins>

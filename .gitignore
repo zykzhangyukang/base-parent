@@ -108,3 +108,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 /base-parent.iml
+/base-auth/base-auth-api/target/
+/base-auth/base-auth-service/target/
+/base-auth/base-auth-web/target/

@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.coderman.auth.dao.user.UserDAO">
-  <resultMap id="BaseResultMap" type="com.coderman.auth.model.user.UserModel">
-    <id column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="real_name" jdbcType="VARCHAR" property="realName" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
+<mapper namespace="com.coderman.auth.dao.dept.DeptDAO">
+  <resultMap id="BaseResultMap" type="com.coderman.auth.model.dept.DeptModel">
+    <id column="dept_id" jdbcType="INTEGER" property="deptId" />
     <result column="dept_code" jdbcType="VARCHAR" property="deptCode" />
-    <result column="user_status" jdbcType="INTEGER" property="userStatus" />
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <resultMap id="deptWithUserResultMap" type="com.coderman.auth.vo.dept.DeptVO" extends="BaseResultMap">
+    <collection property="userList" ofType="com.coderman.auth.vo.user.UserVO">
+      <result column="username" property="username"/>
+      <result column="real_name" property="realName"/>
+      <result column="user_status" property="userStatus"/>
+    </collection>
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,16 +75,16 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    user_id, username, real_name, password, dept_code, user_status, create_time, update_time
+    dept_id, dept_code, dept_name, create_time, update_time
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.user.UserModelExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.dept.DeptModelExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     'false' as QUERYID,
     <include refid="Base_Column_List" />
-    from tb_user
+    from tb_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -88,49 +93,38 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
+    select 
     <include refid="Base_Column_List" />
-    from tb_user
-    where user_id = #{userId,jdbcType=INTEGER}
+    from tb_dept
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_user
-    where user_id = #{userId,jdbcType=INTEGER}
+    delete from tb_dept
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.user.UserModelExample">
-    delete from tb_user
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.dept.DeptModelExample">
+    delete from tb_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.coderman.auth.model.user.UserModel">
-    insert into tb_user (user_id, username, real_name,
-      password, dept_code, user_status,
+  <insert id="insert" parameterType="com.coderman.auth.model.dept.DeptModel">
+    insert into tb_dept (dept_id, dept_code, dept_name, 
       create_time, update_time)
-    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR},
-      #{password,jdbcType=VARCHAR}, #{deptCode,jdbcType=VARCHAR}, #{userStatus,jdbcType=INTEGER},
+    values (#{deptId,jdbcType=INTEGER}, #{deptCode,jdbcType=VARCHAR}, #{deptName,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.coderman.auth.model.user.UserModel">
-    insert into tb_user
+  <insert id="insertSelective" parameterType="com.coderman.auth.model.dept.DeptModel">
+    insert into tb_dept
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="username != null">
-        username,
-      </if>
-      <if test="realName != null">
-        real_name,
-      </if>
-      <if test="password != null">
-        password,
+      <if test="deptId != null">
+        dept_id,
       </if>
       <if test="deptCode != null">
         dept_code,
       </if>
-      <if test="userStatus != null">
-        user_status,
+      <if test="deptName != null">
+        dept_name,
       </if>
       <if test="createTime != null">
         create_time,
@@ -140,23 +134,14 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="username != null">
-        #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="realName != null">
-        #{realName,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
+      <if test="deptId != null">
+        #{deptId,jdbcType=INTEGER},
       </if>
       <if test="deptCode != null">
         #{deptCode,jdbcType=VARCHAR},
       </if>
-      <if test="userStatus != null">
-        #{userStatus,jdbcType=INTEGER},
+      <if test="deptName != null">
+        #{deptName,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -166,32 +151,23 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.user.UserModelExample" resultType="java.lang.Long">
-    select count(*) from tb_user
+  <select id="countByExample" parameterType="com.coderman.auth.model.dept.DeptModelExample" resultType="java.lang.Long">
+    select count(*) from tb_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_user
+    update tb_dept
     <set>
-      <if test="record.userId != null">
-        user_id = #{record.userId,jdbcType=INTEGER},
-      </if>
-      <if test="record.username != null">
-        username = #{record.username,jdbcType=VARCHAR},
-      </if>
-      <if test="record.realName != null">
-        real_name = #{record.realName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.password != null">
-        password = #{record.password,jdbcType=VARCHAR},
+      <if test="record.deptId != null">
+        dept_id = #{record.deptId,jdbcType=INTEGER},
       </if>
       <if test="record.deptCode != null">
         dept_code = #{record.deptCode,jdbcType=VARCHAR},
       </if>
-      <if test="record.userStatus != null">
-        user_status = #{record.userStatus,jdbcType=INTEGER},
+      <if test="record.deptName != null">
+        dept_name = #{record.deptName,jdbcType=VARCHAR},
       </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -205,36 +181,24 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_user
-    set user_id = #{record.userId,jdbcType=INTEGER},
-      username = #{record.username,jdbcType=VARCHAR},
-      real_name = #{record.realName,jdbcType=VARCHAR},
-      password = #{record.password,jdbcType=VARCHAR},
+    update tb_dept
+    set dept_id = #{record.deptId,jdbcType=INTEGER},
       dept_code = #{record.deptCode,jdbcType=VARCHAR},
-      user_status = #{record.userStatus,jdbcType=INTEGER},
+      dept_name = #{record.deptName,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.user.UserModel">
-    update tb_user
+  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.dept.DeptModel">
+    update tb_dept
     <set>
-      <if test="username != null">
-        username = #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="realName != null">
-        real_name = #{realName,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
-        password = #{password,jdbcType=VARCHAR},
-      </if>
       <if test="deptCode != null">
         dept_code = #{deptCode,jdbcType=VARCHAR},
       </if>
-      <if test="userStatus != null">
-        user_status = #{userStatus,jdbcType=INTEGER},
+      <if test="deptName != null">
+        dept_name = #{deptName,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -243,46 +207,14 @@
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where user_id = #{userId,jdbcType=INTEGER}
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.user.UserModel">
-    update tb_user
-    set username = #{username,jdbcType=VARCHAR},
-      real_name = #{realName,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      dept_code = #{deptCode,jdbcType=VARCHAR},
-      user_status = #{userStatus,jdbcType=INTEGER},
+  <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.dept.DeptModel">
+    update tb_dept
+    set dept_code = #{deptCode,jdbcType=VARCHAR},
+      dept_name = #{deptName,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where user_id = #{userId,jdbcType=INTEGER}
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </update>
-
-
-  <resultMap id="pageBaseResultMap" extends="BaseResultMap" type="com.coderman.auth.vo.user.UserVO">
-    <result column="dept_name" property="deptName"/>
-  </resultMap>
-
-  <!-- 用户列表 -->
-  <select id="page" resultMap="pageBaseResultMap" resultType="com.coderman.auth.vo.user.UserVO">
-      select
-      u.user_id, u.username, u.real_name, u.password, u.dept_code, u.user_status, u.create_time, u.update_time,d.dept_name
-      from tb_user u
-      left join tb_dept d on u.dept_code  = d.dept_code
-      <where>
-        <if test="queryVO.username!=null and queryVO.username!=''">
-          and username like concat('%',#{queryVO.username},'%')
-        </if>
-        <if test="queryVO.realName!=null and queryVO.realName!=''">
-          and real_name like concat('%',#{queryVO.realName},'%')
-        </if>
-        <if test="queryVO.userStatus!=null">
-          and user_status = #{queryVO.userStatus}
-        </if>
-        <if test="queryVO.deptCode!=null and queryVO.deptCode!=''">
-          and u.dept_code = #{queryVO.deptCode}
-        </if>
-      </where>
-      order by u.create_time desc
-  </select>
-
 </mapper>

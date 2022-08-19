@@ -67,12 +67,11 @@
   <sql id="Base_Column_List">
     role_func_id, role_id, func_id
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.role.RoleFuncModelExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.role.RoleFuncExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    'false' as QUERYID,
     <include refid="Base_Column_List" />
     from tb_role_func
     <if test="_parameter != null">
@@ -92,7 +91,7 @@
     delete from tb_role_func
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.role.RoleFuncModelExample">
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.role.RoleFuncExample">
     delete from tb_role_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -129,7 +128,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.role.RoleFuncModelExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.coderman.auth.model.role.RoleFuncExample" resultType="java.lang.Long">
     select count(*) from tb_role_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

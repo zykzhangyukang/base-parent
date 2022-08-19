@@ -1,33 +1,25 @@
 package com.coderman.auth.model.role;
 
-public class RoleFuncModel {
+import com.coderman.api.model.BaseModel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+@EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
+@Data
+@ApiModel(value="RoleFuncModel", description = "")
+public class RoleFuncModel extends BaseModel {
+    
+
+    @ApiModelProperty(value = "")
     private Integer roleFuncId;
 
+    @ApiModelProperty(value = "")
     private Integer roleId;
 
+    @ApiModelProperty(value = "")
     private Integer funcId;
-
-    public Integer getRoleFuncId() {
-        return roleFuncId;
-    }
-
-    public void setRoleFuncId(Integer roleFuncId) {
-        this.roleFuncId = roleFuncId;
-    }
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
-    }
-
-    public Integer getFuncId() {
-        return funcId;
-    }
-
-    public void setFuncId(Integer funcId) {
-        this.funcId = funcId;
-    }
 }

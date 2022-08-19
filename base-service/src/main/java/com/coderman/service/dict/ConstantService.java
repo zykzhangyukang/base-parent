@@ -1,8 +1,11 @@
 package com.coderman.service.dict;
 
+import com.coderman.api.anntation.Constant;
 import com.coderman.api.anntation.ConstantList;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
@@ -31,17 +34,32 @@ import java.util.*;
 @Lazy(value = false)
 public class ConstantService {
 
-    // 存放常量
+    /**
+     * 存放常量
+     */
     private final static Map<String, List<ConstantItem>> constMap = new HashMap<>();
 
-    // 读取器工厂
+    /**
+     * 读取器工厂
+     */
     private final static CachingMetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 
-    // 日志打印
+    /**
+     * 日志打印
+     */
     private final static Logger logger = LoggerFactory.getLogger(ConstantService.class);
+
+    /**
+     * 项目domain
+     */
+    @Value("${domain}")
+    private String domain;
+
 
     @PostConstruct
     public void init() {
+
+        final Set<String> noAllowedConflictGroupSet = new HashSet<>();
 
         StopWatch stopWatch = new StopWatch();
 
@@ -54,8 +72,20 @@ public class ConstantService {
 
             try {
 
+                Class<?> beanClazz = Class.forName(beanDefinition.getBeanClassName());
+
+                if (!beanClazz.isAnnotationPresent(Constant.class)) {
+                    continue;
+                }
+
+                Constant constant = beanClazz.getAnnotation(Constant.class);
+
+                // 是否允许冲突
+                boolean allowedConflict = constant.allowedConflict();
+
+
                 // 获取中的属性
-                Field[] declaredFields = Class.forName(beanDefinition.getBeanClassName()).getDeclaredFields();
+                Field[] declaredFields = beanClazz.getDeclaredFields();
 
                 for (Field declaredField : declaredFields) {
 
@@ -70,9 +100,21 @@ public class ConstantService {
                         String group = ((ConstantList) declaredAnnotation).group();
                         String name = ((ConstantList) declaredAnnotation).name();
 
+
+                        // 如果本项目的常量 & 不允许冲突
+                        if (this.isInnerClass(beanDefinition) && !allowedConflict) {
+                            noAllowedConflictGroupSet.add(group);
+                        }
+
+
+                        // 如果不是本项目的常量 & 出现冲突
+                        if (!this.isInnerClass(beanDefinition) && constMap.containsKey(group)) {
+
+                            logger.info("出现冲突 class->{},group->{},name->{},不加入常量.", beanDefinition.getBeanClassName(), group, name);
+                            continue;
+                        }
+
                         List<ConstantItem> constantItems;
-
-
 
 
                         if (constMap.containsKey(group)) {
@@ -99,6 +141,17 @@ public class ConstantService {
         logger.info(stopWatch.prettyPrint());
     }
 
+
+    /**
+     * 是否属于本项目的常量
+     *
+     * @param beanDefinition
+     * @return
+     */
+    private boolean isInnerClass(BeanDefinition beanDefinition) {
+        return (beanDefinition.getBeanClassName() != null && beanDefinition.getBeanClassName().split("\\.").length > 3)
+                && StringUtils.equals(domain, beanDefinition.getBeanClassName().split("\\.")[2]);
+    }
 
 
     /**
@@ -179,7 +232,7 @@ public class ConstantService {
         Set<BeanDefinition> constBeanSet = new HashSet<>();
         try {
             ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-            Resource[] resources = resourcePatternResolver.getResources("classpath*:com/coderman/**/constant/*.class");
+            Resource[] resources = resourcePatternResolver.getResources("classpath*:com/coderman/**/constant/**/*.class");
 
             for (Resource resource : resources) {
 

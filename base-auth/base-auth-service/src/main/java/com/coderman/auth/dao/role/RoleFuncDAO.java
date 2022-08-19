@@ -1,13 +1,13 @@
 package com.coderman.auth.dao.role;
 
-import java.util.List;
-
+import com.coderman.auth.model.role.RoleFuncExample;
 import com.coderman.auth.model.role.RoleFuncModel;
-import com.coderman.auth.model.role.RoleFuncModelExample;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 
-public interface RoleFuncDAO extends BaseDAO<RoleFuncModel,RoleFuncModelExample> {
+import java.util.List;
+
+public interface RoleFuncDAO extends BaseDAO<RoleFuncModel,RoleFuncExample> {
 
 
     /**

@@ -6,9 +6,9 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.dao.func.FuncResourceDAO;
 import com.coderman.auth.dao.resource.ResourceDAO;
-import com.coderman.auth.model.func.FuncResourceModelExample;
+import com.coderman.auth.model.func.FuncResourceExample;
+import com.coderman.auth.model.resource.ResourceExample;
 import com.coderman.auth.model.resource.ResourceModel;
-import com.coderman.auth.model.resource.ResourceModelExample;
 import com.coderman.auth.service.resource.ResourceService;
 import com.coderman.auth.vo.resource.ResourceVO;
 import com.github.pagehelper.PageHelper;
@@ -74,7 +74,7 @@ public class ResourceServiceImpl implements ResourceService {
         }
 
         // 资源url唯一性校验
-        ResourceModelExample example = new ResourceModelExample();
+        ResourceExample example = new ResourceExample();
         example.createCriteria().andResourceUrlEqualTo(resourceVO.getResourceUrl());
         long count = this.resourceDAO.countByExample(example);
         if(count>0){
@@ -120,7 +120,7 @@ public class ResourceServiceImpl implements ResourceService {
             return ResultUtil.getWarn("请求方式不能为空");
         }
 
-        ResourceModelExample example = new ResourceModelExample();
+        ResourceExample example = new ResourceExample();
         example.createCriteria().andResourceUrlEqualTo(resourceUrl).andResourceIdNotEqualTo(resourceId);
         long count = this.resourceDAO.countByExample(example);
 
@@ -147,7 +147,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 
         // 校验该资源是否绑定了功能.
-        FuncResourceModelExample example = new FuncResourceModelExample();
+        FuncResourceExample example = new FuncResourceExample();
         example.createCriteria().andResourceIdEqualTo(resourceId);
         long count = this.funcResourceDAO.countByExample(example);
 

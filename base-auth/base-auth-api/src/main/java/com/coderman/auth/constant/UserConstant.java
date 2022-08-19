@@ -1,6 +1,7 @@
 package com.coderman.auth.constant;
 
 
+import com.coderman.api.anntation.Constant;
 import com.coderman.api.anntation.ConstantList;
 
 /**
@@ -9,6 +10,7 @@ import com.coderman.api.anntation.ConstantList;
  * @Description: TOD
  * @date 2022/2/2623:50
  */
+@Constant
 public interface UserConstant {
 
 

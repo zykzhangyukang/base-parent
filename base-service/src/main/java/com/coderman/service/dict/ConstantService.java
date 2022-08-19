@@ -108,7 +108,7 @@ public class ConstantService {
 
 
                         // 如果不是本项目的常量 & 出现冲突
-                        if (!this.isInnerClass(beanDefinition) && constMap.containsKey(group)) {
+                        if (!this.isInnerClass(beanDefinition) && constMap.containsKey(group) && noAllowedConflictGroupSet.contains(group)) {
 
                             logger.info("出现冲突 class->{},group->{},name->{},不加入常量.", beanDefinition.getBeanClassName(), group, name);
                             continue;

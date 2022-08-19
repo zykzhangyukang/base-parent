@@ -1,75 +1,38 @@
 package com.coderman.auth.model.resource;
 
+import com.coderman.api.model.BaseModel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
-public class ResourceModel {
+@EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
+@Data
+@ApiModel(value="ResourceModel", description = "")
+public class ResourceModel extends BaseModel {
+    
+
+    @ApiModelProperty(value = "")
     private Integer resourceId;
 
+    @ApiModelProperty(value = "")
     private String resourceName;
 
+    @ApiModelProperty(value = "")
     private String resourceUrl;
 
+    @ApiModelProperty(value = "")
     private String resourceDomain;
 
+    @ApiModelProperty(value = "")
     private Date createTime;
 
+    @ApiModelProperty(value = "")
     private Date updateTime;
 
+    @ApiModelProperty(value = "")
     private String methodType;
-
-    public Integer getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(Integer resourceId) {
-        this.resourceId = resourceId;
-    }
-
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public String getResourceUrl() {
-        return resourceUrl;
-    }
-
-    public void setResourceUrl(String resourceUrl) {
-        this.resourceUrl = resourceUrl;
-    }
-
-    public String getResourceDomain() {
-        return resourceDomain;
-    }
-
-    public void setResourceDomain(String resourceDomain) {
-        this.resourceDomain = resourceDomain;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getMethodType() {
-        return methodType;
-    }
-
-    public void setMethodType(String methodType) {
-        this.methodType = methodType;
-    }
 }

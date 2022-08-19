@@ -9,13 +9,13 @@ import com.coderman.auth.dao.dept.DeptDAO;
 import com.coderman.auth.dao.role.RoleDAO;
 import com.coderman.auth.dao.user.UserDAO;
 import com.coderman.auth.dao.user.UserRoleDAO;
+import com.coderman.auth.model.dept.DeptExample;
 import com.coderman.auth.model.dept.DeptModel;
-import com.coderman.auth.model.dept.DeptModelExample;
 import com.coderman.auth.model.role.RoleModel;
 import com.coderman.auth.model.user.UserExample;
 import com.coderman.auth.model.user.UserModel;
+import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
-import com.coderman.auth.model.user.UserRoleModelExample;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserVO;
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
     public ResultVO<Void> delete(Integer userId) {
 
         // 删除用户-角色关联
-        UserRoleModelExample example = new UserRoleModelExample();
+        UserRoleExample example = new UserRoleExample();
         example.createCriteria().andUserIdEqualTo(userId);
         this.userRoleDAO.deleteByExample(example);
 
@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
             BeanUtils.copyProperties(first.get(), userVO);
 
             // 设置部门信息
-            DeptModelExample example1 = new DeptModelExample();
+            DeptExample example1 = new DeptExample();
             example1.createCriteria().andDeptCodeEqualTo(first.get().getDeptCode());
             Optional<DeptModel> first1 = this.deptDAO.selectByExample(example1).stream().findFirst();
 
@@ -316,7 +316,7 @@ public class UserServiceImpl implements UserService {
         userAssignVO.setRoleList(roleModels);
 
         // 查询用户已有的角色
-        UserRoleModelExample example = new UserRoleModelExample();
+        UserRoleExample example = new UserRoleExample();
         example.createCriteria().andUserIdEqualTo(userId);
         List<UserRoleModel> userRoleModels = this.userRoleDAO.selectByExample(example);
         List<Integer> userRoleIds = userRoleModels.stream().map(UserRoleModel::getRoleId).collect(Collectors.toList());
@@ -337,7 +337,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 清空之前的权限
-        UserRoleModelExample example = new UserRoleModelExample();
+        UserRoleExample example = new UserRoleExample();
         example.createCriteria().andUserIdEqualTo(userId);
         this.userRoleDAO.deleteByExample(example);
 

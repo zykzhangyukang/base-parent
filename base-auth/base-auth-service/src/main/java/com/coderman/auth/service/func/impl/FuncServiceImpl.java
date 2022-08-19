@@ -9,13 +9,13 @@ import com.coderman.auth.dao.func.FuncDAO;
 import com.coderman.auth.dao.func.FuncResourceDAO;
 import com.coderman.auth.dao.role.RoleFuncDAO;
 import com.coderman.auth.dao.user.UserRoleDAO;
+import com.coderman.auth.model.func.FuncExample;
 import com.coderman.auth.model.func.FuncModel;
-import com.coderman.auth.model.func.FuncModelExample;
-import com.coderman.auth.model.func.FuncResourceModelExample;
+import com.coderman.auth.model.func.FuncResourceExample;
+import com.coderman.auth.model.role.RoleFuncExample;
 import com.coderman.auth.model.role.RoleFuncModel;
-import com.coderman.auth.model.role.RoleFuncModelExample;
+import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
-import com.coderman.auth.model.user.UserRoleModelExample;
 import com.coderman.auth.service.func.FuncService;
 import com.coderman.auth.vo.func.FuncQueryVO;
 import com.coderman.auth.vo.func.FuncTreeVO;
@@ -65,7 +65,7 @@ public class FuncServiceImpl implements FuncService {
         FuncVO funcVO = new FuncVO();
 
         // 获取所有功能转成VO
-        FuncModelExample example = new FuncModelExample();
+        FuncExample example = new FuncExample();
         example.setOrderByClause("func_sort asc");
         List<FuncModel> funcModels = this.funcDAO.selectByExample(example);
 
@@ -144,7 +144,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 功能key唯一性校验
-        FuncModelExample example = new FuncModelExample();
+        FuncExample example = new FuncExample();
         example.createCriteria().andFuncKeyEqualTo(funcKey);
         long count = this.funcDAO.countByExample(example);
 
@@ -220,7 +220,7 @@ public class FuncServiceImpl implements FuncService {
 
 
         // 功能key唯一性校验
-        FuncModelExample example = new FuncModelExample();
+        FuncExample example = new FuncExample();
         example.createCriteria().andFuncKeyEqualTo(funcKey).andFuncIdNotEqualTo(funcId);
         long count = this.funcDAO.countByExample(example);
 
@@ -240,7 +240,7 @@ public class FuncServiceImpl implements FuncService {
 
 
         // 删除原来的功能-资源绑定
-        FuncResourceModelExample funcResourceModelExample = new FuncResourceModelExample();
+        FuncResourceExample funcResourceModelExample = new FuncResourceExample();
         funcResourceModelExample.createCriteria().andFuncIdEqualTo(funcId);
         this.funcResourceDAO.deleteByExample(funcResourceModelExample);
 
@@ -264,7 +264,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 校验是否有功能-资源关联
-        FuncResourceModelExample example = new FuncResourceModelExample();
+        FuncResourceExample example = new FuncResourceExample();
         example.createCriteria().andFuncIdEqualTo(funcId);
         long funcResCount = this.funcResourceDAO.countByExample(example);
         if (funcResCount > 0) {
@@ -273,14 +273,14 @@ public class FuncServiceImpl implements FuncService {
 
 
         // 校验是否有用户绑定了该功能
-        RoleFuncModelExample roleFuncModelExample = new RoleFuncModelExample();
+        RoleFuncExample roleFuncModelExample = new RoleFuncExample();
         roleFuncModelExample.createCriteria().andFuncIdEqualTo(funcId);
         List<Integer> roleIds = this.roleFuncDAO.selectByExample(roleFuncModelExample).stream().map(RoleFuncModel::getRoleId)
                 .distinct().collect(Collectors.toList());
 
         if (!CollectionUtils.isEmpty(roleIds)) {
 
-            UserRoleModelExample userRoleModelExample = new UserRoleModelExample();
+            UserRoleExample userRoleModelExample = new UserRoleExample();
             userRoleModelExample.createCriteria().andRoleIdIn(roleIds);
             List<UserRoleModel> userRoleModels = this.userRoleDAO.selectByExample(userRoleModelExample);
             if (userRoleModels.size() > 0) {
@@ -289,7 +289,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 校验功能是否存在子功能
-        FuncModelExample funcModelExample = new FuncModelExample();
+        FuncExample funcModelExample = new FuncExample();
         funcModelExample.createCriteria().andParentIdEqualTo(funcId);
         long childrenCount = this.funcDAO.countByExample(funcModelExample);
         if (childrenCount > 0) {
@@ -331,7 +331,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 所谓功能解绑用户,即删除所有该功能-角色的绑定
-        RoleFuncModelExample example = new RoleFuncModelExample();
+        RoleFuncExample example = new RoleFuncExample();
         example.createCriteria().andFuncIdIn(funcIdList);
         this.roleFuncDAO.deleteByExample(example);
 
@@ -355,7 +355,7 @@ public class FuncServiceImpl implements FuncService {
 
             funcIdList.add(rootFuncId);
 
-            FuncModelExample example = new FuncModelExample();
+            FuncExample example = new FuncExample();
             example.createCriteria().andParentIdEqualTo(rootFuncId);
             List<FuncModel> funcModels = this.funcDAO.selectByExample(example);
 
@@ -379,7 +379,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 所谓功能解绑资源,即删除所有该功能-资源的绑定
-        FuncResourceModelExample example = new FuncResourceModelExample();
+        FuncResourceExample example = new FuncResourceExample();
         example.createCriteria().andFuncIdEqualTo(funcId);
         this.funcResourceDAO.deleteByExample(example);
 

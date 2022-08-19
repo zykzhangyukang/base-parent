@@ -4,11 +4,9 @@ import com.coderman.auth.model.func.FuncModel;
 import com.coderman.auth.vo.resource.ResourceVO;
 import com.coderman.auth.vo.user.UserVO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author coderman
@@ -17,7 +15,6 @@ import java.util.Map;
  * @date 2022/3/1915:35
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class FuncVO extends FuncModel {
 
     /**

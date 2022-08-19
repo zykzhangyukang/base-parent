@@ -69,12 +69,11 @@
   <sql id="Base_Column_List">
     role_id, role_name, role_desc, create_time, update_time
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.role.RoleModelExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.role.RoleExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    'false' as QUERYID,
     <include refid="Base_Column_List" />
     from tb_role
     <if test="_parameter != null">
@@ -94,7 +93,7 @@
     delete from tb_role
     where role_id = #{roleId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.role.RoleModelExample">
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.role.RoleExample">
     delete from tb_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -143,7 +142,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.role.RoleModelExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.coderman.auth.model.role.RoleExample" resultType="java.lang.Long">
     select count(*) from tb_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

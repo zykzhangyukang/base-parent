@@ -67,12 +67,11 @@
   <sql id="Base_Column_List">
     func_resource_id, func_id, resource_id
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.func.FuncResourceModelExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.func.FuncResourceExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    'false' as QUERYID,
     <include refid="Base_Column_List" />
     from tb_func_resource
     <if test="_parameter != null">
@@ -92,7 +91,7 @@
     delete from tb_func_resource
     where func_resource_id = #{funcResourceId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.func.FuncResourceModelExample">
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.func.FuncResourceExample">
     delete from tb_func_resource
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -129,7 +128,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.func.FuncResourceModelExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.coderman.auth.model.func.FuncResourceExample" resultType="java.lang.Long">
     select count(*) from tb_func_resource
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

@@ -8,14 +8,6 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
-
-  <resultMap id="deptWithUserResultMap" type="com.coderman.auth.vo.dept.DeptVO" extends="BaseResultMap">
-    <collection property="userList" ofType="com.coderman.auth.vo.user.UserVO">
-      <result column="username" property="username"/>
-      <result column="real_name" property="realName"/>
-      <result column="user_status" property="userStatus"/>
-    </collection>
-  </resultMap>
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -77,12 +69,11 @@
   <sql id="Base_Column_List">
     dept_id, dept_code, dept_name, create_time, update_time
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.dept.DeptModelExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.dept.DeptExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    'false' as QUERYID,
     <include refid="Base_Column_List" />
     from tb_dept
     <if test="_parameter != null">
@@ -102,7 +93,7 @@
     delete from tb_dept
     where dept_id = #{deptId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.dept.DeptModelExample">
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.dept.DeptExample">
     delete from tb_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -151,7 +142,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.dept.DeptModelExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.coderman.auth.model.dept.DeptExample" resultType="java.lang.Long">
     select count(*) from tb_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

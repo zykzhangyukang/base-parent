@@ -9,15 +9,15 @@ import com.coderman.auth.dao.role.RoleDAO;
 import com.coderman.auth.dao.role.RoleFuncDAO;
 import com.coderman.auth.dao.user.UserDAO;
 import com.coderman.auth.dao.user.UserRoleDAO;
+import com.coderman.auth.model.func.FuncExample;
 import com.coderman.auth.model.func.FuncModel;
-import com.coderman.auth.model.func.FuncModelExample;
+import com.coderman.auth.model.role.RoleExample;
+import com.coderman.auth.model.role.RoleFuncExample;
 import com.coderman.auth.model.role.RoleFuncModel;
-import com.coderman.auth.model.role.RoleFuncModelExample;
 import com.coderman.auth.model.role.RoleModel;
-import com.coderman.auth.model.role.RoleModelExample;
 import com.coderman.auth.model.user.UserModel;
+import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
-import com.coderman.auth.model.user.UserRoleModelExample;
 import com.coderman.auth.service.func.FuncService;
 import com.coderman.auth.service.role.RoleService;
 import com.coderman.auth.vo.func.FuncTreeVO;
@@ -107,7 +107,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         // 角色名称唯一性校验
-        RoleModelExample example = new RoleModelExample();
+        RoleExample example = new RoleExample();
         example.createCriteria().andRoleNameEqualTo(roleName);
         long count = this.roleDAO.countByExample(example);
 
@@ -135,7 +135,7 @@ public class RoleServiceImpl implements RoleService {
     public ResultVO<Void> delete(Integer roleId) {
 
         // 查询当前角色是否有关联用户
-        UserRoleModelExample example = new UserRoleModelExample();
+        UserRoleExample example = new UserRoleExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         long count = this.userRoleDAO.countByExample(example);
 
@@ -144,7 +144,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         // 删除角色-功能关联
-        RoleFuncModelExample roleFuncModelExample = new RoleFuncModelExample();
+        RoleFuncExample roleFuncModelExample = new RoleFuncExample();
         roleFuncModelExample.createCriteria().andRoleIdEqualTo(roleId);
         this.roleFuncDAO.deleteByExample(roleFuncModelExample);
 
@@ -179,7 +179,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         // 角色名称唯一性校验
-        RoleModelExample example = new RoleModelExample();
+        RoleExample example = new RoleExample();
         example.createCriteria().andRoleNameEqualTo(roleName).andRoleIdNotEqualTo(roleId);
         long count = this.roleDAO.countByExample(example);
 
@@ -232,7 +232,7 @@ public class RoleServiceImpl implements RoleService {
         roleAssignVO.setUserList(userModelList);
 
         // 查询角色已有的用户
-        UserRoleModelExample example = new UserRoleModelExample();
+        UserRoleExample example = new UserRoleExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         List<UserRoleModel> userRoleModels = this.userRoleDAO.selectByExample(example);
         List<Integer> roleUserIds = userRoleModels.stream().map(UserRoleModel::getUserId).collect(Collectors.toList());
@@ -251,7 +251,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         // 清空之前的权限
-        UserRoleModelExample example = new UserRoleModelExample();
+        UserRoleExample example = new UserRoleExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         this.userRoleDAO.deleteByExample(example);
 
@@ -280,7 +280,7 @@ public class RoleServiceImpl implements RoleService {
         List<FuncTreeVO> funcVOList = funcVOResultVO.getResult().getFuncVOList();
 
         // 查询该角色拥有的功能
-        RoleFuncModelExample example = new RoleFuncModelExample();
+        RoleFuncExample example = new RoleFuncExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         List<Integer> hasFuncIdList = this.roleFuncDAO.selectByExample(example).stream().map(RoleFuncModel::getFuncId).collect(Collectors.toList());
 
@@ -306,7 +306,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         // 删除之前该角色拥有的功能
-        RoleFuncModelExample example = new RoleFuncModelExample();
+        RoleFuncExample example = new RoleFuncExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         this.roleFuncDAO.deleteByExample(example);
 
@@ -333,7 +333,7 @@ public class RoleServiceImpl implements RoleService {
         List<FuncModel> needAuthFuncKeyList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(funcKeyList)) {
 
-            FuncModelExample example = new FuncModelExample();
+            FuncExample example = new FuncExample();
             example.createCriteria().andFuncKeyIn(funcKeyList);
             needAuthFuncKeyList = new ArrayList<>(this.funcDAO.selectByExample(example));
         }
@@ -341,7 +341,7 @@ public class RoleServiceImpl implements RoleService {
 
         // 查出该角色原本有的功能
         List<FuncModel> historyAuthFuncList = new ArrayList<>();
-        RoleFuncModelExample example = new RoleFuncModelExample();
+        RoleFuncExample example = new RoleFuncExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         List<Integer> funcIds = this.roleFuncDAO.selectByExample(example).stream()
                 .map(RoleFuncModel::getFuncId)
@@ -349,7 +349,7 @@ public class RoleServiceImpl implements RoleService {
                 .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(funcIds)) {
 
-            FuncModelExample funcModelExample = new FuncModelExample();
+            FuncExample funcModelExample = new FuncExample();
             funcModelExample.createCriteria().andFuncIdIn(funcIds);
             historyAuthFuncList = new ArrayList<>(this.funcDAO.selectByExample(funcModelExample));
         }

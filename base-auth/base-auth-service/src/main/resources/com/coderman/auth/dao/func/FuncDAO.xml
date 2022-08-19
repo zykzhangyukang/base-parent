@@ -75,12 +75,11 @@
     func_id, func_name, func_key, func_type, func_icon, func_sort, dir_hide, parent_id, 
     create_time, update_time
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.func.FuncModelExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.func.FuncExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    'false' as QUERYID,
     <include refid="Base_Column_List" />
     from tb_func
     <if test="_parameter != null">
@@ -100,7 +99,7 @@
     delete from tb_func
     where func_id = #{funcId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.func.FuncModelExample">
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.func.FuncExample">
     delete from tb_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -183,7 +182,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.func.FuncModelExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.coderman.auth.model.func.FuncExample" resultType="java.lang.Long">
     select count(*) from tb_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

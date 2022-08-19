@@ -1,14 +1,14 @@
 package com.coderman.auth.dao.resource;
 
+import com.coderman.auth.model.resource.ResourceExample;
 import com.coderman.auth.model.resource.ResourceModel;
-import com.coderman.auth.model.resource.ResourceModelExample;
 import com.coderman.auth.vo.resource.ResourceVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface ResourceDAO extends BaseDAO<ResourceModel,ResourceModelExample> {
+public interface ResourceDAO extends BaseDAO<ResourceModel, ResourceExample> {
 
 
     /**

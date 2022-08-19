@@ -1,7 +1,7 @@
 package com.coderman.auth.dao.func;
 
+import com.coderman.auth.model.func.FuncExample;
 import com.coderman.auth.model.func.FuncModel;
-import com.coderman.auth.model.func.FuncModelExample;
 import com.coderman.auth.vo.func.FuncQueryVO;
 import com.coderman.auth.vo.func.FuncVO;
 import com.coderman.auth.vo.func.MenuVO;
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface FuncDAO extends BaseDAO<FuncModel, FuncModelExample> {
+public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
 
     /**
      * 功能列表

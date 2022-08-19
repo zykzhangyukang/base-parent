@@ -5,7 +5,6 @@ import com.coderman.auth.vo.resource.ResourceVO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +17,6 @@ import java.util.List;
  * @date 2022/3/1915:36
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class FuncTreeVO extends FuncModel {
 
     @JsonProperty(value = "value")

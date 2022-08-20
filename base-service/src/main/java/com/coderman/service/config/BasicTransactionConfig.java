@@ -1,4 +1,4 @@
-package com.coderman.service.configure;
+package com.coderman.service.config;
 
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Advisor;

@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = BusinessException.class)
     public ResultVO<String> handleBusinessEx(BusinessException e){
 
-        log.error("业务异常:{}",e.getMessage(),e);
 
         String message = e.getMessage();
         ResultVO<String> resultVO = new ResultVO<>();
@@ -34,7 +33,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public ResultVO<String> handleMethodEx(HttpRequestMethodNotSupportedException e){
 
-        log.error("请求异常:{}",e.getMessage(),e);
 
         ResultVO<String> resultVO = new ResultVO<>();
         resultVO.setCode(ResultConstant.RESULT_CODE_500);
@@ -47,7 +45,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResultVO<String> handleSystemEx(Exception e){
 
-        log.error("系统异常:{}",e.getMessage(),e);
 
         ResultVO<String> resultVO = new ResultVO<>();
         resultVO.setCode(ResultConstant.RESULT_CODE_500);

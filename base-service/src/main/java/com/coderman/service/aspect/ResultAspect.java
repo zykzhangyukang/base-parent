@@ -1,10 +1,10 @@
 package com.coderman.service.aspect;
 
 import com.coderman.api.vo.ResultVO;
+import com.coderman.service.util.ReflectUtil;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -28,7 +28,7 @@ import java.util.*;
 @Aspect
 @Component
 @Slf4j
-@Order(value = 2300)
+@Order(value = 2600)
 @SuppressWarnings("all")
 public class ResultAspect {
 
@@ -156,7 +156,7 @@ public class ResultAspect {
 
     private void setReturnFilter(Map<String, List<String>> returnParamsMap, Type type, Object resultVO) {
 
-        List<Field> fieldList = getAllField((Class<?>) type);
+        List<Field> fieldList = ReflectUtil.getAllField((Class<?>) type);
 
         for (Field field : fieldList) {
 
@@ -251,7 +251,7 @@ public class ResultAspect {
                 return null;
             }
 
-            List<Field> fieldList = getAllField(resultVO.getClass());
+            List<Field> fieldList = ReflectUtil.getAllField(resultVO.getClass());
 
             for (Field field : fieldList) {
 
@@ -289,32 +289,5 @@ public class ResultAspect {
         }
 
         return resultVO;
-    }
-
-
-    public <T> List<Field> getAllField(Class<T> obj){
-
-        List<Field> list = new ArrayList<>();
-
-        try {
-
-            if(obj.getName().equals(Object.class.getName())){
-                return list;
-            }
-
-            Field[] fields =  obj.getDeclaredFields();
-            if(!ArrayUtils.isEmpty(fields)){
-
-                list.addAll(Arrays.asList(fields));
-            }
-
-            List<Field> listParent = getAllField(obj.getSuperclass());
-            list.addAll(listParent);
-
-        }catch (Exception e){
-
-            log.error("{}", e.getMessage(),e);
-        }
-        return list;
     }
 }

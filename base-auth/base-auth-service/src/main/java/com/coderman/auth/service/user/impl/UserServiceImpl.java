@@ -19,6 +19,7 @@ import com.coderman.auth.model.user.UserRoleModel;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserVO;
+import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.MD5Utils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -66,13 +67,15 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @LogError(value = "用户列表")
     public ResultVO<PageVO<List<UserVO>>> page(Integer currentPage, Integer pageSize, UserVO queryVO) {
 
         PageHelper.startPage(currentPage, pageSize);
         List<UserVO> userVOList = this.userDAO.page(queryVO);
 
         PageInfo<UserVO> pageInfo = new PageInfo<>(userVOList);
-        PageVO<List<UserVO>> pageVO = new PageVO<>(pageInfo.getTotal(), pageInfo.getList());
+        PageVO<List<UserVO>> pageVO = new PageVO<>(pageInfo.getTotal(), pageInfo.getList(), currentPage, pageSize);
+
         return ResultUtil.getSuccessPage(UserVO.class, pageVO);
     }
 
@@ -83,6 +86,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @LogError(value = "新增用户信息")
     public ResultVO<Void> save(UserVO userVO) {
 
         String username = userVO.getUsername();
@@ -157,7 +161,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    @Transactional
+    @LogError(value = "删除用户信息")
     public ResultVO<Void> delete(Integer userId) {
 
         // 删除用户-角色关联
@@ -171,6 +175,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @LogError(value = "更新用户信息")
     public ResultVO<Void> update(UserVO userVO) {
 
         String username = userVO.getUsername();
@@ -218,6 +223,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @LogError(value = "获取用户信息")
     public ResultVO<UserVO> select(Integer userId) {
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
         if (null == userModel) {
@@ -231,6 +237,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @LogError(value = "根据用户名获取用户信息")
     public ResultVO<UserVO> selectUserByName(String username) {
 
         UserExample example = new UserExample();

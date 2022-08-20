@@ -79,7 +79,7 @@ public class RoleServiceImpl implements RoleService {
         PageInfo<RoleVO> pageInfo = new PageInfo<>(userVOList);
         List<RoleVO> list = pageInfo.getList();
 
-        return ResultUtil.getSuccessPage(RoleVO.class, new PageVO<>(pageInfo.getTotal(), list));
+        return ResultUtil.getSuccessPage(RoleVO.class, new PageVO<>(pageInfo.getTotal(), list,currentPage,pageSize));
     }
 
     @Override

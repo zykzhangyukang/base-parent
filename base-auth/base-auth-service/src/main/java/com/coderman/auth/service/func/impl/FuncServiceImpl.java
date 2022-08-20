@@ -101,7 +101,7 @@ public class FuncServiceImpl implements FuncService {
 
         PageInfo<FuncVO> pageInfo = new PageInfo<>(funcVOList);
         List<FuncVO> list = pageInfo.getList();
-        return ResultUtil.getSuccessPage(FuncVO.class, new PageVO<>(pageInfo.getTotal(), list));
+        return ResultUtil.getSuccessPage(FuncVO.class, new PageVO<>(pageInfo.getTotal(), list,currentPage,pageSize));
     }
 
     @Override

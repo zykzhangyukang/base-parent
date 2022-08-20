@@ -12,21 +12,41 @@ import lombok.Data;
 public class PageVO<T> {
 
     /**
-     * 总页数
+     * 当前页码
      */
-    private long total = 0;
+    private int currPage;
 
     /**
-     * 数据
+     * 页码显示条数
+     */
+    private int pageRow;
+
+    /**
+     * 总页数
+     */
+    private int totalPage;
+
+    /**
+     * 总条数
+     */
+    private long totalRow;
+
+    /**
+     * 数据集合
      */
     private T dataList;
 
 
-    public PageVO() {
+    public PageVO(long totalRow, T dataList) {
+        this.totalRow = totalRow;
+        this.dataList = dataList;
     }
 
-    public PageVO(long total, T dataList) {
-        this.total = total;
+
+    public PageVO(long totalRow, T dataList,int currPage, int pageRow) {
+        this.currPage = currPage;
+        this.pageRow = pageRow;
+        this.totalRow = totalRow;
         this.dataList = dataList;
     }
 }

@@ -1,4 +1,4 @@
-package com.coderman.service.configure;
+package com.coderman.service.config;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

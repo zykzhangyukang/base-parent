@@ -1,4 +1,4 @@
-package com.coderman.service.configure;
+package com.coderman.service.config;
 
 import com.coderman.service.xss.XssFilter;
 import lombok.RequiredArgsConstructor;

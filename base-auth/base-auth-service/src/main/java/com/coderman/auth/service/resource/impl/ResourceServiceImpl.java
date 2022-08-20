@@ -44,7 +44,7 @@ public class ResourceServiceImpl implements ResourceService {
         List<ResourceVO> resourceVOList = this.resourceDAO.page(queryVO);
 
         PageInfo<ResourceVO> pageInfo = new PageInfo<>(resourceVOList);
-        PageVO<List<ResourceVO>> pageVO = new PageVO<>(pageInfo.getTotal(), pageInfo.getList());
+        PageVO<List<ResourceVO>> pageVO = new PageVO<>(pageInfo.getTotal(), pageInfo.getList(),currentPage,pageSize);
         return ResultUtil.getSuccessPage(ResourceVO.class, pageVO);
     }
 

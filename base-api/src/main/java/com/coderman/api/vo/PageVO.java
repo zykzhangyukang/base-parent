@@ -1,5 +1,6 @@
 package com.coderman.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
@@ -24,6 +25,7 @@ public class PageVO<T> {
     /**
      * 总页数
      */
+    @JsonIgnore
     private int totalPage;
 
     /**

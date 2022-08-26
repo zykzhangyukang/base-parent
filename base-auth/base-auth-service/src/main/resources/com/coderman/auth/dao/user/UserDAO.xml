@@ -262,26 +262,41 @@
   </resultMap>
 
   <!-- 用户列表 -->
-  <select id="page" resultMap="pageBaseResultMap" resultType="com.coderman.auth.vo.user.UserVO">
+  <select id="selectPage" resultMap="pageBaseResultMap">
       select
       u.user_id, u.username, u.real_name, u.password, u.dept_code, u.user_status, u.create_time, u.update_time,d.dept_name
       from tb_user u
       left join tb_dept d on u.dept_code  = d.dept_code
-      <where>
-        <if test="queryVO.username!=null and queryVO.username!=''">
-          and username like concat('%',#{queryVO.username},'%')
-        </if>
-        <if test="queryVO.realName!=null and queryVO.realName!=''">
-          and real_name like concat('%',#{queryVO.realName},'%')
-        </if>
-        <if test="queryVO.userStatus!=null">
-          and user_status = #{queryVO.userStatus}
-        </if>
-        <if test="queryVO.deptCode!=null and queryVO.deptCode!=''">
-          and u.dept_code = #{queryVO.deptCode}
-        </if>
-      </where>
+      <include refid="pageCondition"/>
       order by u.create_time desc
+      limit #{offset}, #{size}
   </select>
+
+
+  <select id="countPage" resultType="java.lang.Long">
+    select
+    count(1)
+    from tb_user u
+    left join tb_dept d on u.dept_code = d.dept_code
+    <include refid="pageCondition"/>
+  </select>
+
+
+  <sql id="pageCondition">
+    <where>
+      <if test="username!=null and username!=''">
+        and username like concat('%',#{.username},'%')
+      </if>
+      <if test="realName!=null and realName!=''">
+        and real_name like concat('%',#{realName},'%')
+      </if>
+      <if test="userStatus!=null">
+        and user_status = #{userStatus}
+      </if>
+      <if test="deptCode!=null and queryVO.deptCode!=''">
+        and u.dept_code = #{deptCode}
+      </if>
+    </where>
+  </sql>
 
 </mapper>

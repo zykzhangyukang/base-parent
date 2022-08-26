@@ -1,6 +1,7 @@
 package com.coderman.auth.service.user.impl;
 
 import com.coderman.api.exception.BusinessException;
+import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
@@ -21,8 +22,6 @@ import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.MD5Utils;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -70,13 +67,34 @@ public class UserServiceImpl implements UserService {
     @LogError(value = "用户列表")
     public ResultVO<PageVO<List<UserVO>>> page(Integer currentPage, Integer pageSize, UserVO queryVO) {
 
-        PageHelper.startPage(currentPage, pageSize);
-        List<UserVO> userVOList = this.userDAO.page(queryVO);
+        Map<String, Object> conditionMap = new HashMap<>();
 
-        PageInfo<UserVO> pageInfo = new PageInfo<>(userVOList);
-        PageVO<List<UserVO>> pageVO = new PageVO<>(pageInfo.getTotal(), pageInfo.getList(), currentPage, pageSize);
+        if (StringUtils.isNotBlank(queryVO.getUsername())) {
+            conditionMap.put("username", queryVO.getUsername());
+        }
 
-        return ResultUtil.getSuccessPage(UserVO.class, pageVO);
+        if (StringUtils.isNotBlank(queryVO.getRealName())) {
+            conditionMap.put("realName", queryVO.getRealName());
+        }
+
+        if (Objects.nonNull(queryVO.getUserStatus())) {
+            conditionMap.put("userStatus", queryVO.getUserStatus());
+        }
+
+        if (StringUtils.isNotBlank(queryVO.getDeptCode())) {
+            conditionMap.put("deptCode", queryVO.getDeptCode());
+        }
+
+
+        PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
+
+        // 总条数
+        Long count = this.userDAO.countPage(conditionMap);
+
+        // 分页
+        List<UserVO> userVOList = this.userDAO.selectPage(conditionMap);
+
+        return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, userVOList, currentPage, pageSize));
     }
 
     /**

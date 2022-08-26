@@ -1,5 +1,6 @@
 package com.coderman.service.aspect;
 
+import com.coderman.api.constant.AopConstant;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.util.ReflectUtil;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -22,13 +23,12 @@ import java.util.*;
 /**
  * @author coderman
  * @Title: 返回结果切面
- * @Description: TOD
  * @date 2022/3/1512:14
  */
 @Aspect
 @Component
 @Slf4j
-@Order(value = 2600)
+@Order(value = AopConstant.RESULT_ASPECT_ORDER)
 @SuppressWarnings("all")
 public class ResultAspect {
 

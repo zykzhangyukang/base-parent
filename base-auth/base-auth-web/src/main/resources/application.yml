@@ -1,6 +1,6 @@
 domain: auth
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: base-auth
@@ -11,6 +11,12 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  redis:
+    auth:
+      host: 119.91.30.131
+      port: 6379
+      password: zhangyukang
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

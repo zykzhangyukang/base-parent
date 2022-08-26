@@ -2,11 +2,16 @@ package com.coderman.service.dict;
 
 import com.coderman.api.anntation.Constant;
 import com.coderman.api.anntation.ConstantList;
+import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.service.redis.RedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.io.Resource;
@@ -32,7 +37,7 @@ import java.util.*;
  */
 @Component
 @Lazy(value = false)
-public class ConstantService {
+public class ConstantService implements ApplicationRunner {
 
     /**
      * 存放常量
@@ -54,6 +59,9 @@ public class ConstantService {
      */
     @Value("${domain}")
     private String domain;
+
+    @Autowired
+    private RedisService redisService;
 
 
     @PostConstruct
@@ -138,7 +146,7 @@ public class ConstantService {
         }
 
         stopWatch.stop();
-        logger.info(stopWatch.prettyPrint());
+        logger.info(" ------------ 扫描常量完成:{} millis ------------ ", stopWatch.getTotalTimeMillis());
     }
 
 
@@ -254,4 +262,14 @@ public class ConstantService {
         return constBeanSet;
     }
 
+
+    /**
+     * 将常量保存到redis中
+     */
+    @Override
+    public void run(ApplicationArguments args) {
+        redisService.setHash("auth.const.all", domain, getAllConstList(), RedisDbConstant.REDIS_DB_DEFAULT);
+
+        logger.info(" ------------ 常量数据保存redis完成 ------------");
+    }
 }

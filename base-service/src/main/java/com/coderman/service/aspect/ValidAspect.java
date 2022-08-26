@@ -1,5 +1,6 @@
 package com.coderman.service.aspect;
 
+import com.coderman.api.constant.AopConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.ApiImplicitParam;
@@ -35,7 +36,7 @@ import java.util.Set;
  */
 @Component
 @Aspect
-@Order(value = 2400)
+@Order(value = AopConstant.VALID_ASPECT_ORDER)
 @SuppressWarnings("all")
 public class ValidAspect {
 

@@ -3,7 +3,7 @@ package com.coderman.auth;
 import com.coderman.service.anntation.ISpringBootApplication;
 import org.springframework.boot.SpringApplication;
 
-/**
+/**a
  * @author coderman
  * @date 2022/7/17 14:23
  */

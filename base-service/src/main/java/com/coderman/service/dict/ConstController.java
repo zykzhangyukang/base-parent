@@ -10,15 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/${domain}/constant")
-public class ConstantController {
+@RequestMapping(value = "/${domain}/const")
+public class ConstController {
 
     @Autowired
-    private ConstantService constantService;
+    private ConstService constService;
 
     @GetMapping(value = "/list")
-    public ResultVO<List<ConstantItems>> list(){
-        List<ConstantItems> allConstList = this.constantService.getAllConstList();
-        return ResultUtil.getSuccessList(ConstantItems.class,allConstList);
+    public ResultVO<List<ConstItems>> list(){
+        return ResultUtil.getSuccessList(ConstItems.class,this.constService.getAllConstList());
     }
 }

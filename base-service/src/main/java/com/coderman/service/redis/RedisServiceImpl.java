@@ -362,7 +362,7 @@ public class RedisServiceImpl extends BaseService implements RedisService {
 
     @Override
     public RedisTemplate getRedisTemplate() {
-        return null;
+        return this.redisTemplate;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.coderman.auth.service.user.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -18,10 +20,15 @@ import com.coderman.auth.model.user.UserModel;
 import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
 import com.coderman.auth.service.user.UserService;
+import com.coderman.auth.vo.user.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserVO;
 import com.coderman.service.anntation.LogError;
+import com.coderman.service.anntation.LogErrorParam;
+import com.coderman.service.redis.RedisService;
+import com.coderman.service.service.BaseService;
 import com.coderman.service.util.MD5Utils;
+import com.coderman.service.util.UUIDUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +46,7 @@ import java.util.stream.Collectors;
  * @date 2022/2/2711:41
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseService implements UserService {
 
     @Autowired
     private UserDAO userDAO;
@@ -53,6 +60,69 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private DeptDAO deptDAO;
+
+    @Autowired
+    private RedisService redisService;
+
+
+    @Override
+    @LogError(value = "用户登入")
+    public ResultVO<AuthUserVO> login(@LogErrorParam UserVO userVO) throws BusinessException {
+
+        try {
+
+            String username = userVO.getUsername();
+            String password = userVO.getPassword();
+
+            if (StringUtils.isBlank(username)) {
+                return ResultUtil.getWarn("用户名不能为空");
+            }
+
+
+            if (StringUtils.isBlank(password)) {
+                return ResultUtil.getWarn("登入密码不能为空");
+            }
+
+            UserExample example = new UserExample();
+            example.createCriteria().andUsernameEqualTo(userVO.getUsername()).andUserStatusEqualTo(UserConstant.USER_STATUS_ENABLE);
+            Optional<UserModel> modelOptional = this.userDAO.selectByExample(example).stream().findFirst();
+
+            if (!modelOptional.isPresent()) {
+
+                return ResultUtil.getWarn("用户名或密码错误");
+            }
+
+            UserModel dbUser = modelOptional.get();
+
+            // 密码比对
+            if (StringUtils.equals(MD5Utils.md5Hex(password.getBytes()), dbUser.getPassword())) {
+
+                return ResultUtil.getWarn("用户名或密码错误");
+            }
+
+            // 生成令牌
+            String token = UUIDUtils.getPrimaryValue();
+
+
+            // 会话写入redis
+            AuthUserVO authUserVO = new AuthUserVO();
+            authUserVO.setUsername(username);
+            authUserVO.setToken(token);
+            authUserVO.setDeptCode(dbUser.getDeptCode());
+            authUserVO.setRealName(dbUser.getRealName());
+
+            this.redisService.setString(token, JSON.toJSONString(authUserVO), 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
+
+            return ResultUtil.getSuccess(AuthUserVO.class, authUserVO);
+
+        } catch (Exception e) {
+
+            logger.error("用户登入失败,username:{},msg:{}", userVO.getUsername(), e.getMessage(), e);
+
+            return ResultUtil.getFail("登入失败,请联系技术人员处理.");
+        }
+
+    }
 
 
     /**
@@ -161,7 +231,7 @@ public class UserServiceImpl implements UserService {
         UserModel insertModel = new UserModel();
         insertModel.setUsername(username);
         insertModel.setRealName(realName);
-        insertModel.setPassword(MD5Utils.encodeHexString(password.getBytes()));
+        insertModel.setPassword(MD5Utils.md5Hex(password.getBytes()));
         insertModel.setCreateTime(now);
         insertModel.setUpdateTime(now);
         insertModel.setUserStatus(userVO.getUserStatus());
@@ -287,6 +357,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @LogError(value = "启用用户")
     public ResultVO<Void> updateEnable(Integer userId) {
 
         UserModel db = this.userDAO.selectByPrimaryKey(userId);
@@ -402,7 +473,7 @@ public class UserServiceImpl implements UserService {
 
         UserModel record = new UserModel();
         record.setUserId(userId);
-        record.setPassword(MD5Utils.encodeHexString(password.getBytes()));
+        record.setPassword(MD5Utils.md5Hex(password.getBytes()));
         this.userDAO.updateByPrimaryKeySelective(record);
         return ResultUtil.getSuccess();
     }

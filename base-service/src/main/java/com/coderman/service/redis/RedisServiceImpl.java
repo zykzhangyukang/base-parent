@@ -1,18 +1,22 @@
 package com.coderman.service.redis;
 
+import com.alibaba.fastjson.JSON;
 import com.coderman.service.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @SuppressWarnings("all")
@@ -224,7 +228,15 @@ public class RedisServiceImpl extends BaseService implements RedisService {
 
     @Override
     public <T> void setString(String key, String string, int seconds, int db) {
+        Object execute = this.redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
 
+                connection.select(db);
+                Boolean set = connection.set(serializeKey(key), serializeValue(string), Expiration.seconds(seconds), RedisStringCommands.SetOption.UPSERT);
+                return set;
+            }
+        });
     }
 
     @Override

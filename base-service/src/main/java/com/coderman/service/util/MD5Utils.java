@@ -27,15 +27,16 @@ public class MD5Utils {
      *
      * @param bytes byte arrays
      * @return MD5 hex string of input
-     * @throws NoSuchAlgorithmException if can't load md5 digest spi.
      */
-    public static String md5Hex(byte[] bytes) throws NoSuchAlgorithmException {
+    public static String md5Hex(byte[] bytes)  {
         try {
             MessageDigest messageDigest = MESSAGE_DIGEST_LOCAL.get();
             if (messageDigest != null) {
                 return encodeHexString(messageDigest.digest(bytes));
+            }else {
+                throw new RuntimeException("MessageDigest get MD5 instance error");
             }
-            throw new NoSuchAlgorithmException("MessageDigest get MD5 instance error");
+
         } finally {
             MESSAGE_DIGEST_LOCAL.remove();
         }
@@ -59,7 +60,7 @@ public class MD5Utils {
     /**
      * Convert a byte array into a visible string.
      */
-    public static String encodeHexString(byte[] bytes) {
+    private static String encodeHexString(byte[] bytes) {
         int l = bytes.length;
 
         char[] out = new char[l << 1];

@@ -18,8 +18,4 @@ import org.springframework.stereotype.Component;
 @Order(value = AopConstant.AUTH_ASPECT_ORDER)
 public class AuthAspect {
 
-
-
-
-
 }

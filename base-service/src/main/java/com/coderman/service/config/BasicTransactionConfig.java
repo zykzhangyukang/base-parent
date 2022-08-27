@@ -20,7 +20,7 @@ import java.util.List;
  * @Description: TOD
  * @date 2022/3/1618:05
  */
-public class BasicTransactionConfig {
+public abstract class BasicTransactionConfig {
 
 
     public TransactionInterceptor transactionInterceptor(PlatformTransactionManager transactionManager) {

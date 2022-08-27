@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class ConstantItem extends BaseModel {
+public class ConstItem extends BaseModel {
 
     private Object code;
 
@@ -38,7 +38,7 @@ public class ConstantItem extends BaseModel {
     }
 
 
-    public ConstantItem(Object code, String name) {
+    public ConstItem(Object code, String name) {
         this.code = code;
         this.name = name;
     }

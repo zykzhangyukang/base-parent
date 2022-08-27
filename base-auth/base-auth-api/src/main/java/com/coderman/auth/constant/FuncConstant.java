@@ -2,7 +2,7 @@ package com.coderman.auth.constant;
 
 
 import com.coderman.api.anntation.Constant;
-import com.coderman.api.anntation.ConstantList;
+import com.coderman.api.anntation.ConstList;
 
 /**
  * @author coderman
@@ -23,10 +23,10 @@ public interface FuncConstant {
      */
     String func_type_group = "func_type_group";
 
-    @ConstantList(group = func_type_group, name = "目录")
+    @ConstList(group = func_type_group, name = "目录")
     String func_type_dir = "dir";
 
-    @ConstantList(group = func_type_group, name = "功能")
+    @ConstList(group = func_type_group, name = "功能")
     String func_type_func = "func";
 
 }

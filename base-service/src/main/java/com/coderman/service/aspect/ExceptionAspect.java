@@ -47,9 +47,6 @@ public class ExceptionAspect {
     public void doAfterThrowing(JoinPoint point, Throwable e) {
 
 
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-
-
         Signature signature = point.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
@@ -105,11 +102,8 @@ public class ExceptionAspect {
 
         if (logger.isInfoEnabled()) {
 
+
             String builder = "[ExceptionAspect][AfterThrowing][Begin]\n" +
-                    "[FullUrl-->" + request.getRequestURI() + "]\n" +
-                    "[ReqUrl-->" + request.getRequestURI() + "]\n" +
-                    "[ReqUrl-->" + request.getServletPath() + "]\n" +
-                    "[Ip-->" + request.getRemoteHost() + "]\n" +
                     "[MethodName-->" + point.getSignature().getName() + "]\n" +
                     "[CreateTime-->" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss") + "]\n" +
                     "[ExceptionClassName-->" + point + "]\n" +

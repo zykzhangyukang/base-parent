@@ -40,33 +40,6 @@ public class User2AuthApiImpl implements User2AuthService {
         return this.userService.selectUserByName(username);
     }
 
-    @Override
-    public ResultVO<UserInfoVO> selectUserInfoByName(String username) {
-
-        ResultVO<UserVO> voResultVO = this.selectUserByName(username);
-        UserVO userVO = voResultVO.getResult();
-
-        if (null == userVO) {
-            return ResultUtil.getFail(UserInfoVO.class, null, "用户信息不存在");
-        }
-
-        UserInfoVO userInfoVO = new UserInfoVO();
-
-        BeanUtils.copyProperties(userVO, userInfoVO);
-
-        // 查询角色
-        ResultVO<List<String>> roleNamesRes = this.userService.selectRoleNames(userVO.getUserId());
-        userInfoVO.setRoles(roleNamesRes.getResult());
-
-        // 查询菜单
-        ResultVO<List<MenuVO>> listResultVO = this.funcService.selectMenusTreeByUserId(userVO.getUserId());
-        userInfoVO.setMenus(listResultVO.getResult());
-
-        // 查询功能
-        ResultVO<List<String>> resultVO = this.funcService.selectFuncKeyListByUserId(userVO.getUserId());
-        userInfoVO.setFuncKeys(resultVO.getResult());
-        return ResultUtil.getSuccess(UserInfoVO.class, userInfoVO);
-    }
 
 
     @Override

@@ -1,12 +1,12 @@
 package com.coderman.auth.controller.user;
 
-import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.service.user.UserService;
+import com.coderman.auth.vo.user.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserVO;
-import com.coderman.service.redis.RedisService;
+import com.coderman.service.util.MD5Utils;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -32,6 +33,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户登入")
+    @GetMapping(value = "/login")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "username", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING),
+            @ApiImplicitParam(name = "password", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING),
+    })
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "AuthUserVO",value = {"realName", "deptCode", "username", "token"})
+    })
+    public ResultVO<AuthUserVO> login(UserVO userVO) {
+        return this.userService.login(userVO);
+    }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取用户拥有的角色名称")
     @GetMapping(value = "/select/role/names")

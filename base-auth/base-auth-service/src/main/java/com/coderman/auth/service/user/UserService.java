@@ -4,8 +4,9 @@ package com.coderman.auth.service.user;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.auth.vo.user.AuthUserVO;
+import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
+import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
 
 import java.util.List;
@@ -132,4 +133,13 @@ public interface UserService {
      * @return
      */
     ResultVO<AuthUserVO> login(UserVO userVO) throws BusinessException;
+
+
+    /**
+     *
+     * 获取用户信息
+     *
+     * @return
+     */
+    ResultVO<UserInfoVO> info();
 }

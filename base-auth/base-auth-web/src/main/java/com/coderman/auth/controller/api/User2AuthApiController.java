@@ -45,18 +45,6 @@ public class User2AuthApiController implements User2AuthApi {
         return this.user2AuthService.selectUserByName(username);
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "提供给权限系统获取用户信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username",paramType = SwaggerConstant.PARAM_QUERY,dataType = SwaggerConstant.DATA_STRING,value = "用户名",required = true)
-    })
-    @ApiReturnParams({
-            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserInfoVO", value = {"deptName", "realName", "userStatus", "userId", "deptCode", "username","roles","funcKeys","menus"}),
-    })
-    @Override
-    public ResultVO<UserInfoVO> selectUserInfoByName(String username) {
-        return this.user2AuthService.selectUserInfoByName(username);
-    }
 
 
     @SneakyThrows

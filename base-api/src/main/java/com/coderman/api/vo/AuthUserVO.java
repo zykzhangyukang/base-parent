@@ -1,4 +1,4 @@
-package com.coderman.auth.vo.user;
+package com.coderman.api.vo;
 
 import com.coderman.api.model.BaseModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 登入用户
+ * 当前登入用户信息
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

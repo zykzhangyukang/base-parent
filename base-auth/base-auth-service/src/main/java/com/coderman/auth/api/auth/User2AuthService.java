@@ -24,12 +24,7 @@ public interface User2AuthService {
      */
     ResultVO<UserVO> selectUserByName(String username);
 
-    /**
-     *
-     * @param username
-     * @return
-     */
-    ResultVO<UserInfoVO> selectUserInfoByName(String username);
+
 
 
     /**

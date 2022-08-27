@@ -28,16 +28,19 @@ public class XssFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        log.info("------------ xss filter init ------------");
+
         String isIncludeRichText = filterConfig.getInitParameter("isIncludeRichText");
         if (StringUtils.isNotBlank(isIncludeRichText)) {
             flag = BooleanUtils.toBoolean(isIncludeRichText);
         }
+
         String temp = filterConfig.getInitParameter("excludes");
         if (temp != null) {
             String[] url = StringUtils.split(temp, ",");
             excludes.addAll(Arrays.asList(url));
         }
+
+        log.info("============================XSS过滤器初始化============================");
     }
 
     @Override

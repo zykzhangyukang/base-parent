@@ -2,7 +2,7 @@ package com.coderman.auth.constant;
 
 
 import com.coderman.api.anntation.Constant;
-import com.coderman.api.anntation.ConstantList;
+import com.coderman.api.anntation.ConstList;
 
 /**
  * @author coderman
@@ -19,10 +19,10 @@ public interface UserConstant {
      */
     String USER_STATUS_GROUP = "user_status_group";
 
-    @ConstantList(group = USER_STATUS_GROUP, name = "禁用")
+    @ConstList(group = USER_STATUS_GROUP, name = "禁用")
     Integer USER_STATUS_DISABLE = 0;
 
-    @ConstantList(group = USER_STATUS_GROUP, name = "启用")
+    @ConstList(group = USER_STATUS_GROUP, name = "启用")
     Integer USER_STATUS_ENABLE = 1;
 
 }

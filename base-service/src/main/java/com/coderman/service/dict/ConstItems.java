@@ -20,12 +20,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConstantItems extends BaseModel {
+public class ConstItems extends BaseModel {
 
     @ApiModelProperty(value = "字典组")
     private String group;
 
 
-    @ApiModelProperty(value = "字典香")
-    private List<ConstantItem> itemList;
+    @ApiModelProperty(value = "字典项")
+    private List<ConstItem> itemList;
 }

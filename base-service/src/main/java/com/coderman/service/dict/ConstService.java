@@ -1,14 +1,13 @@
 package com.coderman.service.dict;
 
+import com.coderman.api.anntation.ConstList;
 import com.coderman.api.anntation.Constant;
-import com.coderman.api.anntation.ConstantList;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.service.redis.RedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -19,6 +18,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
@@ -37,12 +41,12 @@ import java.util.*;
  */
 @Component
 @Lazy(value = false)
-public class ConstantService implements ApplicationRunner {
+public class ConstService implements ApplicationRunner {
 
     /**
      * 存放常量
      */
-    private final static Map<String, List<ConstantItem>> constMap = new HashMap<>();
+    private final static Map<String, List<ConstItem>> constMap = new HashMap<>();
 
     /**
      * 读取器工厂
@@ -52,13 +56,8 @@ public class ConstantService implements ApplicationRunner {
     /**
      * 日志打印
      */
-    private final static Logger logger = LoggerFactory.getLogger(ConstantService.class);
+    private final static Logger logger = LoggerFactory.getLogger(ConstService.class);
 
-    /**
-     * 项目domain
-     */
-    @Value("${domain}")
-    private String domain;
 
     @Autowired
     private RedisService redisService;
@@ -71,7 +70,8 @@ public class ConstantService implements ApplicationRunner {
 
         StopWatch stopWatch = new StopWatch();
 
-        stopWatch.start("扫描常量开始");
+        logger.info("============================扫描项目常量开始============================");
+        stopWatch.start();
 
         // 扫描常量class
         Set<BeanDefinition> constantBeanSet = getConstantBeanSet();
@@ -100,13 +100,13 @@ public class ConstantService implements ApplicationRunner {
                     Annotation[] declaredAnnotations = declaredField.getDeclaredAnnotations();
                     for (Annotation declaredAnnotation : declaredAnnotations) {
 
-                        if (!(declaredAnnotation instanceof ConstantList)) {
+                        if (!(declaredAnnotation instanceof ConstList)) {
                             continue;
                         }
 
 
-                        String group = ((ConstantList) declaredAnnotation).group();
-                        String name = ((ConstantList) declaredAnnotation).name();
+                        String group = ((ConstList) declaredAnnotation).group();
+                        String name = ((ConstList) declaredAnnotation).name();
 
 
                         // 如果本项目的常量 & 不允许冲突
@@ -118,35 +118,36 @@ public class ConstantService implements ApplicationRunner {
                         // 如果不是本项目的常量 & 出现冲突
                         if (!this.isInnerClass(beanDefinition) && constMap.containsKey(group) && noAllowedConflictGroupSet.contains(group)) {
 
-                            logger.info("出现冲突 class->{},group->{},name->{},不加入常量.", beanDefinition.getBeanClassName(), group, name);
+                            logger.warn("出现冲突 class->{},group->{},name->{},不加入常量.", beanDefinition.getBeanClassName(), group, name);
                             continue;
                         }
 
-                        List<ConstantItem> constantItems;
-
+                        List<ConstItem> constItems;
 
                         if (constMap.containsKey(group)) {
-                            constantItems = constMap.get(group);
+                            constItems = constMap.get(group);
                         } else {
-                            constantItems = new ArrayList<>();
-                            constMap.put(group, constantItems);
+                            constItems = new ArrayList<>();
+                            constMap.put(group, constItems);
                         }
 
-                        constantItems.add(new ConstantItem(declaredField.get(null), name));
+
+                        constItems.add(new ConstItem(declaredField.get(null), name));
                     }
                 }
 
 
-                logger.info("扫描常量:{}", beanDefinition.getBeanClassName());
+                logger.info("扫描常量: {}",beanDefinition.getBeanClassName());
 
-            } catch (ClassNotFoundException | IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+
+                logger.warn("扫描常量 {} 错误,请检查常量定义修饰符.常量需要用 public static final 修饰.", beanDefinition.getBeanClassName());
             }
 
         }
 
         stopWatch.stop();
-        logger.info(" ------------ 扫描常量完成:{} millis ------------ ", stopWatch.getTotalTimeMillis());
+        logger.info("============================扫描常量完成,耗时:{} 毫秒.============================", stopWatch.getTotalTimeMillis());
     }
 
 
@@ -158,7 +159,7 @@ public class ConstantService implements ApplicationRunner {
      */
     private boolean isInnerClass(BeanDefinition beanDefinition) {
         return (beanDefinition.getBeanClassName() != null && beanDefinition.getBeanClassName().split("\\.").length > 3)
-                && StringUtils.equals(domain, beanDefinition.getBeanClassName().split("\\.")[2]);
+                && StringUtils.equals(System.getProperty("domain"), beanDefinition.getBeanClassName().split("\\.")[2]);
     }
 
 
@@ -167,7 +168,7 @@ public class ConstantService implements ApplicationRunner {
      *
      * @return
      */
-    public static Map<String, List<ConstantItem>> getAllConst() {
+    public static Map<String, List<ConstItem>> getAllConst() {
         return cloneConstMap();
     }
 
@@ -177,12 +178,12 @@ public class ConstantService implements ApplicationRunner {
      *
      * @return
      */
-    public List<ConstantItems> getAllConstList() {
+    public static List<ConstItems> getAllConstList() {
 
-        List<ConstantItems> list = new ArrayList<>();
+        List<ConstItems> list = new ArrayList<>();
         for (String key : constMap.keySet()) {
 
-            list.add(new ConstantItems(key, cloneItems(constMap.get(key))));
+            list.add(new ConstItems(key, cloneItems(constMap.get(key))));
 
         }
 
@@ -193,20 +194,20 @@ public class ConstantService implements ApplicationRunner {
     /**
      * 克隆对象
      *
-     * @param constantItems
+     * @param constItems
      * @return
      */
-    private List<ConstantItem> cloneItems(List<ConstantItem> constantItems) {
+    private static List<ConstItem> cloneItems(List<ConstItem> constItems) {
 
-        List<ConstantItem> newList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(constantItems)) {
+        List<ConstItem> newList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(constItems)) {
 
             return newList;
         }
 
-        for (ConstantItem item : constantItems) {
+        for (ConstItem item : constItems) {
 
-            newList.add(new ConstantItem(item.getCode(), item.getName()));
+            newList.add(new ConstItem(item.getCode(), item.getName()));
         }
 
         return newList;
@@ -217,18 +218,18 @@ public class ConstantService implements ApplicationRunner {
      *
      * @return
      */
-    private static Map<String, List<ConstantItem>> cloneConstMap() {
+    private static Map<String, List<ConstItem>> cloneConstMap() {
 
-        Map<String, List<ConstantItem>> map = new HashMap<>();
+        Map<String, List<ConstItem>> map = new HashMap<>();
 
-        for (Map.Entry<String, List<ConstantItem>> entry : ConstantService.constMap.entrySet()) {
+        for (Map.Entry<String, List<ConstItem>> entry : ConstService.constMap.entrySet()) {
 
-            List<ConstantItem> constantItems = new ArrayList<>();
-            for (ConstantItem constantItem : entry.getValue()) {
-                constantItems.add(new ConstantItem(constantItem.getCode(), constantItem.getName()));
+            List<ConstItem> constItems = new ArrayList<>();
+            for (ConstItem constItem : entry.getValue()) {
+                constItems.add(new ConstItem(constItem.getCode(), constItem.getName()));
             }
 
-            map.put(entry.getKey(), constantItems);
+            map.put(entry.getKey(), constItems);
         }
 
         return map;
@@ -267,9 +268,26 @@ public class ConstantService implements ApplicationRunner {
      * 将常量保存到redis中
      */
     @Override
+    @SuppressWarnings("all")
     public void run(ApplicationArguments args) {
-        redisService.setHash("auth.const.all", domain, getAllConstList(), RedisDbConstant.REDIS_DB_DEFAULT);
 
-        logger.info(" ------------ 常量数据保存redis完成 ------------");
+        Object obj = redisService.getRedisTemplate().execute((RedisCallback) connection -> {
+
+            connection.select(RedisDbConstant.REDIS_DB_DEFAULT);
+
+            StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+            GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+
+            byte[] key = stringRedisSerializer.serialize("auth.const.all");
+            byte[] domain = stringRedisSerializer.serialize(System.getProperty("domain"));
+            byte[] value = genericJackson2JsonRedisSerializer.serialize(getAllConstList());
+
+            assert key != null;
+            assert domain != null;
+            assert value != null;
+            return connection.hSet(key, domain, value);
+        });
+
+        logger.info("============================常量数据保存redis完成============================");
     }
 }

@@ -26,7 +26,7 @@ public class PageUtil {
 
         Integer offset = currentPage < 1 ? 1 : (currentPage - 1) * pageSize;
 
-        conditionMap.put("offSet", offset);
+        conditionMap.put("offset", offset);
         conditionMap.put("size", pageSize);
         return conditionMap;
     }

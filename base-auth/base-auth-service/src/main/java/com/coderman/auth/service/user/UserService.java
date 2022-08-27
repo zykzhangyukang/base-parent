@@ -1,8 +1,10 @@
 package com.coderman.auth.service.user;
 
 
+import com.coderman.api.exception.BusinessException;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.auth.vo.user.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserVO;
 
@@ -120,5 +122,14 @@ public interface UserService {
      * @param userId
      * @return
      */
-    ResultVO<Void> updatePassword(Integer userId,String password);
+    ResultVO<Void> updatePassword(Integer userId, String password);
+
+
+    /**
+     * 用户登入
+     *
+     * @param userVO
+     * @return
+     */
+    ResultVO<AuthUserVO> login(UserVO userVO) throws BusinessException;
 }

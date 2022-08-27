@@ -33,15 +33,6 @@ public interface User2AuthApi {
     ResultVO<UserVO> selectUserByName(@RequestParam(value = "username") String username);
 
 
-    /**
-     * 根据用户账号获取用户基本信息
-     *
-     * @param username
-     * @return
-     */
-    @GetMapping(value = "/select/user/info/by/name")
-    ResultVO<UserInfoVO> selectUserInfoByName(@RequestParam(value = "username") String username);
-
 
     /**
      * 根据用户账号获取用户资源

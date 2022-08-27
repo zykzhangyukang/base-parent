@@ -2,11 +2,12 @@ package com.coderman.auth.controller.user;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.auth.api.auth.User2AuthService;
 import com.coderman.auth.service.user.UserService;
-import com.coderman.auth.vo.user.AuthUserVO;
+import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
+import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
-import com.coderman.service.util.MD5Utils;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -33,8 +33,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    @Autowired
+    private User2AuthService user2AuthService;
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户登入")
-    @GetMapping(value = "/login")
+    @PostMapping(value = "/login")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "username", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING),
             @ApiImplicitParam(name = "password", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING),
@@ -46,6 +50,20 @@ public class UserController {
     public ResultVO<AuthUserVO> login(UserVO userVO) {
         return this.userService.login(userVO);
     }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "获取用户信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username",paramType = SwaggerConstant.PARAM_QUERY,dataType = SwaggerConstant.DATA_STRING,value = "用户名",required = true)
+    })
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "UserInfoVO", value = {"deptName", "realName", "userStatus", "userId", "deptCode", "username","roles","funcKeys","menus"}),
+    })
+    public ResultVO<UserInfoVO> info(){
+        return this.userService.info();
+    }
+
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取用户拥有的角色名称")
     @GetMapping(value = "/select/role/names")

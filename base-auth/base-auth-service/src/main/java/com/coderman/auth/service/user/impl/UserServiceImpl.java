@@ -19,14 +19,18 @@ import com.coderman.auth.model.user.UserExample;
 import com.coderman.auth.model.user.UserModel;
 import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
+import com.coderman.auth.service.func.FuncService;
 import com.coderman.auth.service.user.UserService;
-import com.coderman.auth.vo.user.AuthUserVO;
+import com.coderman.auth.vo.func.MenuVO;
+import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
+import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.redis.RedisService;
 import com.coderman.service.service.BaseService;
+import com.coderman.service.util.AuthUtil;
 import com.coderman.service.util.MD5Utils;
 import com.coderman.service.util.UUIDUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +69,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     private RedisService redisService;
 
 
+    @Autowired
+    private FuncService funcService;
+
+
     @Override
     @LogError(value = "用户登入")
     public ResultVO<AuthUserVO> login(@LogErrorParam UserVO userVO) throws BusinessException {
@@ -95,7 +103,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             UserModel dbUser = modelOptional.get();
 
             // 密码比对
-            if (StringUtils.equals(MD5Utils.md5Hex(password.getBytes()), dbUser.getPassword())) {
+            if (!StringUtils.equals(MD5Utils.md5Hex(password.getBytes()), dbUser.getPassword())) {
 
                 return ResultUtil.getWarn("用户名或密码错误");
             }
@@ -122,6 +130,35 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getFail("登入失败,请联系技术人员处理.");
         }
 
+    }
+
+    @Override
+    @LogError(value = "获取用户信息")
+    public ResultVO<UserInfoVO> info() {
+
+        ResultVO<UserVO> voResultVO = this.selectUserByName(AuthUtil.getCurrent().getUsername());
+        UserVO userVO = voResultVO.getResult();
+
+        if (null == userVO) {
+            return ResultUtil.getFail(UserInfoVO.class, null, "用户信息不存在");
+        }
+
+        UserInfoVO userInfoVO = new UserInfoVO();
+
+        BeanUtils.copyProperties(userVO, userInfoVO);
+
+        // 查询角色
+        ResultVO<List<String>> roleNamesRes = this.selectRoleNames(userVO.getUserId());
+        userInfoVO.setRoles(roleNamesRes.getResult());
+
+        // 查询菜单
+        ResultVO<List<MenuVO>> listResultVO = this.funcService.selectMenusTreeByUserId(userVO.getUserId());
+        userInfoVO.setMenus(listResultVO.getResult());
+
+        // 查询功能
+        ResultVO<List<String>> resultVO = this.funcService.selectFuncKeyListByUserId(userVO.getUserId());
+        userInfoVO.setFuncKeys(resultVO.getResult());
+        return ResultUtil.getSuccess(UserInfoVO.class, userInfoVO);
     }
 
 

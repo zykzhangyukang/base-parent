@@ -23,6 +23,7 @@ public abstract class BaseRedisConfig {
 
         stringRedisTemplate.setConnectionFactory(connectionFactory);
         stringRedisTemplate.setKeySerializer(stringRedisSerializer);
+        stringRedisTemplate.setValueSerializer(genericJackson2JsonRedisSerializer);
         stringRedisTemplate.setHashKeySerializer(stringRedisSerializer);
         stringRedisTemplate.setHashValueSerializer(genericJackson2JsonRedisSerializer);
 

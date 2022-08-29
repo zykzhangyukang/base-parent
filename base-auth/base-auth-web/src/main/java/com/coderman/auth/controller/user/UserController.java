@@ -2,7 +2,6 @@ package com.coderman.auth.controller.user;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.auth.api.auth.User2AuthService;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
@@ -34,8 +33,6 @@ public class UserController {
     private UserService userService;
 
 
-    @Autowired
-    private User2AuthService user2AuthService;
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户登入")
     @PostMapping(value = "/login")
@@ -53,13 +50,11 @@ public class UserController {
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "获取用户信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username",paramType = SwaggerConstant.PARAM_QUERY,dataType = SwaggerConstant.DATA_STRING,value = "用户名",required = true)
-    })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "UserInfoVO", value = {"deptName", "realName", "userStatus", "userId", "deptCode", "username","roles","funcKeys","menus"}),
     })
+    @GetMapping(value = "/info")
     public ResultVO<UserInfoVO> info(){
         return this.userService.info();
     }

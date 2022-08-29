@@ -222,7 +222,7 @@ public class FuncServiceImpl implements FuncService {
         // 功能key唯一性校验
         FuncExample example = new FuncExample();
         example.createCriteria().andFuncKeyEqualTo(funcKey).andFuncIdNotEqualTo(funcId);
-        long count = this.funcDAO.countByExample(example);
+        Long count = this.funcDAO.countByExample(example);
 
         if (count > 0) {
             throw new BusinessException("存在重复的功能key");

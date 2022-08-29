@@ -6,6 +6,8 @@ import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.vo.resource.ResourceVO;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author coderman
@@ -74,4 +76,12 @@ public interface ResourceService {
      * @return
      */
     List<ResourceVO> selectResourceListByUsername(String username);
+
+
+    /**
+     * 获取所有资源
+     * @param project 所属项目
+     * @return
+     */
+    ResultVO<Map<String, Set<Integer>>> getSystemAllRescMap(String project);
 }

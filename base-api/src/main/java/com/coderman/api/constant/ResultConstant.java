@@ -31,6 +31,12 @@ public interface ResultConstant {
 
 
     /**
+     * 404 资源不存在
+     */
+    Integer RESULT_CODE_404 = 404;
+
+
+    /**
      * 405 警告
      */
     Integer RESULT_CODE_405 = 405;

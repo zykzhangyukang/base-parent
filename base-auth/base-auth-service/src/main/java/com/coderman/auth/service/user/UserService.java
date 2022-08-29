@@ -142,4 +142,12 @@ public interface UserService {
      * @return
      */
     ResultVO<UserInfoVO> info();
+
+
+    /**
+     * 根据token获取用户信息
+     * @param token token
+     * @return
+     */
+    ResultVO<AuthUserVO> getUserByToken(String token);
 }

@@ -281,6 +281,7 @@
   <select id="selectResourceListByUsername" resultType="com.coderman.auth.vo.resource.ResourceVO">
       SELECT
        DISTINCT
+          r2.resource_id as resourceId,
           r2.resource_url as resourceUrl,
           r2.method_type as methodType
       FROM

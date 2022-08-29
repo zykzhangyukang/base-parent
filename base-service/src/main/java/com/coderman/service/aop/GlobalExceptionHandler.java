@@ -50,6 +50,8 @@ public class GlobalExceptionHandler {
         resultVO.setCode(ResultConstant.RESULT_CODE_500);
         resultVO.setMsg("系统异常,请联系技术人员.");
         resultVO.setResult(null);
+
+        log.error("Controller 统一异常处理, 错误信息:{}",e.getMessage(),e);
         return resultVO;
     }
 

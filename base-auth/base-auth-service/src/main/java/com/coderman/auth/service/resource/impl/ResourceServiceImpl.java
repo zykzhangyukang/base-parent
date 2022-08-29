@@ -1,5 +1,6 @@
 package com.coderman.auth.service.resource.impl;
 
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -19,8 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author coderman
@@ -179,5 +179,43 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<ResourceVO> selectResourceListByUsername(String username) {
         return this.resourceDAO.selectResourceListByUsername(username);
+    }
+
+    @Override
+    public ResultVO<Map<String, Set<Integer>>> getSystemAllRescMap(String project) {
+
+        Map<String, Set<Integer>> map =  new HashMap<>();
+
+        ResourceExample example = new ResourceExample();
+
+        if(StringUtils.isNotBlank(project)){
+            example.createCriteria().andResourceDomainEqualTo(project);
+        }
+
+        List<ResourceModel> resourceModels = this.resourceDAO.selectByExample(example);
+        Set<Integer> rescIds;
+
+        for (ResourceModel resc : resourceModels) {
+
+
+            if(map.containsKey(resc.getResourceUrl())){
+
+                rescIds = map.get(resc.getResourceUrl());
+            }else {
+
+                rescIds = new HashSet<>();
+            }
+
+
+            rescIds.add(resc.getResourceId());
+            map.put(resc.getResourceUrl(),rescIds);
+
+        }
+
+        ResultVO<Map<String, Set<Integer>>> resultVO =  new ResultVO<>();
+        resultVO.setCode(ResultConstant.RESULT_CODE_200);
+        resultVO.setResult(map);
+
+        return resultVO;
     }
 }

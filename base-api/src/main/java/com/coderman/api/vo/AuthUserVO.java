@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * 当前登入用户信息
  */
@@ -29,4 +31,7 @@ public class AuthUserVO extends BaseModel {
 
     @ApiModelProperty(value = "会话过期时间")
     private Long expiredTime;
+
+    @ApiModelProperty(value = "资源id")
+    private List<Integer> rescIdList;
 }

@@ -18,7 +18,7 @@ public interface BaseDAO<T, E> {
      * @param example
      * @return
      */
-    int countByExample(E example);
+    Long countByExample(E example);
 
     /**
      * 根据条件删除数据

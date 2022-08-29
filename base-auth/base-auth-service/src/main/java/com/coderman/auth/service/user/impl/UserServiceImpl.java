@@ -20,9 +20,11 @@ import com.coderman.auth.model.user.UserModel;
 import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
 import com.coderman.auth.service.func.FuncService;
+import com.coderman.auth.service.resource.ResourceService;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.auth.vo.func.MenuVO;
 import com.coderman.api.vo.AuthUserVO;
+import com.coderman.auth.vo.resource.ResourceVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
@@ -67,6 +69,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private ResourceService resourceService;
 
 
     @Autowired
@@ -118,8 +123,9 @@ public class UserServiceImpl extends BaseService implements UserService {
             authUserVO.setToken(token);
             authUserVO.setDeptCode(dbUser.getDeptCode());
             authUserVO.setRealName(dbUser.getRealName());
+            authUserVO.setRescIdList(getUserResourceIds(dbUser.getUsername()));
 
-            this.redisService.setString(token, JSON.toJSONString(authUserVO), 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
+            this.redisService.setObject(token, authUserVO, 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
 
             return ResultUtil.getSuccess(AuthUserVO.class, authUserVO);
 
@@ -130,6 +136,20 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getFail("登入失败,请联系技术人员处理.");
         }
 
+    }
+
+    /**
+     * 获取用户拥有的资源id
+     * @param username 用户名
+     * @return
+     */
+    @LogError(value = "获取用户拥有的资源id")
+    private List<Integer> getUserResourceIds(String username) {
+
+        return this.resourceService.selectResourceListByUsername(username).stream()
+                .map(ResourceVO::getResourceId)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -159,6 +179,13 @@ public class UserServiceImpl extends BaseService implements UserService {
         ResultVO<List<String>> resultVO = this.funcService.selectFuncKeyListByUserId(userVO.getUserId());
         userInfoVO.setFuncKeys(resultVO.getResult());
         return ResultUtil.getSuccess(UserInfoVO.class, userInfoVO);
+    }
+
+    @Override
+    @LogError(value = "根据token获取用户信息")
+    public ResultVO<AuthUserVO> getUserByToken(String token) {
+        AuthUserVO authUserVO = this.redisService.getObject(token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+        return ResultUtil.getSuccess(AuthUserVO.class,authUserVO);
     }
 
 

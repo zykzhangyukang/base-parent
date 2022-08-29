@@ -24,7 +24,7 @@ public interface RedisService {
      * @param seconds 过期秒数
      * @param db 数据库索引
      */
-    public boolean expire(String key, int seconds, int db);
+    public void expire(String key, int seconds, int db);
 
     /**
      * key自增

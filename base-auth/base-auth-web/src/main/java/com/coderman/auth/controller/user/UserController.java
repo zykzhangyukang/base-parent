@@ -1,5 +1,6 @@
 package com.coderman.auth.controller.user;
 
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.service.user.UserService;
@@ -55,8 +56,8 @@ public class UserController {
             @ApiReturnParam(name = "UserInfoVO", value = {"deptName", "realName", "userStatus", "userId", "deptCode", "username","roles","funcKeys","menus"}),
     })
     @GetMapping(value = "/info")
-    public ResultVO<UserInfoVO> info(){
-        return this.userService.info();
+    public ResultVO<UserInfoVO> info(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME,required = false) String token){
+        return this.userService.info(token);
     }
 
 
@@ -73,7 +74,7 @@ public class UserController {
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户分配初始化")
-    @GetMapping(value = "/assign/init")
+    @GetMapping(value = "/role/update/init")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "用户id", required = true)
     })
@@ -86,7 +87,7 @@ public class UserController {
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户角色分配")
-    @PostMapping(value = "/assign")
+    @PostMapping(value = "/role/update")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "用户id", required = true),
             @ApiImplicitParam(name = "assignedIdList", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_OBJECT, value = "分配的角色id集合", required = true),

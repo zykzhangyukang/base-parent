@@ -80,7 +80,7 @@ public class RoleController {
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "角色分配功能")
-    @PostMapping(value = "/auth/func")
+    @PostMapping(value = "/func/update")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
             @ApiImplicitParam(name = "funcKeyList",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "功能key计集合",required = true),
@@ -118,7 +118,7 @@ public class RoleController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "PageVO",value = {"dataList", "total"}),
+            @ApiReturnParam(name = "PageVO",value = {"dataList",  "pageRow", "totalRow", "currPage", "totalPage"}),
             @ApiReturnParam(name = "RoleVO",value = {"roleDesc", "createTime", "roleId", "roleName", "updateTime", "userNameList"})
     })
     public ResultVO<PageVO<List<RoleVO>>> page(@RequestParam(value = "currentPage", defaultValue = "1") Integer currentPage,

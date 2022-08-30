@@ -81,7 +81,7 @@ public class FuncController {
     @GetMapping(value = "/page")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "PageVO",value = {"dataList", "total"}),
+            @ApiReturnParam(name = "PageVO",value = {"dataList",  "pageRow", "totalRow", "currPage", "totalPage"}),
             @ApiReturnParam(name = "FuncVO",value = {"parentFuncName","funcSort","dirHide","userVOList","resourceVOList","funcName", "funcKey", "createTime","funcType","funcIcon",
                     "updateTime", "childrenList", "funcId", "parentId","resourceIdList"})
     })

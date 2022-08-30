@@ -4,7 +4,7 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.auth.constant.FuncConstant;
+import com.coderman.auth.constant.AuthConstant;
 import com.coderman.auth.dao.func.FuncDAO;
 import com.coderman.auth.dao.func.FuncResourceDAO;
 import com.coderman.auth.dao.role.RoleFuncDAO;
@@ -139,7 +139,7 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("功能排序不能为空，请输入0-100之间的整数");
         }
 
-        if (FuncConstant.func_type_dir.equals(funcType) && null == dirHide) {
+        if (AuthConstant.func_type_dir.equals(funcType) && null == dirHide) {
             return ResultUtil.getWarn("请选择目录是显示还是隐藏");
         }
 
@@ -214,7 +214,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
 
-        if (FuncConstant.func_type_dir.equals(funcType) && null == dirHide) {
+        if (AuthConstant.func_type_dir.equals(funcType) && null == dirHide) {
             return ResultUtil.getWarn("请选择目录是显示还是隐藏");
         }
 
@@ -349,7 +349,7 @@ public class FuncServiceImpl implements FuncService {
     private List<Integer> getDeepFuncIds(List<Integer> funcIdList, Integer rootFuncId) {
 
         FuncModel rootNode = this.funcDAO.selectByPrimaryKey(rootFuncId);
-        if (FuncConstant.func_root_parent_id.equals(rootNode.getParentId())) {
+        if (AuthConstant.func_root_parent_id.equals(rootNode.getParentId())) {
             throw new BusinessException("不允许解绑最顶级的功能!");
         } else {
 

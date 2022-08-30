@@ -2,11 +2,13 @@ package com.coderman.service.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.AopConstant;
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.vo.AuthUserVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.api.RescApi;
 import com.coderman.service.api.UserApi;
+import com.coderman.service.config.PropertyConfig;
 import com.coderman.service.util.AuthUtil;
 import com.coderman.service.util.SpringContextUtil;
 import com.google.common.collect.Sets;
@@ -86,10 +88,8 @@ public class AuthAspect {
         String project = System.getProperty("domain");
 
         // 白名单
-        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/check/code"));
+        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/check/code","/auth/user/info","/auth/const/all"));
 
-        // 不需要过滤的url且有登入信息
-        unFilterHasLoginInfoUrlList.addAll(Arrays.asList("/auth/user/info","/auth/const/all"));
 
         // 刷新系统资源
         refreshSystemAllRescMap(project);
@@ -140,7 +140,7 @@ public class AuthAspect {
         }
 
         // 访问令牌
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader(CommonConstant.USER_TOKEN_NAME);
 
         if (StringUtils.isBlank(token)) {
 
@@ -240,7 +240,7 @@ public class AuthAspect {
 
         // 请求auth获取用户信息
         JSONObject jsonObject = null;
-        String[] authUrlArr = "127.0.0.1:8081".split(",");
+        String[] authUrlArr = PropertyConfig.getConfigValue("authUrlArr").split(",");
 
 
         for (String authUrl : authUrlArr) {
@@ -295,7 +295,7 @@ public class AuthAspect {
 
         // 请求auth获取用户信息
         ResultVO<Map<String, Set<Integer>>> resultVO = null;
-        String[] authUrlArr = "127.0.0.1:8081".split(",");
+        String[] authUrlArr = PropertyConfig.getConfigValue("authUrlArr").split(",");
 
 
         for (String authUrl : authUrlArr) {

@@ -24,39 +24,37 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/${domain}/resource")
-public class ResourceController  {
-    
+public class ResourceController {
+
     @Resource
     private ResourceService resourceService;
 
 
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "资源列表")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "资源列表")
     @GetMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage",paramType = SwaggerConstant.PARAM_FORM,value = "当前页",dataType = SwaggerConstant.DATA_INT,required = true),
-            @ApiImplicitParam(name = "pageSize",paramType = SwaggerConstant.PARAM_FORM,value = "每页大小",dataType = SwaggerConstant.DATA_INT,required = true),
-            @ApiImplicitParam(name = "resourceUrl",paramType = SwaggerConstant.PARAM_FORM,value = "资源url",dataType = SwaggerConstant.DATA_STRING),
-            @ApiImplicitParam(name = "methodType",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "请求方式")
+            @ApiImplicitParam(name = "currentPage", paramType = SwaggerConstant.PARAM_FORM, value = "当前页", dataType = SwaggerConstant.DATA_INT, required = true),
+            @ApiImplicitParam(name = "pageSize", paramType = SwaggerConstant.PARAM_FORM, value = "每页大小", dataType = SwaggerConstant.DATA_INT, required = true),
+            @ApiImplicitParam(name = "resourceUrl", paramType = SwaggerConstant.PARAM_FORM, value = "资源url", dataType = SwaggerConstant.DATA_STRING),
+            @ApiImplicitParam(name = "methodType", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "请求方式")
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "PageVO",value = {"dataList", "total"}),
-            @ApiReturnParam(name = "ResourceVO",value = {"resourceName","resourceUrl","resourceDomain","createTime","updateTime","methodType"})
+            @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
+            @ApiReturnParam(name = "ResourceVO", value = {"resourceName", "resourceUrl", "resourceDomain", "createTime", "updateTime", "methodType"})
     })
     public ResultVO<PageVO<List<ResourceVO>>> page(@RequestParam(value = "currentPage", defaultValue = "1") Integer currentPage,
                                                    @RequestParam(value = "pageSize", defaultValue = "15") Integer pageSize, @ApiIgnore ResourceVO queryVO) {
-        return this.resourceService.page(currentPage, pageSize,queryVO);
+        return this.resourceService.page(currentPage, pageSize, queryVO);
     }
 
 
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "保存资源")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "保存资源")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "resourceName",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "资源名称",required = true),
-            @ApiImplicitParam(name = "resourceUrl",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "资源url",required = true),
-            @ApiImplicitParam(name = "resourceDomain",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "所属系统",required = true),
-            @ApiImplicitParam(name = "methodType",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "请求方式",required = true)
+            @ApiImplicitParam(name = "resourceName", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "资源名称", required = true),
+            @ApiImplicitParam(name = "resourceUrl", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "资源url", required = true),
+            @ApiImplicitParam(name = "resourceDomain", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "所属系统", required = true),
+            @ApiImplicitParam(name = "methodType", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "请求方式", required = true)
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
@@ -66,13 +64,13 @@ public class ResourceController  {
         return this.resourceService.save(resourceVO);
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "更新资源")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "更新资源")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "resourceId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "资源id",required = true),
-            @ApiImplicitParam(name = "resourceName",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "资源名称",required = true),
-            @ApiImplicitParam(name = "resourceUrl",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "资源url",required = true),
-            @ApiImplicitParam(name = "resourceDomain",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "所属系统",required = true),
-            @ApiImplicitParam(name = "methodType",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "请求方式",required = true)
+            @ApiImplicitParam(name = "resourceId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "资源id", required = true),
+            @ApiImplicitParam(name = "resourceName", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "资源名称", required = true),
+            @ApiImplicitParam(name = "resourceUrl", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "资源url", required = true),
+            @ApiImplicitParam(name = "resourceDomain", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "所属系统", required = true),
+            @ApiImplicitParam(name = "methodType", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "请求方式", required = true)
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
@@ -82,26 +80,25 @@ public class ResourceController  {
         return this.resourceService.update(resourceVO);
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "搜索资源")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "搜索资源")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "keyword", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_STRING, value = "关键字", required = false)
     })
     @GetMapping(value = "/search")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "ResourceVO",value = {"resourceName","resourceUrl","resourceDomain","createTime","updateTime","methodType"})
+            @ApiReturnParam(name = "ResourceVO", value = {"resourceName", "resourceUrl", "resourceDomain", "createTime", "updateTime", "methodType"})
     })
-    public ResultVO<List<ResourceVO>> search(@RequestParam(value = "keyword") String keyword){
+    public ResultVO<List<ResourceVO>> search(@RequestParam(value = "keyword") String keyword) {
 
         return this.resourceService.search(keyword);
     }
 
 
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "删除资源")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "删除资源")
     @GetMapping(value = "/delete")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "resourceId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "资源Id",required = true)
+            @ApiImplicitParam(name = "resourceId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "资源Id", required = true)
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
@@ -110,14 +107,14 @@ public class ResourceController  {
         return this.resourceService.delete(resourceId);
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "获取资源")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取资源")
     @GetMapping(value = "/select")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "resourceId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "资源Id",required = true)
+            @ApiImplicitParam(name = "resourceId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "资源Id", required = true)
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "ResourceVO",value = {"resourceUrl","resourceName","resourceId","resourceDomain","createTime","updateTime","methodType"})
+            @ApiReturnParam(name = "ResourceVO", value = {"resourceUrl", "resourceName", "resourceId", "resourceDomain", "createTime", "updateTime", "methodType"})
     })
     public ResultVO<ResourceVO> select(@RequestParam(value = "resourceId") Integer resourceId) {
         return this.resourceService.select(resourceId);

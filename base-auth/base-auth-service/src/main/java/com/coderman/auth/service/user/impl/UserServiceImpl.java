@@ -1,13 +1,12 @@
 package com.coderman.auth.service.user.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.auth.constant.UserConstant;
+import com.coderman.auth.constant.AuthConstant;
 import com.coderman.auth.dao.dept.DeptDAO;
 import com.coderman.auth.dao.role.RoleDAO;
 import com.coderman.auth.dao.user.UserDAO;
@@ -32,7 +31,6 @@ import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.redis.RedisService;
 import com.coderman.service.service.BaseService;
-import com.coderman.service.util.AuthUtil;
 import com.coderman.service.util.MD5Utils;
 import com.coderman.service.util.UUIDUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -97,7 +95,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             }
 
             UserExample example = new UserExample();
-            example.createCriteria().andUsernameEqualTo(userVO.getUsername()).andUserStatusEqualTo(UserConstant.USER_STATUS_ENABLE);
+            example.createCriteria().andUsernameEqualTo(userVO.getUsername()).andUserStatusEqualTo(AuthConstant.USER_STATUS_ENABLE);
             Optional<UserModel> modelOptional = this.userDAO.selectByExample(example).stream().findFirst();
 
             if (!modelOptional.isPresent()) {
@@ -125,7 +123,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             authUserVO.setRealName(dbUser.getRealName());
             authUserVO.setRescIdList(getUserResourceIds(dbUser.getUsername()));
 
-            this.redisService.setObject(token, authUserVO, 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
+            this.redisService.setObject(AuthConstant.AUTH_TOKEN_NAME + token, authUserVO, 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
 
             return ResultUtil.getSuccess(AuthUserVO.class, authUserVO);
 
@@ -140,6 +138,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     /**
      * 获取用户拥有的资源id
+     *
      * @param username 用户名
      * @return
      */
@@ -154,9 +153,20 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     @LogError(value = "获取用户信息")
-    public ResultVO<UserInfoVO> info() {
+    public ResultVO<UserInfoVO> info(String token) {
 
-        ResultVO<UserVO> voResultVO = this.selectUserByName(AuthUtil.getCurrent().getUsername());
+        if (StringUtils.isBlank(token)) {
+
+            return ResultUtil.getFail("用户未登入");
+        }
+
+        AuthUserVO authUserVO = this.getUserByToken(token).getResult();
+        if (authUserVO == null) {
+
+            return ResultUtil.getFail("用户会话失效");
+        }
+
+        ResultVO<UserVO> voResultVO = this.selectUserByName(authUserVO.getUsername());
         UserVO userVO = voResultVO.getResult();
 
         if (null == userVO) {
@@ -184,8 +194,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @LogError(value = "根据token获取用户信息")
     public ResultVO<AuthUserVO> getUserByToken(String token) {
-        AuthUserVO authUserVO = this.redisService.getObject(token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
-        return ResultUtil.getSuccess(AuthUserVO.class,authUserVO);
+        AuthUserVO authUserVO = this.redisService.getObject(AuthConstant.AUTH_TOKEN_NAME + token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+        return ResultUtil.getSuccess(AuthUserVO.class, authUserVO);
     }
 
 
@@ -429,14 +439,14 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new BusinessException("用户不存在!");
         }
 
-        if (UserConstant.USER_STATUS_ENABLE.equals(db.getUserStatus())) {
+        if (AuthConstant.USER_STATUS_ENABLE.equals(db.getUserStatus())) {
             return ResultUtil.getWarn("用户已经是启用状态");
         }
 
 
         UserModel userModel = new UserModel();
         userModel.setUserId(userId);
-        userModel.setUserStatus(UserConstant.USER_STATUS_ENABLE);
+        userModel.setUserStatus(AuthConstant.USER_STATUS_ENABLE);
         this.userDAO.updateByPrimaryKeySelective(userModel);
         return ResultUtil.getSuccess();
     }
@@ -449,13 +459,13 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new BusinessException("用户不存在!");
         }
 
-        if (UserConstant.USER_STATUS_DISABLE.equals(db.getUserStatus())) {
+        if (AuthConstant.USER_STATUS_DISABLE.equals(db.getUserStatus())) {
             return ResultUtil.getWarn("用户已经是禁用状态");
         }
 
         UserModel userModel = new UserModel();
         userModel.setUserId(userId);
-        userModel.setUserStatus(UserConstant.USER_STATUS_DISABLE);
+        userModel.setUserStatus(AuthConstant.USER_STATUS_DISABLE);
         this.userDAO.updateByPrimaryKeySelective(userModel);
         return ResultUtil.getSuccess();
     }

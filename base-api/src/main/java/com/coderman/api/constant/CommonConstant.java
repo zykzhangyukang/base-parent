@@ -24,4 +24,9 @@ public interface CommonConstant {
      * 用户会话key
      */
     String USER_SESSION_KEY = "auth.user.info";
+
+    /**
+     * 请求头Token名称
+     */
+    String USER_TOKEN_NAME = "Authorization";
 }

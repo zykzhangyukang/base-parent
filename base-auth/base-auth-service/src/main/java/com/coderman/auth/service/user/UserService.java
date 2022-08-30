@@ -141,7 +141,7 @@ public interface UserService {
      *
      * @return
      */
-    ResultVO<UserInfoVO> info();
+    ResultVO<UserInfoVO> info(String token);
 
 
     /**

@@ -3,12 +3,12 @@ package com.coderman.serial.annoation;
 /**
  * @author coderman
  * @Title: 序列号类型
- * @Description: TOD
  * @date 2022/6/2119:45
  */
 public enum SerialTypeEnum {
 
-    ORDER("order", "订单编号");
+    ORDER("order", "订单编号"),
+    EMP_CODE("emp_code","员工工号");
 
 
     private String key;

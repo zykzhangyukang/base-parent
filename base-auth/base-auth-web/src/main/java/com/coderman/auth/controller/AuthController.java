@@ -1,9 +1,10 @@
-package com.coderman.auth.controller.constant;
+package com.coderman.auth.controller;
 
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.service.api.RescApi;
 import com.coderman.service.dict.ConstItem;
 import com.coderman.service.dict.ConstItems;
 import com.coderman.service.redis.RedisService;
@@ -14,9 +15,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +24,35 @@ import java.util.Set;
 
 @RestController
 @SuppressWarnings("all")
-@RequestMapping(value = "/${domain}/const")
-public class AuthConstController {
+@RequestMapping(value = "/${domain}")
+public class AuthController {
 
     @Autowired
     private RedisService redisService;
 
 
-    @GetMapping(value = "/all")
+    @Autowired
+    private RescApi rescApi;
+
+
+    /**
+     * 获取权限系统所有资源信息
+     *
+     * @param project 项目名称
+     * @return
+     */
+    @PostMapping(value = "/api/resc/all")
+    public ResultVO< Map<String, Set<Integer>>> sysRescAll(@RequestParam(value = "domain") String project){
+        return this.rescApi.getSystemAllRescMap(project);
+    }
+
+
+    /**
+     * 系统常量获取
+     *
+     * @return
+     */
+    @GetMapping(value = "/const/all")
     public ResultVO<Map<String,List<ConstItems>>> constAll() {
 
         Map<String,List<ConstItems>> resultMap = new HashMap<>();

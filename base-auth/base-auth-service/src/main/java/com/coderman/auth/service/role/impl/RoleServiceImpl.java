@@ -26,6 +26,8 @@ import com.coderman.auth.vo.role.RoleAssignVO;
 import com.coderman.auth.vo.role.RoleAuthCheckVO;
 import com.coderman.auth.vo.role.RoleAuthInitVO;
 import com.coderman.auth.vo.role.RoleVO;
+import com.coderman.auth.vo.user.UserAssignVO;
+import com.coderman.service.anntation.LogError;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,7 +47,6 @@ import java.util.stream.Collectors;
 /**
  * @author coderman
  * @Title: 角色服务实现
- * @Description: TOD
  * @date 2022/2/2711:58
  */
 @Service
@@ -140,7 +141,8 @@ public class RoleServiceImpl implements RoleService {
         long count = this.userRoleDAO.countByExample(example);
 
         if (count > 0) {
-            throw new BusinessException("当前角色已关联用户无法删除");
+
+            return ResultUtil.getWarn("当前角色已关联用户无法删除");
         }
 
         // 删除角色-功能关联
@@ -215,8 +217,8 @@ public class RoleServiceImpl implements RoleService {
         return ResultUtil.getSuccess(RoleVO.class, roleVO);
     }
 
-    @Override
-    public ResultVO<RoleAssignVO> assignInit(Integer roleId) {
+    @LogError(value = "角色分配用户初始化")
+    public ResultVO<RoleAssignVO> roleUserUpdateInit(Integer roleId) {
 
         RoleAssignVO roleAssignVO = new RoleAssignVO();
 
@@ -243,7 +245,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public ResultVO<Void> assign(Integer roleId, List<Integer> assignedIdList) {
+    @LogError(value = "角色分配用户")
+    public ResultVO<Void> roleUserUpdate(Integer roleId, List<Integer> assignedIdList) {
 
         RoleModel roleModel = this.roleDAO.selectByPrimaryKey(roleId);
         if (roleModel == null) {
@@ -265,7 +268,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public ResultVO<RoleAuthInitVO> authFuncInit(Integer roleId) {
+    public ResultVO<RoleAuthInitVO> roleFuncUpdateInit(Integer roleId) {
 
         RoleAuthInitVO roleAuthInitVO = new  RoleAuthInitVO();
 
@@ -298,7 +301,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public ResultVO<Void> authFunc(Integer roleId, List<String> funcKeyList) {
+    @LogError(value = "角色分配功能")
+    public ResultVO<Void> roleFuncUpdate(Integer roleId, List<String> funcKeyList) {
 
         RoleModel roleModel = this.roleDAO.selectByPrimaryKey(roleId);
         if(null == roleModel){

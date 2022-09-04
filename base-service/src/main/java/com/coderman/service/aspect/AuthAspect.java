@@ -11,6 +11,7 @@ import com.coderman.service.api.UserApi;
 import com.coderman.service.config.PropertyConfig;
 import com.coderman.service.util.AuthUtil;
 import com.coderman.service.util.SpringContextUtil;
+import com.google.common.cache.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,6 +36,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 权限拦截器
@@ -60,25 +62,39 @@ public class AuthAspect {
     /**
      * 不拦截的接口
      */
-    public static  List<String> whitelistUrl = new ArrayList<>();
+    public static List<String> whitelistUrl = new ArrayList<>();
 
 
     /**
      * 保存token与用户的关系
      */
-    public static  Map<String, AuthUserVO> AUTH_USER_MAP = new HashMap<>();
+    public static final Cache<String, AuthUserVO> userTokenCacheMap = CacheBuilder.newBuilder()
+            //设置缓存初始大小
+            .initialCapacity(10)
+            //最大值
+            .maximumSize(500)
+            //多线程并发数
+            .concurrencyLevel(5)
+            //过期时间，写入后30分钟过期
+            .expireAfterWrite(30, TimeUnit.MINUTES)
+            // 过期监听
+            .removalListener((RemovalListener<String, AuthUserVO>) removalNotification -> {
+                log.info("过期会话缓存清除 token:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
+            })
+            .recordStats()
+            .build();
 
 
     /**
      * 资源与功能资源id
      */
-    public static  Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
+    public static Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
 
 
     /**
      * 不需要过滤的url且有登入信息
      */
-    public static  List<String> unFilterHasLoginInfoUrlList = new ArrayList<>();
+    public static List<String> unFilterHasLoginInfoUrlList = new ArrayList<>();
 
 
     @PostConstruct
@@ -88,7 +104,7 @@ public class AuthAspect {
         String project = System.getProperty("domain");
 
         // 白名单
-        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/check/code","/auth/user/info","/auth/const/all"));
+        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all", "/auth/api/resc/all"));
 
 
         // 刷新系统资源
@@ -104,20 +120,19 @@ public class AuthAspect {
 
         try {
 
-            if(rescApi == null){
+            if (rescApi == null) {
 
                 rescApi = SpringContextUtil.getBean(RescApi.class);
             }
 
             systemAllResourceMap = this.rescApi.getSystemAllRescMap(project).getResult();
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
             this.getAllAuthByHttp(project);
         }
 
     }
-
 
 
     @Pointcut("(execution(* com.coderman..controller..*(..)))")
@@ -159,33 +174,36 @@ public class AuthAspect {
         }
 
         // 用户信息
-        AuthUserVO authUserVO = AUTH_USER_MAP.get(token);
+        AuthUserVO authUserVO = null;
+        try {
+            authUserVO = userTokenCacheMap.get(token, () -> {
 
-        if (authUserVO == null || authUserVO.getExpiredTime() < System.currentTimeMillis()) {
+                log.info("尝试从redis中获取用户信息结果.token:{}", token);
 
-            try {
+                try {
 
-                if (userApi == null) {
-                    userApi = SpringContextUtil.getBean(UserApi.class);
+                    if (userApi == null) {
+
+                        userApi = SpringContextUtil.getBean(UserApi.class);
+                    }
+
+                    return userApi.getUserByToken(token).getResult();
+
+                } catch (Exception e) {
+
+                    return getUserByHttp(token);
+
                 }
+            });
+        } catch (Exception e) {
 
-                authUserVO = this.userApi.getUserByToken(token).getResult();
-
-            } catch (Exception e) {
-
-                authUserVO = this.getUserByHttp(token);
-            }
-
-            if (null != authUserVO) {
-
-                authUserVO.setExpiredTime(System.currentTimeMillis() + 1000 * 60 * 30);
-                AUTH_USER_MAP.put(token, authUserVO);
-            }
+            log.error("尝试从redis中获取用户信息结果失败:{}", e.getMessage());
         }
+
 
         if (authUserVO == null) {
 
-            AUTH_USER_MAP.remove(token);
+            userTokenCacheMap.invalidate(token);
             assert response != null;
             response.setStatus(ResultConstant.RESULT_CODE_401);
             return null;
@@ -247,7 +265,7 @@ public class AuthAspect {
 
             try {
 
-                jsonObject = restTemplate.postForObject("http://" + authUrl + "/api/user/info", restRequest, JSONObject.class);
+                jsonObject = restTemplate.postForObject("http://" + authUrl + "/auth/api/user/info", restRequest, JSONObject.class);
 
                 if (jsonObject != null) {
 
@@ -255,7 +273,7 @@ public class AuthAspect {
                 }
 
             } catch (Exception e) {
-                log.error("请求权限系统获取用户失败：token:" + token + ",url:http://" + authUrl + "/api/user/info", e);
+                log.error("请求权限系统获取用户失败：token:" + token + ",url:http://" + authUrl + "/auth/api/user/info", e);
             }
         }
 
@@ -302,20 +320,20 @@ public class AuthAspect {
 
             try {
 
-                resultVO = restTemplate.postForObject("http://" + authUrl + "/api/resc/all", restRequest, ResultVO.class);
+                resultVO = restTemplate.postForObject("http://" + authUrl + "/auth/api/resc/all", restRequest, ResultVO.class);
 
                 if (resultVO != null) {
                     break;
                 }
 
             } catch (Exception e) {
-                log.error("请求权限系统获取用户失败,http://" + authUrl + "/api/resc/all", e);
+                log.error("请求权限系统获取用户失败,http://" + authUrl + "/auth/api/resc/all", e);
             }
         }
 
         if (resultVO == null || !ResultConstant.RESULT_CODE_200.equals(resultVO.getCode())) {
 
-            log.error("请求权限系统获取资源失败:/api/resc/all");
+            log.error("请求权限系统获取资源失败:/auth/api/resc/all");
             return;
         }
 

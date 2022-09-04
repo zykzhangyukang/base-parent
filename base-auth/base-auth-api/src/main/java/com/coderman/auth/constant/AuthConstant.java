@@ -47,6 +47,9 @@ public interface AuthConstant {
     @ConstList(group = project_domain, name = "文件服务")
     String project_domain_file = "file";
 
+    @ConstList(group = project_domain, name = "测试服务")
+    String project_domain_demo = "demo";
+
 
     /**
      * 方法常量

@@ -1,16 +1,16 @@
-package com.coderman.service.aspect;
+package com.coderman.erp.aop;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
-import com.coderman.api.vo.AuthUserVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.service.api.RescApi;
-import com.coderman.service.api.UserApi;
+import com.coderman.erp.vo.AuthUserVO;
+import com.coderman.erp.api.RescApi;
+import com.coderman.erp.api.UserApi;
 import com.coderman.service.config.PropertyConfig;
-import com.coderman.service.util.AuthUtil;
+import com.coderman.erp.util.AuthUtil;
 import com.coderman.service.util.SpringContextUtil;
 import com.google.common.cache.*;
 import com.google.common.collect.Sets;

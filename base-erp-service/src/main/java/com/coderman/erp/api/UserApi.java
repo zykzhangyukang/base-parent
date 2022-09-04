@@ -1,7 +1,7 @@
-package com.coderman.service.api;
+package com.coderman.erp.api;
 
-import com.coderman.api.vo.AuthUserVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.erp.vo.AuthUserVO;
 
 public interface UserApi {
 

@@ -3,27 +3,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>base-auth</artifactId>
+        <artifactId>base-parent</artifactId>
         <groupId>com.coderman</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>${i.project.version}</version>
+    <version>${base.version}</version>
 
-    <artifactId>base-auth-service</artifactId>
+    <artifactId>base-erp-service</artifactId>
+
 
     <dependencies>
-
         <dependency>
             <groupId>com.coderman</groupId>
-            <artifactId>base-erp-service</artifactId>
+            <artifactId>base-service</artifactId>
+            <version>${base.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.coderman</groupId>
-            <artifactId>base-auth-api</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

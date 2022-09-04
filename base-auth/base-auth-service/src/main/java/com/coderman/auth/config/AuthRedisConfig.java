@@ -14,7 +14,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 @Component
 @Configuration("authRedisConfig")
-public class AuthRedisConfig extends BaseRedisConfig{
+public class AuthRedisConfig extends BaseRedisConfig {
 
 
     @Bean

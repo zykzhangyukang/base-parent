@@ -1,13 +1,13 @@
 package com.coderman.auth.controller.user;
 
 import com.coderman.api.constant.CommonConstant;
-import com.coderman.api.vo.AuthUserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
+import com.coderman.erp.vo.AuthUserVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;

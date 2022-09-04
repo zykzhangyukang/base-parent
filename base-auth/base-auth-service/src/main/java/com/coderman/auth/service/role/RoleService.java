@@ -7,6 +7,7 @@ import com.coderman.auth.vo.role.RoleAssignVO;
 import com.coderman.auth.vo.role.RoleAuthCheckVO;
 import com.coderman.auth.vo.role.RoleAuthInitVO;
 import com.coderman.auth.vo.role.RoleVO;
+import com.coderman.auth.vo.user.UserAssignVO;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public interface RoleService {
      * @param roleId
      * @return
      */
-    ResultVO<RoleAssignVO> assignInit(Integer roleId);
+    ResultVO<RoleAssignVO> roleUserUpdateInit(Integer roleId);
 
     /**
      * 角色分配用户
@@ -73,7 +74,7 @@ public interface RoleService {
      * @param assignedIdList
      * @return
      */
-    ResultVO<Void> assign(Integer roleId, List<Integer> assignedIdList);
+    ResultVO<Void> roleUserUpdate(Integer roleId, List<Integer> assignedIdList);
 
 
 
@@ -83,7 +84,7 @@ public interface RoleService {
      * @param roleId
      * @return
      */
-    ResultVO<RoleAuthInitVO> authFuncInit(Integer roleId);
+    ResultVO<RoleAuthInitVO> roleFuncUpdateInit(Integer roleId);
 
 
     /**
@@ -92,7 +93,7 @@ public interface RoleService {
      * @param funcKeyList
      * @return
      */
-    ResultVO<Void> authFunc(Integer roleId, List<String> funcKeyList);
+    ResultVO<Void> roleFuncUpdate(Integer roleId, List<String> funcKeyList);
 
 
     /**

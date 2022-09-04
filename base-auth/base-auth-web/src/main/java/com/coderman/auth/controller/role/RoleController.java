@@ -7,6 +7,7 @@ import com.coderman.auth.vo.role.RoleAssignVO;
 import com.coderman.auth.vo.role.RoleAuthCheckVO;
 import com.coderman.auth.vo.role.RoleAuthInitVO;
 import com.coderman.auth.vo.role.RoleVO;
+import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -34,7 +35,7 @@ public class RoleController {
     private RoleService roleService;
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "角色分配用户")
-    @PostMapping(value = "/assign")
+    @PostMapping(value = "/user/update")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
             @ApiImplicitParam(name = "assignedIdList",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_OBJECT,value = "分配的用户id集合",required = true),
@@ -42,14 +43,42 @@ public class RoleController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
-    public ResultVO<Void> assign(@RequestParam(value = "roleId") Integer roleId,
-                                 @RequestParam(value = "assignedIdList") List<Integer> assignedIdList){
-        return this.roleService.assign(roleId,assignedIdList);
+    public ResultVO<Void> roleUserUpdate(@RequestParam(value = "roleId") Integer roleId,
+                                     @RequestParam(value = "assignedIdList") List<Integer> assignedIdList){
+        return this.roleService.roleUserUpdate(roleId,assignedIdList);
     }
 
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "角色分配用户初始化")
+    @GetMapping(value = "/user/update/init")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true)
+    })
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "RoleAssignVO",value = {"assignedIdList", "userList", "roleId"})
+    })
+    public ResultVO<RoleAssignVO> roleUserUpdateInit(@RequestParam(value = "roleId") Integer roleId){
+        return this.roleService.roleUserUpdateInit(roleId);
+    }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "角色分配功能")
+    @PostMapping(value = "/func/update")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
+            @ApiImplicitParam(name = "funcKeyList",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "功能key计集合",required = true),
+    })
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<Void> roleFuncUpdate(@RequestParam(value = "roleId") Integer roleId,
+                                         @RequestParam(value = "funcKeyList") List<String> funcKeyList){
+        return this.roleService.roleFuncUpdate(roleId,funcKeyList);
+    }
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "角色分配功能初始化")
-    @GetMapping(value = "/auth/func/init")
+    @GetMapping(value = "/func/update/init")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
     })
@@ -57,13 +86,13 @@ public class RoleController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "RoleAuthInitVO",value = {"allTreeList", "roleId", "roleName", "funcKeyList"})
     })
-    public ResultVO<RoleAuthInitVO> authFuncInit(@RequestParam(value = "roleId") Integer roleId){
-        return this.roleService.authFuncInit(roleId);
+    public ResultVO<RoleAuthInitVO> roleFuncUpdateInit(@RequestParam(value = "roleId") Integer roleId){
+        return this.roleService.roleFuncUpdateInit(roleId);
     }
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "角色分配功能预先检查")
-    @PostMapping(value = "/auth/func/check")
+    @PostMapping(value = "/func/update/check")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
             @ApiImplicitParam(name = "funcKeyList",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "功能key计集合",required = true),
@@ -77,36 +106,6 @@ public class RoleController {
         return this.roleService.authFuncCheck(roleId,funcKeyList);
     }
 
-
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "角色分配功能")
-    @PostMapping(value = "/func/update")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
-            @ApiImplicitParam(name = "funcKeyList",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "功能key计集合",required = true),
-    })
-    @ApiReturnParams({
-            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-    })
-    public ResultVO<Void> authFunc(@RequestParam(value = "roleId") Integer roleId,
-                                             @RequestParam(value = "funcKeyList") List<String> funcKeyList){
-        return this.roleService.authFunc(roleId,funcKeyList);
-    }
-
-
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "角色分配初始化")
-    @GetMapping(value = "/assign/init")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true)
-    })
-    @ApiReturnParams({
-            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "RoleAssignVO",value = {"assignedIdList", "userList", "roleId"})
-    })
-    public ResultVO<RoleAssignVO> assignInit(@RequestParam(value = "roleId") Integer roleId){
-        return this.roleService.assignInit(roleId);
-    }
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "角色列表")

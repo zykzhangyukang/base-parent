@@ -156,6 +156,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "获取用户信息")
     public ResultVO<UserInfoVO> info(String token) {
 
+        if(StringUtils.isBlank(token)){
+            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401,"访问令牌为空");
+        }
+
         AuthUserVO authUserVO = this.getUserByToken(token).getResult();
 
         if (null == authUserVO) {

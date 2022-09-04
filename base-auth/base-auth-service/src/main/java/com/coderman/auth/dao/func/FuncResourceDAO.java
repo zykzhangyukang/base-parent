@@ -16,5 +16,5 @@ public interface FuncResourceDAO extends BaseDAO<FuncResourceModel, FuncResource
      * @param funcId
      * @param resourceIdList
      */
-    void insertBatchByFuncId(@Param(value = "funcId") Integer funcId, @RequestParam(value = "resourceIdList") List<Integer> resourceIdList);
+    void insertBatchByFuncId(@Param(value = "funcId") Integer funcId, @Param(value = "resourceIdList") List<Integer> resourceIdList);
 }

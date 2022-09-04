@@ -76,7 +76,7 @@ public class UserController {
             @ApiReturnParam(name = "UserInfoVO", value = {"deptName", "realName", "userStatus", "userId", "deptCode", "username","roles","funcKeys","menus"}),
     })
     @GetMapping(value = "/info")
-    public ResultVO<UserInfoVO> info(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME) String token){
+    public ResultVO<UserInfoVO> info(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME,required = false) String token){
         return this.userService.info(token);
     }
 

@@ -1,5 +1,6 @@
 package com.coderman.service.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.CommonConstant;
@@ -104,7 +105,8 @@ public class AuthAspect {
         String project = System.getProperty("domain");
 
         // 白名单
-        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all", "/auth/api/resc/all"));
+        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all",
+                "/auth/api/resc/all", "/auth/api/user/info"));
 
 
         // 刷新系统资源
@@ -155,7 +157,7 @@ public class AuthAspect {
         }
 
         // 访问令牌
-        String token = request.getHeader(CommonConstant.USER_TOKEN_NAME);
+        String token = Optional.ofNullable(request.getHeader(CommonConstant.USER_TOKEN_NAME)).orElse(request.getParameter("token"));
 
         if (StringUtils.isBlank(token)) {
 
@@ -249,16 +251,17 @@ public class AuthAspect {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.add("Authorization", token);
+        httpHeaders.add("securityCode", PropertyConfig.getConfigValue("auth-security-code"));
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("securityCode", "codeXXXXXX");
-        paramMap.add("Authorization", token);
+
 
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);
 
         // 请求auth获取用户信息
         JSONObject jsonObject = null;
-        String[] authUrlArr = PropertyConfig.getConfigValue("authUrlArr").split(",");
+        String[] authUrlArr = PropertyConfig.getConfigValue("auth-server-arr").split(",");
 
 
         for (String authUrl : authUrlArr) {
@@ -269,11 +272,12 @@ public class AuthAspect {
 
                 if (jsonObject != null) {
 
+                    log.info("获取用户信息,请求权限系统成功. authServer:{}",authUrl);
                     break;
                 }
 
             } catch (Exception e) {
-                log.error("请求权限系统获取用户失败：token:" + token + ",url:http://" + authUrl + "/auth/api/user/info", e);
+                log.error("请求权限系统获取用户失败：token:" + token + ",url:http://" + authUrl + "/auth/api/user/info");
             }
         }
 
@@ -306,14 +310,14 @@ public class AuthAspect {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("securityCode", "codeXXXXXX");
+        paramMap.add("securityCode", PropertyConfig.getConfigValue("auth-security-code"));
         paramMap.add("domain", domain);
 
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);
 
         // 请求auth获取用户信息
         ResultVO<Map<String, Set<Integer>>> resultVO = null;
-        String[] authUrlArr = PropertyConfig.getConfigValue("authUrlArr").split(",");
+        String[] authUrlArr = PropertyConfig.getConfigValue("auth-server-arr").split(",");
 
 
         for (String authUrl : authUrlArr) {
@@ -323,17 +327,18 @@ public class AuthAspect {
                 resultVO = restTemplate.postForObject("http://" + authUrl + "/auth/api/resc/all", restRequest, ResultVO.class);
 
                 if (resultVO != null) {
+                    log.info("初始化系统资源,请求权限系统成功. authServer:{}",authUrl);
                     break;
                 }
 
             } catch (Exception e) {
-                log.error("请求权限系统获取用户失败,http://" + authUrl + "/auth/api/resc/all", e);
+                log.error("请求权限系统获取资源失败,http://" + authUrl + "/auth/api/resc/all");
             }
         }
 
         if (resultVO == null || !ResultConstant.RESULT_CODE_200.equals(resultVO.getCode())) {
 
-            log.error("请求权限系统获取资源失败:/auth/api/resc/all");
+            log.error("请求权限系统获取非200:/auth/api/resc/all. resultVO:{}", JSON.toJSONString(resultVO));
             return;
         }
 

@@ -28,4 +28,9 @@ public interface CommonConstant {
      * 请求头Token名称
      */
     String USER_TOKEN_NAME = "Authorization";
+
+    /**
+     * 安全码
+     */
+    String AUTH_SECURITY_CODE ="coderman";
 }

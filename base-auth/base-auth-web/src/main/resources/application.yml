@@ -19,6 +19,9 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
+# 权限服务安全码
+auth-security-code: coderman
 #rocketmq:
 #  nameServer: 127.0.0.1:9876
 #  producer:

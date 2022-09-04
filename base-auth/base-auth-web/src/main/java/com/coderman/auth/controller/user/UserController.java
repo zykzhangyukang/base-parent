@@ -1,10 +1,10 @@
 package com.coderman.auth.controller.user;
 
 import com.coderman.api.constant.CommonConstant;
+import com.coderman.api.vo.AuthUserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.service.user.UserService;
-import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
@@ -23,7 +23,6 @@ import java.util.List;
 /**
  * @author coderman
  * @Title: 用户模块
- * @Description: TOD
  * @date 2022/2/2711:37
  */
 @RestController
@@ -50,13 +49,34 @@ public class UserController {
     }
 
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户登入")
+    @PostMapping(value = "/refresh/login")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "AuthUserVO",value = {"realName", "deptCode", "username", "token"})
+    })
+    public ResultVO<String> refreshLogin(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME) String token) {
+        return this.userService.refreshLogin(token);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "注销登入")
+    @PostMapping(value = "/logout")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "AuthUserVO",value = {"realName", "deptCode", "username", "token"})
+    })
+    public ResultVO<Void> logout(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME,required = false) String token) {
+        return this.userService.logout(token);
+    }
+
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "获取用户信息")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "UserInfoVO", value = {"deptName", "realName", "userStatus", "userId", "deptCode", "username","roles","funcKeys","menus"}),
     })
     @GetMapping(value = "/info")
-    public ResultVO<UserInfoVO> info(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME,required = false) String token){
+    public ResultVO<UserInfoVO> info(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME) String token){
         return this.userService.info(token);
     }
 

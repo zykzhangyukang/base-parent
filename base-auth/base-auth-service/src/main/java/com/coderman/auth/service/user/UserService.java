@@ -136,7 +136,6 @@ public interface UserService {
 
 
     /**
-     *
      * 获取用户信息
      *
      * @return
@@ -146,8 +145,26 @@ public interface UserService {
 
     /**
      * 根据token获取用户信息
+     *
      * @param token token
      * @return
      */
     ResultVO<AuthUserVO> getUserByToken(String token);
+
+
+    /**
+     * 用户注销登入
+     *
+     * @param token 令牌
+     * @return
+     */
+    ResultVO<Void> logout(String token);
+
+
+    /**
+     * 用户刷新登入
+     *
+     * @return
+     */
+    ResultVO<String> refreshLogin(String token);
 }

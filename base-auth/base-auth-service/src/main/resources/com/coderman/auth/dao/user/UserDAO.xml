@@ -285,7 +285,7 @@
   <sql id="pageCondition">
     <where>
       <if test="username!=null and username!=''">
-        and username like concat('%',#{.username},'%')
+        and username like concat('%',#{username},'%')
       </if>
       <if test="realName!=null and realName!=''">
         and real_name like concat('%',#{realName},'%')
@@ -293,7 +293,7 @@
       <if test="userStatus!=null">
         and user_status = #{userStatus}
       </if>
-      <if test="deptCode!=null and queryVO.deptCode!=''">
+      <if test="deptCode!=null and deptCode!=''">
         and u.dept_code = #{deptCode}
       </if>
     </where>

@@ -1,9 +1,11 @@
 package com.coderman.auth.service.user.impl;
 
 import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.AuthUserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.constant.AuthConstant;
@@ -22,7 +24,6 @@ import com.coderman.auth.service.func.FuncService;
 import com.coderman.auth.service.resource.ResourceService;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.auth.vo.func.MenuVO;
-import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.resource.ResourceVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserInfoVO;
@@ -155,26 +156,20 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "获取用户信息")
     public ResultVO<UserInfoVO> info(String token) {
 
-        if (StringUtils.isBlank(token)) {
-
-            return ResultUtil.getFail("用户未登入");
-        }
-
         AuthUserVO authUserVO = this.getUserByToken(token).getResult();
-        if (authUserVO == null) {
 
-            return ResultUtil.getFail("用户会话失效");
+        if (null == authUserVO) {
+            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401,"用户会话已过期");
         }
 
         ResultVO<UserVO> voResultVO = this.selectUserByName(authUserVO.getUsername());
         UserVO userVO = voResultVO.getResult();
-
-        if (null == userVO) {
-            return ResultUtil.getFail(UserInfoVO.class, null, "用户信息不存在");
+        if(null == userVO){
+            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401,"用户会话已过期");
         }
 
-        UserInfoVO userInfoVO = new UserInfoVO();
 
+        UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtils.copyProperties(userVO, userInfoVO);
 
         // 查询角色
@@ -196,6 +191,54 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<AuthUserVO> getUserByToken(String token) {
         AuthUserVO authUserVO = this.redisService.getObject(AuthConstant.AUTH_TOKEN_NAME + token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
         return ResultUtil.getSuccess(AuthUserVO.class, authUserVO);
+    }
+
+    @Override
+    @LogError(value = "用户退出登入")
+    public ResultVO<Void> logout(@LogErrorParam String token) {
+
+        // 删除token
+        if (StringUtils.isNotBlank(token)) {
+            this.redisService.expire(AuthConstant.AUTH_TOKEN_NAME + token, 0, RedisDbConstant.REDIS_DB_AUTH);
+        }
+
+        return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "用户刷新登入")
+    public ResultVO<String> refreshLogin(String token) {
+
+        AuthUserVO oldAuthUserVO = this.getUserByToken(token).getResult();
+        if(oldAuthUserVO == null){
+            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401,"会话已过期,请重新登入");
+        }
+
+        // 删除当前token
+        this.redisService.expire(AuthConstant.AUTH_TOKEN_NAME + oldAuthUserVO.getToken(), 0, RedisDbConstant.REDIS_DB_AUTH);
+
+        UserExample example = new UserExample();
+        example.createCriteria().andUsernameEqualTo(oldAuthUserVO.getUsername()).andUserStatusEqualTo(AuthConstant.USER_STATUS_ENABLE);
+        Optional<UserModel> first = this.userDAO.selectByExample(example).stream().findFirst();
+
+
+        // 签发新的token
+        String newToken = UUIDUtils.getPrimaryValue();
+
+        if (!first.isPresent()) {
+            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401,"用户信息不存在");
+        }
+
+        UserModel dbUser = first.get();
+
+        AuthUserVO newAuthUserVo = new AuthUserVO();
+        newAuthUserVo.setUsername(dbUser.getUsername());
+        newAuthUserVo.setDeptCode(dbUser.getDeptCode());
+        newAuthUserVo.setRealName(dbUser.getRealName());
+        newAuthUserVo.setToken(newToken);
+        newAuthUserVo.setRescIdList(getUserResourceIds(dbUser.getUsername()));
+        this.redisService.setObject(AuthConstant.AUTH_TOKEN_NAME + newToken, newAuthUserVo, 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
+        return ResultUtil.getSuccess(String.class,newToken);
     }
 
 
@@ -325,6 +368,17 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @LogError(value = "删除用户信息")
     public ResultVO<Void> delete(Integer userId) {
+
+        UserModel dbUserModel = this.userDAO.selectByPrimaryKey(userId);
+        if(dbUserModel == null){
+
+            return ResultUtil.getFail("用户信息不存在");
+        }
+
+        if(dbUserModel.getUserStatus().equals(AuthConstant.USER_STATUS_ENABLE)){
+
+            return ResultUtil.getFail("启用状态的用户不能删除");
+        }
 
         // 删除用户-角色关联
         UserRoleExample example = new UserRoleExample();

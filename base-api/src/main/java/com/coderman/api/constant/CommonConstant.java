@@ -3,7 +3,6 @@ package com.coderman.api.constant;
 /**
  * @author coderman
  * @Title: 公共的常量
- * @Description: TOD
  * @date 2022/5/2521:45
  */
 public interface CommonConstant {

@@ -1,4 +1,4 @@
-package com.coderman.api.vo;
+package com.coderman.erp.vo;
 
 import com.coderman.api.model.BaseModel;
 import io.swagger.annotations.ApiModelProperty;

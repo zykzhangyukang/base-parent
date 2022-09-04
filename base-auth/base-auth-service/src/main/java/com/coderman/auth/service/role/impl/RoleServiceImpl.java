@@ -26,7 +26,6 @@ import com.coderman.auth.vo.role.RoleAssignVO;
 import com.coderman.auth.vo.role.RoleAuthCheckVO;
 import com.coderman.auth.vo.role.RoleAuthInitVO;
 import com.coderman.auth.vo.role.RoleVO;
-import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.service.anntation.LogError;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

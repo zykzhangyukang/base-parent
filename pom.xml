@@ -13,6 +13,7 @@
         <module>base-db-queue</module>
         <module>base-rocketmq</module>
         <module>base-auth</module>
+        <module>base-erp-service</module>
     </modules>
 
     <groupId>com.coderman</groupId>
@@ -59,6 +60,14 @@
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-service</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
+
+            <!-- 基础 erp后台service模块 -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-erp-service</artifactId>
                 <version>${base.version}</version>
             </dependency>
 

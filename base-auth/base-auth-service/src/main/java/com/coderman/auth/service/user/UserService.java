@@ -4,10 +4,10 @@ package com.coderman.auth.service.user;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.api.vo.AuthUserVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
+import com.coderman.erp.vo.AuthUserVO;
 
 import java.util.List;
 

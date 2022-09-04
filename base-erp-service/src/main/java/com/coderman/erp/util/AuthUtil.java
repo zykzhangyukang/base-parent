@@ -1,7 +1,7 @@
-package com.coderman.service.util;
+package com.coderman.erp.util;
 
 import com.coderman.api.constant.CommonConstant;
-import com.coderman.api.vo.AuthUserVO;
+import com.coderman.erp.vo.AuthUserVO;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

@@ -1,11 +1,11 @@
 server:
-  port: 8081
+  port: 8082
 spring:
   application:
     name: base-auth
   datasource:
     username: root
-    password: zhangyukang
+    password: DES@2120FA78BC6EB99B019C119BD8067DB0
     url: jdbc:mysql://localhost:3306/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -14,7 +14,7 @@ spring:
     auth:
       host: 119.91.30.131
       port: 6379
-      password: zhangyukang
+      password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
 mybatis:
   configuration:

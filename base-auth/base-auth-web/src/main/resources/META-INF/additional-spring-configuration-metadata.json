@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "auth-security-code",
+      "type": "java.lang.String",
+      "description": "Description for auth-security-code."
+    }
+  ] }

@@ -33,7 +33,7 @@ import java.util.List;
 @Configuration
 @SuppressWarnings("all")
 @Slf4j
-public class TransactionConfigure {
+public class TransactionConfig {
 
     @Autowired
     private DataSource dataSource;

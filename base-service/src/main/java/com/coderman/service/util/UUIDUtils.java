@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * @author coderman
- * @Description: uuid工具类
+ * @description: uuid工具类
  * @date 2022/6/2521:04
  */
 public class UUIDUtils {
@@ -16,6 +16,6 @@ public class UUIDUtils {
      * @return
      */
     public synchronized static String getPrimaryValue() {
-        return UUID.randomUUID().toString().replace("-", "");
+        return (System.currentTimeMillis()+UUID.randomUUID().toString()).replace("-", "");
     }
 }

@@ -26,6 +26,7 @@
         <rocketmq.boot.version>2.1.1</rocketmq.boot.version>
         <rocketmq.client.version>4.7.0</rocketmq.client.version>
         <jsoup.version>1.12.1</jsoup.version>
+        <jasypt.boot.starter>2.1.1</jasypt.boot.starter>
         <version>3.1.0</version>
     </properties>
 
@@ -65,6 +66,13 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.boot.starter}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt.boot.starter}</version>
             </dependency>
 
             <dependency>

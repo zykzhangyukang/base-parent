@@ -1,9 +1,9 @@
 package com.coderman.service.config;
 
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +15,15 @@ import org.springframework.context.annotation.Configuration;
  * @author xuxueli 2017-04-28
  */
 @Configuration
+@Data
 @SuppressWarnings("all")
 @ConfigurationProperties(prefix = "job")
 @ConditionalOnProperty(prefix = "job",name = "enable",havingValue = "true")
 public class JobConfig {
 
     private final Logger logger = LoggerFactory.getLogger(JobConfig.class);
+
+    private Boolean enable;
 
     private String adminAddresses;
 

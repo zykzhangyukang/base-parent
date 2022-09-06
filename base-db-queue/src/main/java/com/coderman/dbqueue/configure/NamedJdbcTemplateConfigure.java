@@ -18,7 +18,7 @@ public class NamedJdbcTemplateConfigure {
 
 
     @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(@Qualifier("syncJdbcTemplate") JdbcTemplate jdbcTemplate){
+    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(@Qualifier("jdbcTemplate") JdbcTemplate jdbcTemplate){
 
         return new NamedParameterJdbcTemplate(jdbcTemplate);
     }

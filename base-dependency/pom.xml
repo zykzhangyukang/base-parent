@@ -25,6 +25,7 @@
         <collections4.version>4.4</collections4.version>
         <rocketmq.boot.version>2.1.1</rocketmq.boot.version>
         <rocketmq.client.version>4.7.0</rocketmq.client.version>
+        <xxl.job.version>2.1.0</xxl.job.version>
         <jsoup.version>1.12.1</jsoup.version>
         <jasypt.boot.starter>2.1.1</jasypt.boot.starter>
         <version>3.1.0</version>
@@ -104,6 +105,13 @@
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl.job.version}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

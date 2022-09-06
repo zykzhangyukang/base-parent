@@ -20,6 +20,15 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 
+# xxl job 配置
+job:
+  adminAddresses: http://127.0.0.1:6850/xxl-job-admin
+  appName: auth-executor
+  logPath: /data/jobhandler
+  logRetentionDays: 4
+  enable: false
+
+
 # 权限服务安全码
 auth-security-code: coderman
 #rocketmq:

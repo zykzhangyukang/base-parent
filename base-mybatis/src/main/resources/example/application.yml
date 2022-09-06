@@ -5,7 +5,7 @@ spring:
     name: base-project
   datasource:
     username: root
-    password: zhangyukang
+    password: DES@2120FA78BC6EB99B019C119BD8067DB0
     url: jdbc:mysql://localhost:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -13,6 +13,23 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
+# redis 配置
+#  redis:
+#    host: 119.91.30.131
+#    port: 6379
+#    password: DES@2120FA78BC6EB99B019C119BD8067DB0
+
+
+# xxl job 配置
+#job:
+#  adminAddresses: http://127.0.0.1:6850/xxl-job-admin
+#  appName: auth-executor
+#  logPath: /data/jobhandler
+#  logRetentionDays: 4
+#  enable: false
+
+# rocketmq 配置
 #rocketmq:
 #  nameServer: 127.0.0.1:9876
 #  producer:

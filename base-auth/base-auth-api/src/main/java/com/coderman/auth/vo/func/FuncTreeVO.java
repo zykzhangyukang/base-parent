@@ -1,7 +1,7 @@
 package com.coderman.auth.vo.func;
 
 import com.coderman.auth.model.func.FuncModel;
-import com.coderman.auth.vo.resource.ResourceVO;
+import com.coderman.auth.vo.resc.RescVO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,7 +29,7 @@ public class FuncTreeVO extends FuncModel {
     private String funcKey;
 
     @ApiModelProperty(value = "资源信息")
-    private List<ResourceVO> resourceVOList;
+    private List<RescVO> rescVOList;
 
 
     private Integer parentId;

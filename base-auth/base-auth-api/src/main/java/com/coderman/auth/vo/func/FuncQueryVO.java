@@ -16,5 +16,5 @@ import lombok.EqualsAndHashCode;
 public class FuncQueryVO extends FuncModel {
 
     @ApiModelProperty(value = "资源url")
-    private String resourceUrl;
+    private String rescUrl;
 }

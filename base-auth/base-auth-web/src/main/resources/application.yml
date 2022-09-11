@@ -26,7 +26,7 @@ job:
   appName: auth-executor
   logPath: /data/jobhandler
   logRetentionDays: 4
-  enable: true
+  enable: false
 
 # 权限服务安全码
 auth:

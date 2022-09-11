@@ -10,16 +10,16 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@ApiModel(value="FuncResourceModel", description = "")
-public class FuncResourceModel extends BaseModel {
+@ApiModel(value="FuncRescModel", description = "")
+public class FuncRescModel extends BaseModel {
     
 
-    @ApiModelProperty(value = "")
-    private Integer funcResourceId;
+    @ApiModelProperty(value = "主键")
+    private Integer funcRescId;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "功能id")
     private Integer funcId;
 
-    @ApiModelProperty(value = "")
-    private Integer resourceId;
+    @ApiModelProperty(value = "资源id")
+    private Integer rescId;
 }

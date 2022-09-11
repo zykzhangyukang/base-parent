@@ -20,10 +20,10 @@ import com.coderman.auth.model.user.UserModel;
 import com.coderman.auth.model.user.UserRoleExample;
 import com.coderman.auth.model.user.UserRoleModel;
 import com.coderman.auth.service.func.FuncService;
-import com.coderman.auth.service.resource.ResourceService;
+import com.coderman.auth.service.resc.RescService;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.auth.vo.func.MenuVO;
-import com.coderman.auth.vo.resource.ResourceVO;
+import com.coderman.auth.vo.resc.RescVO;
 import com.coderman.auth.vo.user.UserAssignVO;
 import com.coderman.auth.vo.user.UserInfoVO;
 import com.coderman.auth.vo.user.UserVO;
@@ -70,7 +70,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     private RedisService redisService;
 
     @Autowired
-    private ResourceService resourceService;
+    private RescService rescService;
 
 
     @Autowired
@@ -122,7 +122,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             authUserVO.setToken(token);
             authUserVO.setDeptCode(dbUser.getDeptCode());
             authUserVO.setRealName(dbUser.getRealName());
-            authUserVO.setRescIdList(getUserResourceIds(dbUser.getUsername()));
+            authUserVO.setRescIdList(getUserRescIds(dbUser.getUsername()));
 
             this.redisService.setObject(AuthConstant.AUTH_TOKEN_NAME + token, authUserVO, 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
 
@@ -144,17 +144,17 @@ public class UserServiceImpl extends BaseService implements UserService {
      * @return
      */
     @LogError(value = "获取用户拥有的资源id")
-    private List<Integer> getUserResourceIds(String username) {
+    private List<Integer> getUserRescIds(String username) {
 
-        return this.resourceService.selectResourceListByUsername(username).stream()
-                .map(ResourceVO::getResourceId)
+        return this.rescService.selectRescListByUsername(username).stream()
+                .map(RescVO::getRescId)
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     @Override
     @LogError(value = "获取用户信息")
-    public ResultVO<UserInfoVO> info(String token) {
+    public ResultVO<UserInfoVO> info(@LogErrorParam String token) {
 
         if(StringUtils.isBlank(token)){
             return ResultUtil.getFail(ResultConstant.RESULT_CODE_401,"访问令牌为空");
@@ -240,7 +240,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         newAuthUserVo.setDeptCode(dbUser.getDeptCode());
         newAuthUserVo.setRealName(dbUser.getRealName());
         newAuthUserVo.setToken(newToken);
-        newAuthUserVo.setRescIdList(getUserResourceIds(dbUser.getUsername()));
+        newAuthUserVo.setRescIdList(getUserRescIds(dbUser.getUsername()));
         this.redisService.setObject(AuthConstant.AUTH_TOKEN_NAME + newToken, newAuthUserVo, 12 * 60 * 60, RedisDbConstant.REDIS_DB_AUTH);
         return ResultUtil.getSuccess(String.class,newToken);
     }
@@ -510,6 +510,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
+    @LogError(value = "用户禁用")
     public ResultVO<Void> updateDisable(Integer userId) {
 
         UserModel db = this.userDAO.selectByPrimaryKey(userId);
@@ -529,7 +530,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public ResultVO<UserAssignVO> selectAssignInit(Integer userId) {
+    @LogError(value = "用户分配初始化")
+    public ResultVO<UserAssignVO> selectAssignInit(@LogErrorParam Integer userId) {
         UserAssignVO userAssignVO = new UserAssignVO();
 
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
@@ -556,6 +558,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     @Transactional
+    @LogError(value = "用户分配角色")
     public ResultVO<Void> updateAssign(Integer userId, List<Integer> assignedIdList) {
 
 

@@ -2,9 +2,9 @@ package com.coderman.dbqueue.service;
 
 import com.coderman.dbqueue.dao.QueueDAO;
 import com.coderman.dbqueue.util.QueueUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class QueueProducer {
 
 
-    @Resource
+    @Autowired
     private QueueDAO queueDAO;
 
 

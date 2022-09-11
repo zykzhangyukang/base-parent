@@ -3,14 +3,14 @@ package com.coderman.auth.model.func;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FuncResourceExample {
+public class FuncRescExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public FuncResourceExample() {
+    public FuncRescExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -104,63 +104,63 @@ public class FuncResourceExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        public Criteria andFuncResourceIdIsNull() {
-            addCriterion("func_resource_id is null");
+        public Criteria andFuncRescIdIsNull() {
+            addCriterion("func_resc_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdIsNotNull() {
-            addCriterion("func_resource_id is not null");
+        public Criteria andFuncRescIdIsNotNull() {
+            addCriterion("func_resc_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdEqualTo(Integer value) {
-            addCriterion("func_resource_id =", value, "funcResourceId");
+        public Criteria andFuncRescIdEqualTo(Integer value) {
+            addCriterion("func_resc_id =", value, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdNotEqualTo(Integer value) {
-            addCriterion("func_resource_id <>", value, "funcResourceId");
+        public Criteria andFuncRescIdNotEqualTo(Integer value) {
+            addCriterion("func_resc_id <>", value, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdGreaterThan(Integer value) {
-            addCriterion("func_resource_id >", value, "funcResourceId");
+        public Criteria andFuncRescIdGreaterThan(Integer value) {
+            addCriterion("func_resc_id >", value, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("func_resource_id >=", value, "funcResourceId");
+        public Criteria andFuncRescIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("func_resc_id >=", value, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdLessThan(Integer value) {
-            addCriterion("func_resource_id <", value, "funcResourceId");
+        public Criteria andFuncRescIdLessThan(Integer value) {
+            addCriterion("func_resc_id <", value, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdLessThanOrEqualTo(Integer value) {
-            addCriterion("func_resource_id <=", value, "funcResourceId");
+        public Criteria andFuncRescIdLessThanOrEqualTo(Integer value) {
+            addCriterion("func_resc_id <=", value, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdIn(List<Integer> values) {
-            addCriterion("func_resource_id in", values, "funcResourceId");
+        public Criteria andFuncRescIdIn(List<Integer> values) {
+            addCriterion("func_resc_id in", values, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdNotIn(List<Integer> values) {
-            addCriterion("func_resource_id not in", values, "funcResourceId");
+        public Criteria andFuncRescIdNotIn(List<Integer> values) {
+            addCriterion("func_resc_id not in", values, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdBetween(Integer value1, Integer value2) {
-            addCriterion("func_resource_id between", value1, value2, "funcResourceId");
+        public Criteria andFuncRescIdBetween(Integer value1, Integer value2) {
+            addCriterion("func_resc_id between", value1, value2, "funcRescId");
             return (Criteria) this;
         }
 
-        public Criteria andFuncResourceIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("func_resource_id not between", value1, value2, "funcResourceId");
+        public Criteria andFuncRescIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("func_resc_id not between", value1, value2, "funcRescId");
             return (Criteria) this;
         }
 
@@ -224,63 +224,63 @@ public class FuncResourceExample {
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdIsNull() {
-            addCriterion("resource_id is null");
+        public Criteria andRescIdIsNull() {
+            addCriterion("resc_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdIsNotNull() {
-            addCriterion("resource_id is not null");
+        public Criteria andRescIdIsNotNull() {
+            addCriterion("resc_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdEqualTo(Integer value) {
-            addCriterion("resource_id =", value, "resourceId");
+        public Criteria andRescIdEqualTo(Integer value) {
+            addCriterion("resc_id =", value, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdNotEqualTo(Integer value) {
-            addCriterion("resource_id <>", value, "resourceId");
+        public Criteria andRescIdNotEqualTo(Integer value) {
+            addCriterion("resc_id <>", value, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdGreaterThan(Integer value) {
-            addCriterion("resource_id >", value, "resourceId");
+        public Criteria andRescIdGreaterThan(Integer value) {
+            addCriterion("resc_id >", value, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("resource_id >=", value, "resourceId");
+        public Criteria andRescIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("resc_id >=", value, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdLessThan(Integer value) {
-            addCriterion("resource_id <", value, "resourceId");
+        public Criteria andRescIdLessThan(Integer value) {
+            addCriterion("resc_id <", value, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdLessThanOrEqualTo(Integer value) {
-            addCriterion("resource_id <=", value, "resourceId");
+        public Criteria andRescIdLessThanOrEqualTo(Integer value) {
+            addCriterion("resc_id <=", value, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdIn(List<Integer> values) {
-            addCriterion("resource_id in", values, "resourceId");
+        public Criteria andRescIdIn(List<Integer> values) {
+            addCriterion("resc_id in", values, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdNotIn(List<Integer> values) {
-            addCriterion("resource_id not in", values, "resourceId");
+        public Criteria andRescIdNotIn(List<Integer> values) {
+            addCriterion("resc_id not in", values, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdBetween(Integer value1, Integer value2) {
-            addCriterion("resource_id between", value1, value2, "resourceId");
+        public Criteria andRescIdBetween(Integer value1, Integer value2) {
+            addCriterion("resc_id between", value1, value2, "rescId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("resource_id not between", value1, value2, "resourceId");
+        public Criteria andRescIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("resc_id not between", value1, value2, "rescId");
             return (Criteria) this;
         }
     }

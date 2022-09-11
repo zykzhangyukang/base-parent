@@ -1,9 +1,9 @@
-package com.coderman.auth.service.resource;
+package com.coderman.auth.service.resc;
 
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.auth.vo.resource.ResourceVO;
+import com.coderman.auth.vo.resc.RescVO;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Set;
  * @Description: TOD
  * @date 2022/3/199:04
  */
-public interface ResourceService {
+public interface RescService {
 
     /**
      * 资源列表
@@ -24,40 +24,40 @@ public interface ResourceService {
      * @param queryVO
      * @return
      */
-    ResultVO<PageVO<List<ResourceVO>>> page(Integer currentPage, Integer pageSize, ResourceVO queryVO);
+    ResultVO<PageVO<List<RescVO>>> page(Integer currentPage, Integer pageSize, RescVO queryVO);
 
     /**
      * 保存资源
      *
-     * @param resourceVO
+     * @param rescVO
      * @return
      */
-    ResultVO<Void> save(ResourceVO resourceVO);
+    ResultVO<Void> save(RescVO rescVO);
 
 
     /**
      * 更新资源
-     * @param resourceVO
+     * @param rescVO
      * @return
      */
-    ResultVO<Void> update(ResourceVO resourceVO);
+    ResultVO<Void> update(RescVO rescVO);
 
 
     /**
      * 删除资源
-     * @param resourceId
+     * @param rescId
      * @return
      */
-    ResultVO<Void> delete(Integer resourceId);
+    ResultVO<Void> delete(Integer rescId);
 
 
     /**
      * 获取资源
      *
-     * @param resourceId
+     * @param rescId
      * @return
      */
-    ResultVO<ResourceVO> select(Integer resourceId);
+    ResultVO<RescVO> select(Integer rescId);
 
 
     /**
@@ -66,7 +66,7 @@ public interface ResourceService {
      * @param keyword
      * @return
      */
-    ResultVO<List<ResourceVO>> search(String keyword);
+    ResultVO<List<RescVO>> search(String keyword);
 
 
     /**
@@ -75,7 +75,7 @@ public interface ResourceService {
      * @param username
      * @return
      */
-    List<ResourceVO> selectResourceListByUsername(String username);
+    List<RescVO> selectRescListByUsername(String username);
 
 
     /**

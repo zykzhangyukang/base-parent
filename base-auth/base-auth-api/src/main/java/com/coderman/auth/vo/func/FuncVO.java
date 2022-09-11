@@ -1,7 +1,7 @@
 package com.coderman.auth.vo.func;
 
 import com.coderman.auth.model.func.FuncModel;
-import com.coderman.auth.vo.resource.ResourceVO;
+import com.coderman.auth.vo.resc.RescVO;
 import com.coderman.auth.vo.user.UserVO;
 import lombok.Data;
 
@@ -43,11 +43,11 @@ public class FuncVO extends FuncModel {
     /**
      * 资源信息
      */
-    private List<ResourceVO> resourceVOList =  new ArrayList<>();
+    private List<RescVO> rescVOList =  new ArrayList<>();
 
 
     /**
      * 资源id
      */
-    private List<Integer> resourceIdList =  new ArrayList<>();
+    private List<Integer> rescIdList =  new ArrayList<>();
 }

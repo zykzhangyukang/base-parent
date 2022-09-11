@@ -294,7 +294,7 @@
   <resultMap extends="BaseResultMap" id="pageResultMap" type="com.coderman.auth.vo.func.FuncVO">
     <result column="parent_func_name" property="parentFuncName" />
     <collection column="func_id" ofType="com.coderman.auth.vo.user.UserVO" property="userVOList" select="com.coderman.auth.dao.func.FuncDAO.selectUserListByFuncId" />
-    <collection column="func_id" ofType="com.coderman.auth.vo.resource.ResourceVO" property="resourceVOList" select="com.coderman.auth.dao.func.FuncDAO.selectResListByFuncId" />
+    <collection column="func_id" ofType="com.coderman.auth.vo.resc.RescVO" property="rescVOList" select="com.coderman.auth.dao.func.FuncDAO.selectResListByFuncId" />
   </resultMap>
 
   <select id="selectUserListByFuncId" resultMap="com.coderman.auth.dao.user.UserDAO.pageBaseResultMap">
@@ -306,10 +306,10 @@
     where rf.func_id = #{funcId}
   </select>
 
-  <select id="selectResListByFuncId" resultType="com.coderman.auth.vo.resource.ResourceVO">
-    select r.resource_name as resourceName,r.resource_url as resourceUrl,r.resource_domain as resourceDomain,r.resource_id as resourceId,r.method_type as methodType
-    from tb_func_resource fr
-    inner join tb_resource r on fr.resource_id = r.resource_id
+  <select id="selectResListByFuncId" resultType="com.coderman.auth.vo.resc.RescVO">
+    select r.resc_name as rescName,r.resc_url as rescUrl,r.resc_domain as rescDomain,r.resc_id as rescId,r.method_type as methodType
+    from tb_func_resc fr
+    inner join tb_resc r on fr.resc_id = r.resc_id
     where fr.func_id =  #{funcId}
   </select>
 
@@ -333,16 +333,16 @@
       <if test="queryVO.parentId!=null">
         and (f.parent_id = #{queryVO.parentId} or f.func_id = #{queryVO.parentId})
       </if>
-      <if test="queryVO.resourceUrl!=null and queryVO.resourceUrl!=''">
+      <if test="queryVO.rescUrl!=null and queryVO.rescUrl!=''">
         and f.func_id in (
                     select
                     f.func_id
                     from
                     tb_func f
-                    inner join tb_func_resource fr on f.func_id = fr.func_id
-                    inner join tb_resource r on fr.resource_id = r.resource_id
+                    inner join tb_func_resc fr on f.func_id = fr.func_id
+                    inner join tb_resc r on fr.resc_id = r.resc_id
                     where
-                    r.resource_url like concat('%',#{queryVO.resourceUrl},'%')
+                    r.resc_url like concat('%',#{queryVO.rescUrl},'%')
         )
       </if>
     </where>
@@ -424,7 +424,7 @@
     <result column="func_type" property="funcType" />
     <result column="func_sort" property="funcSort" />
     <result column="dir_hide" property="dirHide" />
-    <collection column="func_id" ofType="com.coderman.auth.vo.resource.ResourceVO" property="resourceVOList" select="com.coderman.auth.dao.func.FuncDAO.selectResListByFuncId" />
+    <collection column="func_id" ofType="com.coderman.auth.vo.resc.RescVO" property="rescVOList" select="com.coderman.auth.dao.func.FuncDAO.selectResListByFuncId" />
   </resultMap>
 
 

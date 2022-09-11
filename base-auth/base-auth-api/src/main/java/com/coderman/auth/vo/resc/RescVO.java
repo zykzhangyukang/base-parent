@@ -1,6 +1,6 @@
-package com.coderman.auth.vo.resource;
+package com.coderman.auth.vo.resc;
 
-import com.coderman.auth.model.resource.ResourceModel;
+import com.coderman.auth.model.resc.RescModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,5 +12,5 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ResourceVO extends ResourceModel {
+public class RescVO extends RescModel {
 }

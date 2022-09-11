@@ -5,7 +5,7 @@ import com.coderman.auth.model.func.FuncModel;
 import com.coderman.auth.vo.func.FuncQueryVO;
 import com.coderman.auth.vo.func.FuncVO;
 import com.coderman.auth.vo.func.MenuVO;
-import com.coderman.auth.vo.resource.ResourceVO;
+import com.coderman.auth.vo.resc.RescVO;
 import com.coderman.auth.vo.user.UserVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
@@ -37,7 +37,7 @@ public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
      * @param funcId
      * @return
      */
-    List<ResourceVO> selectResListByFuncId(@Param(value = "funcId") Integer funcId);
+    List<RescVO> selectResListByFuncId(@Param(value = "funcId") Integer funcId);
 
 
     /**

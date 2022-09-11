@@ -6,12 +6,12 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.constant.AuthConstant;
 import com.coderman.auth.dao.func.FuncDAO;
-import com.coderman.auth.dao.func.FuncResourceDAO;
+import com.coderman.auth.dao.func.FuncRescDAO;
 import com.coderman.auth.dao.role.RoleFuncDAO;
 import com.coderman.auth.dao.user.UserRoleDAO;
 import com.coderman.auth.model.func.FuncExample;
 import com.coderman.auth.model.func.FuncModel;
-import com.coderman.auth.model.func.FuncResourceExample;
+import com.coderman.auth.model.func.FuncRescExample;
 import com.coderman.auth.model.role.RoleFuncExample;
 import com.coderman.auth.model.role.RoleFuncModel;
 import com.coderman.auth.model.user.UserRoleExample;
@@ -21,7 +21,7 @@ import com.coderman.auth.vo.func.FuncQueryVO;
 import com.coderman.auth.vo.func.FuncTreeVO;
 import com.coderman.auth.vo.func.FuncVO;
 import com.coderman.auth.vo.func.MenuVO;
-import com.coderman.auth.vo.resource.ResourceVO;
+import com.coderman.auth.vo.resc.RescVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +53,7 @@ public class FuncServiceImpl implements FuncService {
     private RoleFuncDAO roleFuncDAO;
 
     @Autowired
-    private FuncResourceDAO funcResourceDAO;
+    private FuncRescDAO funcRescDAO;
 
     @Autowired
     private UserRoleDAO userRoleDAO;
@@ -167,9 +167,9 @@ public class FuncServiceImpl implements FuncService {
 
 
         // 保存功能-资源关联
-        if (!CollectionUtils.isEmpty(funcVO.getResourceIdList())) {
+        if (!CollectionUtils.isEmpty(funcVO.getRescIdList())) {
 
-            this.funcResourceDAO.insertBatchByFuncId(insert.getFuncId(), funcVO.getResourceIdList());
+            this.funcRescDAO.insertBatchByFuncId(insert.getFuncId(), funcVO.getRescIdList());
         }
 
 
@@ -240,15 +240,15 @@ public class FuncServiceImpl implements FuncService {
 
 
         // 删除原来的功能-资源绑定
-        FuncResourceExample funcResourceModelExample = new FuncResourceExample();
-        funcResourceModelExample.createCriteria().andFuncIdEqualTo(funcId);
-        this.funcResourceDAO.deleteByExample(funcResourceModelExample);
+        FuncRescExample funcRescExample = new FuncRescExample();
+        funcRescExample.createCriteria().andFuncIdEqualTo(funcId);
+        this.funcRescDAO.deleteByExample(funcRescExample);
 
 
         // 批量增加现在的功能-资源绑定
-        if (!CollectionUtils.isEmpty(funcVO.getResourceIdList())) {
+        if (!CollectionUtils.isEmpty(funcVO.getRescIdList())) {
 
-            this.funcResourceDAO.insertBatchByFuncId(funcId, funcVO.getResourceIdList());
+            this.funcRescDAO.insertBatchByFuncId(funcId, funcVO.getRescIdList());
         }
 
         return ResultUtil.getSuccess();
@@ -264,9 +264,9 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 校验是否有功能-资源关联
-        FuncResourceExample example = new FuncResourceExample();
+        FuncRescExample example = new FuncRescExample();
         example.createCriteria().andFuncIdEqualTo(funcId);
-        long funcResCount = this.funcResourceDAO.countByExample(example);
+        long funcResCount = this.funcRescDAO.countByExample(example);
         if (funcResCount > 0) {
             return ResultUtil.getWarn("功能已经绑定了资源,请先清空资源!");
         }
@@ -309,9 +309,9 @@ public class FuncServiceImpl implements FuncService {
             throw new BusinessException("功能不存在");
         }
 
-        List<ResourceVO> resourceVOList = funcVO.getResourceVOList();
-        if (!CollectionUtils.isEmpty(resourceVOList)) {
-            funcVO.setResourceIdList(resourceVOList.stream().map(ResourceVO::getResourceId).collect(Collectors.toList()));
+        List<RescVO> rescVOList = funcVO.getRescVOList();
+        if (!CollectionUtils.isEmpty(rescVOList)) {
+            funcVO.setRescIdList(rescVOList.stream().map(RescVO::getRescId).collect(Collectors.toList()));
         }
 
         return ResultUtil.getSuccess(FuncVO.class, funcVO);
@@ -379,9 +379,9 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 所谓功能解绑资源,即删除所有该功能-资源的绑定
-        FuncResourceExample example = new FuncResourceExample();
+        FuncRescExample example = new FuncRescExample();
         example.createCriteria().andFuncIdEqualTo(funcId);
-        this.funcResourceDAO.deleteByExample(example);
+        this.funcRescDAO.deleteByExample(example);
 
         return ResultUtil.getSuccess();
     }

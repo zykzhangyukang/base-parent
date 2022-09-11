@@ -14,12 +14,12 @@ import lombok.experimental.Accessors;
 public class RoleFuncModel extends BaseModel {
     
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "主键")
     private Integer roleFuncId;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "角色id")
     private Integer roleId;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "功能id")
     private Integer funcId;
 }

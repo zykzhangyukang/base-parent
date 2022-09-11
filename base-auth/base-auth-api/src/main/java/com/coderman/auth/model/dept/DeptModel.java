@@ -15,18 +15,18 @@ import lombok.experimental.Accessors;
 public class DeptModel extends BaseModel {
     
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "部门id")
     private Integer deptId;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "部门编号")
     private String deptCode;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "部门名称")
     private String deptName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 }

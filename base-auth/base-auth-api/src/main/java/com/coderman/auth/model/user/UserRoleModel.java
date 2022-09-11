@@ -10,16 +10,16 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@ApiModel(value="UserRoleModel", description = "")
+@ApiModel(value="UserRoleModel", description = "用户角色关联")
 public class UserRoleModel extends BaseModel {
     
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "组件")
     private Integer userRoleId;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "用户id")
     private Integer userId;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "角色id")
     private Integer roleId;
 }

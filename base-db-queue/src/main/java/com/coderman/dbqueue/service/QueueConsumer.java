@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * 消费者
  */
-public abstract class AbstractQueueConsumer {
+public abstract class QueueConsumer {
 
 
     @Resource

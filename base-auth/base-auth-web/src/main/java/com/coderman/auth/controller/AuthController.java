@@ -7,6 +7,7 @@ import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.auth.service.user.UserService;
 import com.coderman.erp.api.RescApi;
+import com.coderman.erp.config.AuthErpConfig;
 import com.coderman.service.config.PropertyConfig;
 import com.coderman.service.dict.ConstItems;
 import com.coderman.service.redis.RedisService;
@@ -46,6 +47,10 @@ public class AuthController {
     private UserService userService;
 
 
+    @Autowired
+    private AuthErpConfig authErpConfig;
+
+
     /**
      * 获取权限系统所有资源信息
      *
@@ -55,9 +60,9 @@ public class AuthController {
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "获取权限系统所有资源信息api")
     @PostMapping(value = "/api/resc/all")
     public ResultVO<Map<String, Set<Integer>>> sysRescAll(@RequestParam(value = "domain") String project,
-                                                          @RequestParam(value = "securityCode", required = false) String securityCode) {
+                                                          @RequestParam(value = "authSecurityCode", required = false) String authSecurityCode) {
 
-        if (StringUtils.isBlank(securityCode) || !StringUtils.equals(securityCode, PropertyConfig.getConfigValue("auth-security-code"))) {
+        if (StringUtils.isBlank(authSecurityCode) || !StringUtils.equals(authSecurityCode, authErpConfig.getAuthSecurityCode())) {
 
             return ResultUtil.getFail("非法访问,securityCode错误");
 
@@ -75,9 +80,9 @@ public class AuthController {
     })
     @PostMapping(value = "/api/user/info")
     public ResultVO<AuthUserVO> info(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME, required = false) String token,
-                                     @RequestHeader(value = "securityCode", required = false) String securityCode) {
+                                     @RequestHeader(value = "authSecurityCode", required = false) String authSecurityCode) {
 
-        if (StringUtils.isBlank(securityCode) || !StringUtils.equals(securityCode, PropertyConfig.getConfigValue("auth-security-code"))) {
+        if (StringUtils.isBlank(authSecurityCode) || !StringUtils.equals(authSecurityCode, authErpConfig.getAuthSecurityCode())) {
 
             return ResultUtil.getFail("非法访问,securityCode错误");
         } else {

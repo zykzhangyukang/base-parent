@@ -1,4 +1,4 @@
-package com.coderman.swagger.configure;
+package com.coderman.swagger.config;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
@@ -20,7 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @SuppressWarnings("all")
-public class SwaggerConfigure {
+public class SwaggerConfig {
 
 
     /**

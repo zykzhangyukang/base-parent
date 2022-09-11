@@ -60,7 +60,7 @@ public class FuncController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "funcId",paramType = SwaggerConstant.DATA_INT,dataType = SwaggerConstant.DATA_INT,value = "功能id",required = true)
     })
-    @GetMapping(value = "/delete/resource/bind")
+    @GetMapping(value = "/delete/resc/bind")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
@@ -76,14 +76,14 @@ public class FuncController {
             @ApiImplicitParam(name = "pageSize",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "每页显示大小",required = true),
             @ApiImplicitParam(name = "funcKey",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "功能key"),
             @ApiImplicitParam(name = "funcName",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "功能名称"),
-            @ApiImplicitParam(name = "resourceUrl",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "功能url")
+            @ApiImplicitParam(name = "rescUrl",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_STRING,value = "功能url")
     })
     @GetMapping(value = "/page")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO",value = {"dataList",  "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "FuncVO",value = {"parentFuncName","funcSort","dirHide","userVOList","resourceVOList","funcName", "funcKey", "createTime","funcType","funcIcon",
-                    "updateTime", "childrenList", "funcId", "parentId","resourceIdList"})
+            @ApiReturnParam(name = "FuncVO",value = {"parentFuncName","funcSort","dirHide","userVOList","rescVOList","funcName", "funcKey", "createTime","funcType","funcIcon",
+                    "updateTime", "childrenList", "funcId", "parentId","rescIdList"})
     })
     public ResultVO<PageVO<List<FuncVO>>> page(@RequestParam(value = "currentPage") Integer currentPage,
                                                @RequestParam(value = "pageSize") Integer pageSize, @ApiIgnore FuncQueryVO queryVO){
@@ -100,7 +100,7 @@ public class FuncController {
             @ApiImplicitParam(name = "funcType",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "功能类型",required = true),
             @ApiImplicitParam(name = "funcSort",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "功能排序",required = true),
             @ApiImplicitParam(name = "dirShow",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "功能排序"),
-            @ApiImplicitParam(name = "resourceIdList",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_OBJECT,value = "资源id"),
+            @ApiImplicitParam(name = "rescIdList",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_OBJECT,value = "资源id"),
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
@@ -119,7 +119,7 @@ public class FuncController {
             @ApiImplicitParam(name = "funcType",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "功能类型",required = true),
             @ApiImplicitParam(name = "funcSort",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "功能排序",required = true),
             @ApiImplicitParam(name = "dirShow",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "功能排序"),
-            @ApiImplicitParam(name = "resourceIdList",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_OBJECT,value = "资源id"),
+            @ApiImplicitParam(name = "rescIdList",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_OBJECT,value = "资源id"),
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
@@ -149,7 +149,7 @@ public class FuncController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "FuncVO",value = {"parentFuncName","funcSort","dirHide","userVOList","resourceVOList","resourceIdList",
+            @ApiReturnParam(name = "FuncVO",value = {"parentFuncName","funcSort","dirHide","userVOList","rescVOList","rescIdList",
                     "funcName", "funcKey", "createTime", "updateTime", "childrenList", "funcId", "parentId","funcType"})
     })
     public ResultVO<FuncVO> select(@RequestParam(value = "funcId") Integer funcId) {

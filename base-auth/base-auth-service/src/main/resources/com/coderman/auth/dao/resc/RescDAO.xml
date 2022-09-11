@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.coderman.auth.dao.resource.ResourceDAO">
-  <resultMap id="BaseResultMap" type="com.coderman.auth.model.resource.ResourceModel">
-    <id column="resource_id" jdbcType="INTEGER" property="resourceId" />
-    <result column="resource_name" jdbcType="VARCHAR" property="resourceName" />
-    <result column="resource_url" jdbcType="VARCHAR" property="resourceUrl" />
-    <result column="resource_domain" jdbcType="VARCHAR" property="resourceDomain" />
+<mapper namespace="com.coderman.auth.dao.resc.RescDAO">
+  <resultMap id="BaseResultMap" type="com.coderman.auth.model.resc.RescModel">
+    <id column="resc_id" jdbcType="INTEGER" property="rescId" />
+    <result column="resc_name" jdbcType="VARCHAR" property="rescName" />
+    <result column="resc_url" jdbcType="VARCHAR" property="rescUrl" />
+    <result column="resc_domain" jdbcType="VARCHAR" property="rescDomain" />
+    <result column="method_type" jdbcType="VARCHAR" property="methodType" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="method_type" jdbcType="VARCHAR" property="methodType" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -69,16 +69,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    resource_id, resource_name, resource_url, resource_domain, create_time, update_time, 
-    method_type
+    resc_id, resc_name, resc_url, resc_domain, method_type, create_time, update_time
   </sql>
-  <select id="selectByExample" parameterType="com.coderman.auth.model.resource.ResourceExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.auth.model.resc.RescExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_resource
+    from tb_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -89,41 +88,44 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_resource
-    where resource_id = #{resourceId,jdbcType=INTEGER}
+    from tb_resc
+    where resc_id = #{rescId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_resource
-    where resource_id = #{resourceId,jdbcType=INTEGER}
+    delete from tb_resc
+    where resc_id = #{rescId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.auth.model.resource.ResourceExample">
-    delete from tb_resource
+  <delete id="deleteByExample" parameterType="com.coderman.auth.model.resc.RescExample">
+    delete from tb_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.coderman.auth.model.resource.ResourceModel">
-    insert into tb_resource (resource_id, resource_name, resource_url, 
-      resource_domain, create_time, update_time, 
-      method_type)
-    values (#{resourceId,jdbcType=INTEGER}, #{resourceName,jdbcType=VARCHAR}, #{resourceUrl,jdbcType=VARCHAR}, 
-      #{resourceDomain,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{methodType,jdbcType=VARCHAR})
+  <insert id="insert" parameterType="com.coderman.auth.model.resc.RescModel">
+    insert into tb_resc (resc_id, resc_name, resc_url, 
+      resc_domain, method_type, create_time, 
+      update_time)
+    values (#{rescId,jdbcType=INTEGER}, #{rescName,jdbcType=VARCHAR}, #{rescUrl,jdbcType=VARCHAR}, 
+      #{rescDomain,jdbcType=VARCHAR}, #{methodType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.coderman.auth.model.resource.ResourceModel">
-    insert into tb_resource
+  <insert id="insertSelective" parameterType="com.coderman.auth.model.resc.RescModel">
+    insert into tb_resc
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="resourceId != null">
-        resource_id,
+      <if test="rescId != null">
+        resc_id,
       </if>
-      <if test="resourceName != null">
-        resource_name,
+      <if test="rescName != null">
+        resc_name,
       </if>
-      <if test="resourceUrl != null">
-        resource_url,
+      <if test="rescUrl != null">
+        resc_url,
       </if>
-      <if test="resourceDomain != null">
-        resource_domain,
+      <if test="rescDomain != null">
+        resc_domain,
+      </if>
+      <if test="methodType != null">
+        method_type,
       </if>
       <if test="createTime != null">
         create_time,
@@ -131,22 +133,22 @@
       <if test="updateTime != null">
         update_time,
       </if>
-      <if test="methodType != null">
-        method_type,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="resourceId != null">
-        #{resourceId,jdbcType=INTEGER},
+      <if test="rescId != null">
+        #{rescId,jdbcType=INTEGER},
       </if>
-      <if test="resourceName != null">
-        #{resourceName,jdbcType=VARCHAR},
+      <if test="rescName != null">
+        #{rescName,jdbcType=VARCHAR},
       </if>
-      <if test="resourceUrl != null">
-        #{resourceUrl,jdbcType=VARCHAR},
+      <if test="rescUrl != null">
+        #{rescUrl,jdbcType=VARCHAR},
       </if>
-      <if test="resourceDomain != null">
-        #{resourceDomain,jdbcType=VARCHAR},
+      <if test="rescDomain != null">
+        #{rescDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="methodType != null">
+        #{methodType,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -154,31 +156,31 @@
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="methodType != null">
-        #{methodType,jdbcType=VARCHAR},
-      </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.auth.model.resource.ResourceExample" resultType="java.lang.Long">
-    select count(*) from tb_resource
+  <select id="countByExample" parameterType="com.coderman.auth.model.resc.RescExample" resultType="java.lang.Long">
+    select count(*) from tb_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_resource
+    update tb_resc
     <set>
-      <if test="record.resourceId != null">
-        resource_id = #{record.resourceId,jdbcType=INTEGER},
+      <if test="record.rescId != null">
+        resc_id = #{record.rescId,jdbcType=INTEGER},
       </if>
-      <if test="record.resourceName != null">
-        resource_name = #{record.resourceName,jdbcType=VARCHAR},
+      <if test="record.rescName != null">
+        resc_name = #{record.rescName,jdbcType=VARCHAR},
       </if>
-      <if test="record.resourceUrl != null">
-        resource_url = #{record.resourceUrl,jdbcType=VARCHAR},
+      <if test="record.rescUrl != null">
+        resc_url = #{record.rescUrl,jdbcType=VARCHAR},
       </if>
-      <if test="record.resourceDomain != null">
-        resource_domain = #{record.resourceDomain,jdbcType=VARCHAR},
+      <if test="record.rescDomain != null">
+        resc_domain = #{record.rescDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="record.methodType != null">
+        method_type = #{record.methodType,jdbcType=VARCHAR},
       </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -186,38 +188,38 @@
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.methodType != null">
-        method_type = #{record.methodType,jdbcType=VARCHAR},
-      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_resource
-    set resource_id = #{record.resourceId,jdbcType=INTEGER},
-      resource_name = #{record.resourceName,jdbcType=VARCHAR},
-      resource_url = #{record.resourceUrl,jdbcType=VARCHAR},
-      resource_domain = #{record.resourceDomain,jdbcType=VARCHAR},
+    update tb_resc
+    set resc_id = #{record.rescId,jdbcType=INTEGER},
+      resc_name = #{record.rescName,jdbcType=VARCHAR},
+      resc_url = #{record.rescUrl,jdbcType=VARCHAR},
+      resc_domain = #{record.rescDomain,jdbcType=VARCHAR},
+      method_type = #{record.methodType,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      method_type = #{record.methodType,jdbcType=VARCHAR}
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.resource.ResourceModel">
-    update tb_resource
+  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.resc.RescModel">
+    update tb_resc
     <set>
-      <if test="resourceName != null">
-        resource_name = #{resourceName,jdbcType=VARCHAR},
+      <if test="rescName != null">
+        resc_name = #{rescName,jdbcType=VARCHAR},
       </if>
-      <if test="resourceUrl != null">
-        resource_url = #{resourceUrl,jdbcType=VARCHAR},
+      <if test="rescUrl != null">
+        resc_url = #{rescUrl,jdbcType=VARCHAR},
       </if>
-      <if test="resourceDomain != null">
-        resource_domain = #{resourceDomain,jdbcType=VARCHAR},
+      <if test="rescDomain != null">
+        resc_domain = #{rescDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="methodType != null">
+        method_type = #{methodType,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -225,39 +227,35 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="methodType != null">
-        method_type = #{methodType,jdbcType=VARCHAR},
-      </if>
     </set>
-    where resource_id = #{resourceId,jdbcType=INTEGER}
+    where resc_id = #{rescId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.resource.ResourceModel">
-    update tb_resource
-    set resource_name = #{resourceName,jdbcType=VARCHAR},
-      resource_url = #{resourceUrl,jdbcType=VARCHAR},
-      resource_domain = #{resourceDomain,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.resc.RescModel">
+    update tb_resc
+    set resc_name = #{rescName,jdbcType=VARCHAR},
+      resc_url = #{rescUrl,jdbcType=VARCHAR},
+      resc_domain = #{rescDomain,jdbcType=VARCHAR},
+      method_type = #{methodType,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      method_type = #{methodType,jdbcType=VARCHAR}
-    where resource_id = #{resourceId,jdbcType=INTEGER}
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where resc_id = #{rescId,jdbcType=INTEGER}
   </update>
-
 
 
   <!-- 用户列表 -->
-  <select id="page" resultMap="BaseResultMap" resultType="com.coderman.auth.vo.resource.ResourceVO">
+  <select id="page" resultMap="BaseResultMap" resultType="com.coderman.auth.vo.resc.RescVO">
     select
     <include refid="Base_Column_List" />
-    from tb_resource
+    from tb_resc
     <where>
-      <if test="queryVO.resourceUrl!=null and queryVO.resourceUrl!=''">
-        and resource_url like concat('%',#{queryVO.resourceUrl},'%')
+      <if test="queryVO.rescUrl!=null and queryVO.rescUrl!=''">
+        and resc_url like concat('%',#{queryVO.rescUrl},'%')
       </if>
-      <if test="queryVO.resourceName!=null and queryVO.resourceName!=''">
-        and resource_name like concat('%',#{queryVO.resourceName},'%')
+      <if test="queryVO.rescName!=null and queryVO.rescName!=''">
+        and resc_name like concat('%',#{queryVO.rescName},'%')
       </if>
-      <if test="queryVO.resourceDomain!=null and queryVO.resourceDomain!=''">
-        and resource_domain  = #{queryVO.resourceDomain}
+      <if test="queryVO.rescDomain!=null and queryVO.rescDomain!=''">
+        and resc_domain  = #{queryVO.rescDomain}
       </if>
       <if test="queryVO.methodType!=null and queryVO.methodType!=''">
         and method_type  = #{queryVO.methodType}
@@ -269,20 +267,20 @@
   <select id="selectByKeyword" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from tb_resource
+    from tb_resc
     <where>
       <if test="keyword!=null and keyword!=''">
-        and (resource_name like concat('%',#{keyword},'%') or resource_url like concat('%',#{keyword},'%') )
+        and (resc_name like concat('%',#{keyword},'%') or resc_url like concat('%',#{keyword},'%') )
       </if>
     </where>
   </select>
 
 
-  <select id="selectResourceListByUsername" resultType="com.coderman.auth.vo.resource.ResourceVO">
+  <select id="selectRescListByUsername" resultType="com.coderman.auth.vo.resc.RescVO">
       SELECT
        DISTINCT
-          r2.resource_id as resourceId,
-          r2.resource_url as resourceUrl,
+          r2.resc_id as rescId,
+          r2.resc_url as rescUrl,
           r2.method_type as methodType
       FROM
           tb_user u
@@ -290,11 +288,9 @@
           INNER JOIN tb_role r ON ur.role_id = r.role_id
           INNER JOIN tb_role_func rf ON r.role_id = rf.role_id
           INNER JOIN tb_func f ON rf.func_id = f.func_id
-          INNER JOIN tb_func_resource fr ON fr.func_id = f.func_id
-          INNER JOIN tb_resource r2 ON r2.resource_id = fr.resource_id
+          INNER JOIN tb_func_resc fr ON fr.func_id = f.func_id
+          INNER JOIN tb_resc r2 ON r2.resc_id = fr.resc_id
       WHERE
           u.username = #{username}
   </select>
-
-
 </mapper>

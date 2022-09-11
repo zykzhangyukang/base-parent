@@ -6,13 +6,15 @@ import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.erp.vo.AuthUserVO;
 import com.coderman.erp.api.RescApi;
 import com.coderman.erp.api.UserApi;
-import com.coderman.service.config.PropertyConfig;
+import com.coderman.erp.config.AuthErpConfig;
 import com.coderman.erp.util.AuthUtil;
+import com.coderman.erp.vo.AuthUserVO;
 import com.coderman.service.util.SpringContextUtil;
-import com.google.common.cache.*;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 @Slf4j
+@SuppressWarnings("all")
 @Order(value = AopConstant.AUTH_ASPECT_ORDER)
 public class AuthAspect {
 
@@ -59,6 +62,9 @@ public class AuthAspect {
     @Autowired(required = false)
     private RescApi rescApi;
 
+
+    @Autowired
+    private AuthErpConfig authErpConfig;
 
     /**
      * 不拦截的接口
@@ -252,7 +258,7 @@ public class AuthAspect {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         httpHeaders.add("Authorization", token);
-        httpHeaders.add("securityCode", PropertyConfig.getConfigValue("auth-security-code"));
+        httpHeaders.add("authSecurityCode", authErpConfig.getAuthSecurityCode());
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
 
@@ -261,7 +267,7 @@ public class AuthAspect {
 
         // 请求auth获取用户信息
         JSONObject jsonObject = null;
-        String[] authUrlArr = PropertyConfig.getConfigValue("auth-server-arr").split(",");
+        String[] authUrlArr = authErpConfig.getAuthServerArr().split(",");
 
 
         for (String authUrl : authUrlArr) {
@@ -272,7 +278,7 @@ public class AuthAspect {
 
                 if (jsonObject != null) {
 
-                    log.info("获取用户信息,请求权限系统成功. authServer:{}",authUrl);
+                    log.info("获取用户信息,请求权限系统成功. authServer:{}", authUrl);
                     break;
                 }
 
@@ -310,29 +316,34 @@ public class AuthAspect {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("securityCode", PropertyConfig.getConfigValue("auth-security-code"));
+        paramMap.add("authSecurityCode", authErpConfig.getAuthSecurityCode());
         paramMap.add("domain", domain);
 
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);
 
         // 请求auth获取用户信息
         ResultVO<Map<String, Set<Integer>>> resultVO = null;
-        String[] authUrlArr = PropertyConfig.getConfigValue("auth-server-arr").split(",");
+        String[] authUrlArr = authErpConfig.getAuthServerArr().split(",");
 
 
         for (String authUrl : authUrlArr) {
 
+            // 请求url
+            final String url = "http://" + authUrl + "/auth/api/resc/all";
+
             try {
 
-                resultVO = restTemplate.postForObject("http://" + authUrl + "/auth/api/resc/all", restRequest, ResultVO.class);
+                resultVO = restTemplate.postForObject(url, restRequest, ResultVO.class);
 
                 if (resultVO != null) {
-                    log.info("初始化系统资源,请求权限系统成功. authServer:{}",authUrl);
+
+                    log.info("初始化系统资源,请求权限系统成功. 权限节点:{}", url);
                     break;
                 }
 
             } catch (Exception e) {
-                log.error("请求权限系统获取资源失败,http://" + authUrl + "/auth/api/resc/all");
+
+                log.error("请求权限系统获取资源失败,权限节点:{}", url);
             }
         }
 

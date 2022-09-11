@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 生产者
  */
-public abstract class AbstractQueueProducer {
+public abstract class QueueProducer {
 
 
     @Resource

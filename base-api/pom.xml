@@ -45,6 +45,11 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

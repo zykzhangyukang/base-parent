@@ -1,5 +1,6 @@
 package com.coderman.auth.service.func.impl;
 
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -22,6 +23,8 @@ import com.coderman.auth.vo.func.FuncTreeVO;
 import com.coderman.auth.vo.func.FuncVO;
 import com.coderman.auth.vo.func.MenuVO;
 import com.coderman.auth.vo.resc.RescVO;
+import com.coderman.service.anntation.LogError;
+import com.coderman.service.anntation.LogErrorParam;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +63,7 @@ public class FuncServiceImpl implements FuncService {
 
 
     @Override
+    @LogError(value = "获取功能树")
     public ResultVO<FuncVO> listTree() {
 
         FuncVO funcVO = new FuncVO();
@@ -91,8 +95,8 @@ public class FuncServiceImpl implements FuncService {
     }
 
 
-
     @Override
+    @LogError(value = "功能列表")
     public ResultVO<PageVO<List<FuncVO>>> page(Integer currentPage, Integer pageSize, FuncQueryVO queryVO) {
 
         PageHelper.startPage(currentPage, pageSize);
@@ -101,11 +105,11 @@ public class FuncServiceImpl implements FuncService {
 
         PageInfo<FuncVO> pageInfo = new PageInfo<>(funcVOList);
         List<FuncVO> list = pageInfo.getList();
-        return ResultUtil.getSuccessPage(FuncVO.class, new PageVO<>(pageInfo.getTotal(), list,currentPage,pageSize));
+        return ResultUtil.getSuccessPage(FuncVO.class, new PageVO<>(pageInfo.getTotal(), list, currentPage, pageSize));
     }
 
     @Override
-    @Transactional
+    @LogError(value = "保存功能")
     public ResultVO<Void> save(FuncVO funcVO) {
 
         Integer parentId = funcVO.getParentId();
@@ -130,7 +134,7 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("功能key不能为空,且在30个字符之内");
         }
 
-        if (StringUtils.isBlank(funcType) ) {
+        if (StringUtils.isBlank(funcType)) {
 
             return ResultUtil.getWarn("功能类型不能为空！");
         }
@@ -177,7 +181,7 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
-    @Transactional
+    @LogError(value = "更新功能")
     public ResultVO<Void> update(FuncVO funcVO) {
 
         Integer funcId = funcVO.getFuncId();
@@ -208,7 +212,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
 
-        if (StringUtils.isBlank(funcType) ) {
+        if (StringUtils.isBlank(funcType)) {
 
             return ResultUtil.getWarn("功能类型不能为空！");
         }
@@ -255,7 +259,7 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
-    @Transactional
+    @LogError(value = "删除功能")
     public ResultVO<Void> delete(Integer funcId) {
 
         FuncModel funcModel = this.funcDAO.selectByPrimaryKey(funcId);
@@ -302,7 +306,8 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
-    public ResultVO<FuncVO> select(Integer funcId) {
+    @LogError(value = "获取功能")
+    public ResultVO<FuncVO> select(@LogErrorParam Integer funcId) {
 
         FuncVO funcVO = this.funcDAO.selectFuncInfo(funcId);
         if (null == funcVO) {
@@ -319,14 +324,19 @@ public class FuncServiceImpl implements FuncService {
 
 
     @Override
-    public ResultVO<Void> deleteUserBind(Integer funcId) {
+    @LogError(value = "功能解绑用户")
+    public ResultVO<Void> deleteUserBind(@LogErrorParam Integer funcId) {
 
         // 递归查询出所有的功能id,包括子功能id
         List<Integer> funcIdList = new ArrayList<>();
-        this.getDeepFuncIds(funcIdList,funcId);
+        ResultVO<Void> resultVO = this.getDeepFuncIds(funcIdList, funcId);
 
+        if(!ResultConstant.RESULT_CODE_200.equals(resultVO.getCode())){
 
-        if(CollectionUtils.isEmpty(funcIdList)){
+            return resultVO;
+        }
+
+        if (CollectionUtils.isEmpty(funcIdList)) {
             return ResultUtil.getWarn("解绑的功能不存在!");
         }
 
@@ -346,37 +356,58 @@ public class FuncServiceImpl implements FuncService {
      * @param rootFuncId 父级id
      * @return
      */
-    private List<Integer> getDeepFuncIds(List<Integer> funcIdList, Integer rootFuncId) {
+    private ResultVO<Void> getDeepFuncIds(List<Integer> funcIdList, Integer rootFuncId) {
 
         FuncModel rootNode = this.funcDAO.selectByPrimaryKey(rootFuncId);
+
+        if (StringUtils.equals(rootNode.getFuncType(), AuthConstant.func_type_dir)) {
+
+            return ResultUtil.getWarn("目录功能不支持解绑用户");
+        }
+
         if (AuthConstant.func_root_parent_id.equals(rootNode.getParentId())) {
-            throw new BusinessException("不允许解绑最顶级的功能!");
-        } else {
 
-            funcIdList.add(rootFuncId);
+            return ResultUtil.getWarn("不允许解绑最顶级的功能!");
+        }
 
-            FuncExample example = new FuncExample();
-            example.createCriteria().andParentIdEqualTo(rootFuncId);
-            List<FuncModel> funcModels = this.funcDAO.selectByExample(example);
 
-            if (!CollectionUtils.isEmpty(funcModels)) {
-                for (FuncModel funcModel : funcModels) {
-                    getDeepFuncIds(funcIdList, funcModel.getFuncId());
-                }
+        funcIdList.add(rootFuncId);
+        FuncExample example = new FuncExample();
+        example.createCriteria().andParentIdEqualTo(rootFuncId);
+        List<FuncModel> funcModels = this.funcDAO.selectByExample(example);
+
+        if (!CollectionUtils.isEmpty(funcModels)) {
+
+            for (FuncModel funcModel : funcModels) {
+
+                getDeepFuncIds(funcIdList, funcModel.getFuncId());
             }
         }
 
-        return funcIdList;
+        return ResultUtil.getSuccess();
     }
 
 
     @Override
-    public ResultVO<Void> deleteResourceBind(Integer funcId) {
+    @LogError(value = "功能解绑资源")
+    public ResultVO<Void> deleteResourceBind(@LogErrorParam Integer funcId) {
 
         FuncVO funcVO = this.funcDAO.selectFuncInfo(funcId);
         if (null == funcVO) {
-            throw new BusinessException("功能不存在");
+
+            return ResultUtil.getWarn("功能不存在");
         }
+
+        if (StringUtils.equals(funcVO.getFuncType(), AuthConstant.func_type_dir)) {
+
+            return ResultUtil.getWarn("目录功能不支持解绑资源");
+        }
+
+        if (AuthConstant.func_root_parent_id.equals(funcVO.getParentId())) {
+
+            return ResultUtil.getWarn("顶级的功能不允许解绑资源!");
+        }
+
 
         // 所谓功能解绑资源,即删除所有该功能-资源的绑定
         FuncRescExample example = new FuncRescExample();
@@ -387,7 +418,8 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
-    public ResultVO<List<MenuVO>> selectMenusTreeByUserId(Integer userId) {
+    @LogError(value = "查询菜单树")
+    public ResultVO<List<MenuVO>> selectMenusTreeByUserId(@LogErrorParam Integer userId) {
 
         // 获取所有的菜单类型的功能
         List<MenuVO> allMenus = this.funcDAO.selectAllMenusByUserId(userId);
@@ -407,9 +439,10 @@ public class FuncServiceImpl implements FuncService {
 
 
     @Override
-    public ResultVO<List<String>> selectFuncKeyListByUserId(Integer userId) {
+    @LogError(value = "查询功能按钮key")
+    public ResultVO<List<String>> selectFuncKeyListByUserId(@LogErrorParam Integer userId) {
         List<String> funcKeys = this.funcDAO.selectFuncKeyListByUserId(userId);
-        return ResultUtil.getSuccessList(String.class,funcKeys);
+        return ResultUtil.getSuccessList(String.class, funcKeys);
     }
 }
 

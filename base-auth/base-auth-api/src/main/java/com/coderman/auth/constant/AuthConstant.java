@@ -38,17 +38,8 @@ public interface AuthConstant {
     @ConstList(group = project_domain, name = "权限系统")
     String project_domain_auth = "auth";
 
-    @ConstList(group = project_domain, name = "网关服务")
-    String project_domain_gateway = "gateway";
-
-    @ConstList(group = project_domain, name = "搜索服务")
-    String project_domain_search = "search";
-
-    @ConstList(group = project_domain, name = "文件服务")
-    String project_domain_file = "file";
-
-    @ConstList(group = project_domain, name = "测试服务")
-    String project_domain_demo = "demo";
+    @ConstList(group = project_domain, name = "工单系统")
+    String project_domain_wos = "wos";
 
 
     /**

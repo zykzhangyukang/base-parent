@@ -97,7 +97,7 @@
             <!-- 均摊业务 -->
             <dependency>
                 <groupId>com.coderman</groupId>
-                <artifactId>base-bussiness-share</artifactId>
+                <artifactId>base-business-share</artifactId>
                 <version>${base.version}</version>
             </dependency>
 

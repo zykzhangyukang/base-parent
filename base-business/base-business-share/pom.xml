@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>base-bussiness-share</artifactId>
+    <artifactId>base-business-share</artifactId>
     <version>${base.version}</version>
 
 

@@ -1,19 +1,21 @@
 package com.coderman.service.redis;
 
 import com.coderman.service.service.BaseService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @SuppressWarnings("all")
@@ -84,6 +86,10 @@ public class RedisServiceImpl extends BaseService implements RedisService {
 
     private Object deserializeKey(byte[] bytes) {
         return this.redisTemplate.getKeySerializer().deserialize(bytes);
+    }
+
+    private Object deserializeHashValue(byte[] bytes) {
+        return this.redisTemplate.getHashValueSerializer().deserialize(bytes);
     }
 
 
@@ -487,62 +493,314 @@ public class RedisServiceImpl extends BaseService implements RedisService {
 
     @Override
     public <T> long setList(String key, T obj, int db) {
+
+        List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                if (obj instanceof List) {
+
+                    List objList = (List) obj;
+                    for (Object objVal : objList) {
+                        redisConnection.sAdd(serializeKey(key), serializeValue(objVal));
+                    }
+                } else {
+
+                    redisConnection.sAdd(serializeKey(key), serializeValue(obj));
+                }
+
+                return null;
+            }
+        });
+
+        if(CollectionUtils.isNotEmpty(result)){
+
+            long resultValu = 0;
+            for (Object objVal : result) {
+                resultValu +=Long.parseLong(objVal.toString());
+            }
+
+            return resultValu;
+        }
+
+
         return 0;
     }
 
     @Override
     public <T> void setSet(String key, Set<T> set, int db) {
 
+        redisTemplate.delete(key);
+        List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+
+                for (T objVal : set) {
+                    redisConnection.sAdd(serializeKey(key), serializeValue(objVal));
+                }
+
+                return null;
+            }
+        });
+
     }
 
     @Override
-    public <T> void setListData(String key, int size, int db) {
+    public <T> void setListData(String key, List<T> list, int db) {
+
+        List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+
+                for (T objVal : list) {
+                    redisConnection.lPush(serializeKey(key), serializeValue(objVal));
+                }
+
+                return null;
+            }
+        });
 
     }
 
     @Override
     public <T> void delRListData(String key, int size, int db) {
+        List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
 
+                redisConnection.select(db);
+
+                for (int i = 0; i < size;i++) {
+
+                    redisConnection.rPop(serializeKey(key));
+                }
+
+                return null;
+            }
+        });
     }
 
     @Override
     public <T> long setListAppend(String key, T obj, int db) {
-        return 0;
-    }
 
-    @Override
-    public <T> long setListAppendByCluster(String key, T obj, int db) {
+        List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                if (obj instanceof List) {
+
+                    List objList = (List) obj;
+                    for (Object objVal : objList) {
+                        redisConnection.sAdd(serializeKey(key), serializeValue(objVal));
+                    }
+                } else {
+
+                    redisConnection.sAdd(serializeKey(key), serializeValue(obj));
+                }
+
+                return null;
+            }
+        });
+
+        if(CollectionUtils.isNotEmpty(result)){
+
+            long resultValu = 0;
+            for (Object objVal : result) {
+                resultValu +=Long.parseLong(objVal.toString());
+            }
+
+            return resultValu;
+        }
+
         return 0;
     }
 
     @Override
     public <T> void setList(Map<String, T> map, int db) {
 
+        redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                Set<Map.Entry<String, T>> set = map.entrySet();
+
+                for (Map.Entry<String, T> entry : set) {
+
+                    redisConnection.set(serializeKey(entry.getKey()),serializeValue(entry.getValue()));
+                }
+
+                return null;
+            }
+        });
+
     }
 
     @Override
     public <T> List<T> getList(String key, Class<T> clas, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                List<T> resultList = new ArrayList<>();
+
+                ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
+                Cursor<byte[]> cursor = redisConnection.sScan(serializeKey(key), scanOptions);
+
+                while (cursor.hasNext()) {
+
+                    resultList.add((T) deserializeValue(cursor.next()));
+                }
+
+
+                return resultList;
+            }
+        });
+
+        if(obj !=null && obj instanceof List){
+
+            return (List<T>) obj;
+        }
+
+
         return null;
     }
 
     @Override
     public <T> Set<T> getSet(String key, Class<T> clas, int db) {
+
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                Set<T> resultSet = new HashSet<>();
+
+                ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
+                Cursor<byte[]> cursor = redisConnection.sScan(serializeKey(key), scanOptions);
+
+                while (cursor.hasNext()) {
+
+                    resultSet.add((T) deserializeValue(cursor.next()));
+                }
+
+
+                return resultSet;
+            }
+        });
+
+        if(obj !=null && obj instanceof Set){
+
+            return (Set<T>) obj;
+        }
+
+
+
         return null;
+
     }
 
     @Override
     public <T> List<T> getListData(String key, Class<T> clas, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                List<T> resultList = new ArrayList<>();
+
+                List<byte[]> tempList = redisConnection.lRange(serializeKey(key), 0, -1);
+                for (byte[] tempByte : tempList) {
+
+
+                    resultList.add((T) deserializeValue(tempByte));
+                }
+
+                return resultList;
+            }
+        });
+
+        if(obj !=null && obj instanceof List){
+
+            return (List<T>) obj;
+        }
+
         return null;
     }
 
     @Override
     public <T> List<T> getList(List<String> filterKey, Class<T> cls, int db) {
-        return null;
+
+
+        List<T> result = redisTemplate.executePipelined(new RedisCallback<List<T>>() {
+            @Override
+            public List<T> doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                for (String key : filterKey) {
+
+
+                    if (StringUtils.isBlank(key)) {
+                        continue;
+                    }
+
+                    redisConnection.get(serializeKey(key));
+                }
+
+                return null;
+            }
+        });
+
+        return (List<T>) result;
     }
 
     @Override
     public <T> Map<String, T> getMapOfList(List<String> filterKeys, Class<T> clas, int db) {
-        return null;
+
+
+        Map<String,T> map = new HashMap<>();
+        List<Object> result = redisTemplate.executePipelined(new RedisCallback<List<Object>>() {
+            @Override
+            public List<Object> doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                for (String key : filterKeys) {
+
+
+                    if (StringUtils.isBlank(key)) {
+                        continue;
+                    }
+
+                    redisConnection.get(serializeKey(key));
+                }
+
+                return null;
+            }
+        });
+
+        List<T> listTmp = (List<T>) result;
+        int i=0;
+        for (String key : filterKeys) {
+
+            if(StringUtils.isBlank(key)){
+                continue;
+            }
+
+            map.put(key,listTmp.get(i));
+            i++;
+        }
+
+        return map;
     }
 
     @Override
@@ -560,41 +818,196 @@ public class RedisServiceImpl extends BaseService implements RedisService {
 
     @Override
     public <T> T getHash(String key, String filed, Class<T> clas, int db) {
+
+        Object obj = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+
+                byte[] k = serializeKey(key);
+                byte[] v = serializeHashKey(filed);
+
+                byte[] bytes = redisConnection.hGet(k, v);
+
+                return deserializeHashValue(bytes);
+            }
+        });
+
+        if(obj!=null){
+
+            return (T) obj;
+        }
+
+
         return null;
     }
 
     @Override
     public <T> void setHash(String key, Map<String, T> map, int db) {
 
+        redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                redisConnection.select(db);
+                Set<Map.Entry<String,T>> set = map.entrySet();
+
+
+                for (Map.Entry<String, T> entry : set) {
+
+                    redisConnection.hSet(serializeKey(key),serializeHashKey(entry.getKey()),
+                            serializeHashValue(entry.getValue()));
+                }
+
+                return null;
+            }
+        });
+
     }
 
-    @Override
-    public <T> void setHashByCluster(String key, Map<String, T> map, int db) {
-
-    }
 
     @Override
     public <T> List<T> getHash(String key, List<String> filterField, Class<T> clas, int db) {
-        return null;
+
+        Object result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+
+                for (String field : filterField) {
+
+                    if(StringUtils.isBlank(field)){
+                        continue;
+                    }
+
+                    redisConnection.hGet(serializeKey(key),serializeHashKey(field));
+                }
+
+                return null;
+            }
+        });
+
+
+
+        return (List<T>) result;
     }
 
     @Override
     public <T> Map<String, T> getMapOfHash(String key, List<String> filterField, Class<T> clas, int db) {
-        return null;
+
+
+        Map<String,T> map =  new HashMap<>();
+        List<T> result = redisTemplate.executePipelined(new RedisCallback<List<T>>() {
+            @Override
+            public List<T> doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+
+                for (String field : filterField) {
+
+                    if(StringUtils.isBlank(field)){
+                        continue;
+                    }
+
+                    redisConnection.hGet(serializeKey(key),serializeHashKey(field));
+                }
+
+                return null;
+            }
+        });
+
+        int i = 0;
+        for (String field : filterField) {
+
+            if(StringUtils.isBlank(field)){
+                continue;
+            }
+
+            map.put(field,result.get(i));
+            i++;
+        }
+
+        return map;
     }
 
-    @Override
-    public <T> Map<String, T> getMapOfHashByCluster(String key, List<String> filterField, Class<T> clas, int db) {
-        return null;
-    }
 
     @Override
     public <T> List<T> getHashAll(String key, Class<T> clas, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+
+                connection.select(db);
+                List<T> list =  new ArrayList<>();
+
+
+                ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
+                Cursor<Map.Entry<byte[], byte[]>> cursor = connection.hScan(serializeKey(key), scanOptions);
+
+                while(cursor.hasNext()){
+
+
+                    Map.Entry<byte[], byte[]> entry = cursor.next();
+                    byte[] key = serializeHashKey(entry.getKey());
+
+                    if(key!=null){
+
+                        list.add((T) deserializeHashValue(entry.getValue()));
+                    }
+                }
+                return list;
+            }
+        });
+
+
+
+        if(obj!=null){
+
+            return (List) obj;
+        }
+
+
         return null;
     }
 
     @Override
     public <T> Map<String, T> getMapOfHashAll(String key, Class<T> clas, int db) {
+
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+
+                connection.select(db);
+                Map<String,T> map =  new HashMap<>();
+
+
+                ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
+                Cursor<Map.Entry<byte[], byte[]>> cursor = connection.hScan(serializeKey(key), scanOptions);
+
+                while(cursor.hasNext()){
+
+
+                    Map.Entry<byte[], byte[]> entry = cursor.next();
+                    byte[] key = serializeHashKey(entry.getKey());
+
+                    if(key!=null){
+
+                        map.put(key.toString(),(T) deserializeHashValue(entry.getValue()));
+                    }
+                }
+                return map;
+            }
+        });
+
+
+        if(obj!=null){
+
+            return (Map<String, T>) obj;
+        }
+
         return null;
     }
 
@@ -605,11 +1018,46 @@ public class RedisServiceImpl extends BaseService implements RedisService {
 
     @Override
     public String executeLuaScript(String luaScript, List<String> keys, Object... args) {
+
+        DefaultRedisScript redisScript = new DefaultRedisScript();
+        redisScript.setResultType(String.class);
+        redisScript.setScriptText(luaScript);
+
+        Object obj = redisTemplate.execute(redisScript, redisTemplate.getStringSerializer(), redisTemplate.getStringSerializer(), keys, args);
+
+        if (obj != null) {
+
+            return obj.toString();
+        }
+
         return null;
     }
 
     @Override
     public Set<String> keys(String key, int db) {
-        return null;
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+
+                connection.select(db);
+                Set<String> resultSet = new HashSet<>();
+
+                Set<byte[]> keys = connection.keys(serializeKey(key));
+                if (CollectionUtils.isNotEmpty(keys)) {
+
+                    Iterator<byte[]> iterator = keys.iterator();
+                    while (iterator.hasNext()) {
+
+                        resultSet.add((String) deserializeKey(iterator.next()));
+                    }
+                }
+
+                return resultSet;
+            }
+        });
+
+
+        return (Set<String>) obj;
     }
 }

@@ -79,13 +79,12 @@ public interface RedisService {
 
     public <T> void setSet(String key, Set<T> set, int db);
 
-    public <T> void setListData(String key, int size, int db);
+    public <T> void setListData(String key, List<T> list, int db);
 
     public <T> void delRListData(String key, int size, int db);
 
     public <T> long setListAppend(String key, T obj, int db);
 
-    public <T> long setListAppendByCluster(String key, T obj, int db);
 
     public <T> void setList(Map<String, T> map, int db);
 
@@ -106,13 +105,11 @@ public interface RedisService {
     public <T> void setHash(String key, Map<String, T> map, int db);
 
 
-    public <T> void setHashByCluster(String key, Map<String, T> map, int db);
 
     public <T> List<T> getHash(String key, List<String> filterField, Class<T> clas, int db);
 
     public <T> Map<String, T> getMapOfHash(String key, List<String> filterField, Class<T> clas, int db);
 
-    public <T> Map<String, T> getMapOfHashByCluster(String key, List<String> filterField, Class<T> clas, int db);
 
     public <T> List<T> getHashAll(String key, Class<T> clas, int db);
 

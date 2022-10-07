@@ -33,7 +33,9 @@ auth:
   erp:
     auth-security-code: coderman
 
-
+logging:
+  level:
+    root: info
 
 #rocketmq:
 #  nameServer: 127.0.0.1:9876

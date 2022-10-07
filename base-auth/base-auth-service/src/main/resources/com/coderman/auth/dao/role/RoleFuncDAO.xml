@@ -73,7 +73,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_role_func
+    from auth_role_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -84,27 +84,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_role_func
+    from auth_role_func
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_role_func
+    delete from auth_role_func
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.role.RoleFuncExample">
-    delete from tb_role_func
+    delete from auth_role_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.role.RoleFuncModel">
-    insert into tb_role_func (role_func_id, role_id, func_id
+    insert into auth_role_func (role_func_id, role_id, func_id
       )
     values (#{roleFuncId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}, #{funcId,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.role.RoleFuncModel">
-    insert into tb_role_func
+    insert into auth_role_func
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="roleFuncId != null">
         role_func_id,
@@ -129,13 +129,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.role.RoleFuncExample" resultType="java.lang.Long">
-    select count(*) from tb_role_func
+    select count(*) from auth_role_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_role_func
+    update auth_role_func
     <set>
       <if test="record.roleFuncId != null">
         role_func_id = #{record.roleFuncId,jdbcType=INTEGER},
@@ -152,7 +152,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_role_func
+    update auth_role_func
     set role_func_id = #{record.roleFuncId,jdbcType=INTEGER},
       role_id = #{record.roleId,jdbcType=INTEGER},
       func_id = #{record.funcId,jdbcType=INTEGER}
@@ -161,7 +161,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.role.RoleFuncModel">
-    update tb_role_func
+    update auth_role_func
     <set>
       <if test="roleId != null">
         role_id = #{roleId,jdbcType=INTEGER},
@@ -173,14 +173,14 @@
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.role.RoleFuncModel">
-    update tb_role_func
+    update auth_role_func
     set role_id = #{roleId,jdbcType=INTEGER},
       func_id = #{funcId,jdbcType=INTEGER}
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
   </update>
 
   <insert id="batchInsertByRoleId">
-   insert into tb_role_func(role_id,func_id)
+   insert into auth_role_func(role_id,func_id)
     select
        #{roleId},func_id
     from tb_func

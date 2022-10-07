@@ -75,7 +75,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_dept
+    from auth_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -86,27 +86,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_dept
+    from auth_dept
     where dept_id = #{deptId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_dept
+    delete from auth_dept
     where dept_id = #{deptId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.dept.DeptExample">
-    delete from tb_dept
+    delete from auth_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.dept.DeptModel">
-    insert into tb_dept (dept_id, dept_code, dept_name, 
+    insert into auth_dept (dept_id, dept_code, dept_name, 
       create_time, update_time)
     values (#{deptId,jdbcType=INTEGER}, #{deptCode,jdbcType=VARCHAR}, #{deptName,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.dept.DeptModel">
-    insert into tb_dept
+    insert into auth_dept
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="deptId != null">
         dept_id,
@@ -143,13 +143,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.dept.DeptExample" resultType="java.lang.Long">
-    select count(*) from tb_dept
+    select count(*) from auth_dept
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_dept
+    update auth_dept
     <set>
       <if test="record.deptId != null">
         dept_id = #{record.deptId,jdbcType=INTEGER},
@@ -172,7 +172,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_dept
+    update auth_dept
     set dept_id = #{record.deptId,jdbcType=INTEGER},
       dept_code = #{record.deptCode,jdbcType=VARCHAR},
       dept_name = #{record.deptName,jdbcType=VARCHAR},
@@ -183,7 +183,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.dept.DeptModel">
-    update tb_dept
+    update auth_dept
     <set>
       <if test="deptCode != null">
         dept_code = #{deptCode,jdbcType=VARCHAR},
@@ -201,7 +201,7 @@
     where dept_id = #{deptId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.dept.DeptModel">
-    update tb_dept
+    update auth_dept
     set dept_code = #{deptCode,jdbcType=VARCHAR},
       dept_name = #{deptName,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},

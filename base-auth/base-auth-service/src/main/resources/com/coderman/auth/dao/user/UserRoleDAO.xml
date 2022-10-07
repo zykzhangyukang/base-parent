@@ -73,7 +73,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_user_role
+    from auth_user_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -84,27 +84,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_user_role
+    from auth_user_role
     where user_role_id = #{userRoleId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_user_role
+    delete from auth_user_role
     where user_role_id = #{userRoleId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.user.UserRoleExample">
-    delete from tb_user_role
+    delete from auth_user_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.user.UserRoleModel">
-    insert into tb_user_role (user_role_id, user_id, role_id
+    insert into auth_user_role (user_role_id, user_id, role_id
       )
     values (#{userRoleId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.user.UserRoleModel">
-    insert into tb_user_role
+    insert into auth_user_role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userRoleId != null">
         user_role_id,
@@ -129,13 +129,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.user.UserRoleExample" resultType="java.lang.Long">
-    select count(*) from tb_user_role
+    select count(*) from auth_user_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_user_role
+    update auth_user_role
     <set>
       <if test="record.userRoleId != null">
         user_role_id = #{record.userRoleId,jdbcType=INTEGER},
@@ -152,7 +152,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_user_role
+    update auth_user_role
     set user_role_id = #{record.userRoleId,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
       role_id = #{record.roleId,jdbcType=INTEGER}
@@ -161,7 +161,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.user.UserRoleModel">
-    update tb_user_role
+    update auth_user_role
     <set>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
@@ -173,14 +173,14 @@
     where user_role_id = #{userRoleId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.user.UserRoleModel">
-    update tb_user_role
+    update auth_user_role
     set user_id = #{userId,jdbcType=INTEGER},
       role_id = #{roleId,jdbcType=INTEGER}
     where user_role_id = #{userRoleId,jdbcType=INTEGER}
   </update>
 
   <insert id="insertBatchByUserId">
-    insert into tb_user_role (user_id, role_id )
+    insert into auth_user_role (user_id, role_id )
     values
     <foreach collection="roleIds"  item="item"  separator=",">
       (#{userId,jdbcType=INTEGER}, #{item,jdbcType=INTEGER})
@@ -188,7 +188,7 @@
   </insert>
 
   <insert id="insertBatchByRoleId">
-    insert into tb_user_role (role_id, user_id )
+    insert into auth_user_role (role_id, user_id )
     values
     <foreach collection="userIds"  item="item"  separator=",">
       (#{roleId,jdbcType=INTEGER}, #{item,jdbcType=INTEGER})

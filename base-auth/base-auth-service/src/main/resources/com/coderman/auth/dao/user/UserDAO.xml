@@ -78,7 +78,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_user
+    from auth_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -89,21 +89,21 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_user
+    from auth_user
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_user
+    delete from auth_user
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.user.UserExample">
-    delete from tb_user
+    delete from auth_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.user.UserModel">
-    insert into tb_user (user_id, username, real_name, 
+    insert into auth_user (user_id, username, real_name, 
       password, dept_code, user_status, 
       create_time, update_time)
     values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, 
@@ -111,7 +111,7 @@
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.user.UserModel">
-    insert into tb_user
+    insert into auth_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId != null">
         user_id,
@@ -166,13 +166,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.user.UserExample" resultType="java.lang.Long">
-    select count(*) from tb_user
+    select count(*) from auth_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_user
+    update auth_user
     <set>
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
@@ -204,7 +204,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_user
+    update auth_user
     set user_id = #{record.userId,jdbcType=INTEGER},
       username = #{record.username,jdbcType=VARCHAR},
       real_name = #{record.realName,jdbcType=VARCHAR},
@@ -218,7 +218,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.user.UserModel">
-    update tb_user
+    update auth_user
     <set>
       <if test="username != null">
         username = #{username,jdbcType=VARCHAR},
@@ -245,7 +245,7 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.user.UserModel">
-    update tb_user
+    update auth_user
     set username = #{username,jdbcType=VARCHAR},
       real_name = #{realName,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
@@ -265,8 +265,8 @@
   <select id="selectPage" resultMap="pageBaseResultMap">
       select
       u.user_id, u.username, u.real_name, u.password, u.dept_code, u.user_status, u.create_time, u.update_time,d.dept_name
-      from tb_user u
-      left join tb_dept d on u.dept_code  = d.dept_code
+      from auth_user u
+      left join auth_dept d on u.dept_code  = d.dept_code
       <include refid="pageCondition"/>
       order by u.create_time desc
       limit #{offset}, #{size}
@@ -276,8 +276,8 @@
   <select id="countPage" resultType="java.lang.Long">
     select
     count(1)
-    from tb_user u
-    left join tb_dept d on u.dept_code = d.dept_code
+    from auth_user u
+    left join auth_dept d on u.dept_code = d.dept_code
     <include refid="pageCondition"/>
   </select>
 

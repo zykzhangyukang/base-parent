@@ -81,7 +81,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_func
+    from auth_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -92,21 +92,21 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_func
+    from auth_func
     where func_id = #{funcId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_func
+    delete from auth_func
     where func_id = #{funcId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.func.FuncExample">
-    delete from tb_func
+    delete from auth_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.func.FuncModel">
-    insert into tb_func (func_id, func_name, func_key, 
+    insert into auth_func (func_id, func_name, func_key, 
       func_type, func_icon, func_sort, 
       dir_hide, parent_id, create_time, 
       update_time)
@@ -116,7 +116,7 @@
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.func.FuncModel">
-    insert into tb_func
+    insert into auth_func
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="funcId != null">
         func_id,
@@ -183,13 +183,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.func.FuncExample" resultType="java.lang.Long">
-    select count(*) from tb_func
+    select count(*) from auth_func
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_func
+    update auth_func
     <set>
       <if test="record.funcId != null">
         func_id = #{record.funcId,jdbcType=INTEGER},
@@ -227,7 +227,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_func
+    update auth_func
     set func_id = #{record.funcId,jdbcType=INTEGER},
       func_name = #{record.funcName,jdbcType=VARCHAR},
       func_key = #{record.funcKey,jdbcType=VARCHAR},
@@ -243,7 +243,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.func.FuncModel">
-    update tb_func
+    update auth_func
     <set>
       <if test="funcName != null">
         func_name = #{funcName,jdbcType=VARCHAR},
@@ -276,7 +276,7 @@
     where func_id = #{funcId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.func.FuncModel">
-    update tb_func
+    update auth_func
     set func_name = #{funcName,jdbcType=VARCHAR},
       func_key = #{funcKey,jdbcType=VARCHAR},
       func_type = #{funcType,jdbcType=VARCHAR},
@@ -299,17 +299,17 @@
 
   <select id="selectUserListByFuncId" resultMap="com.coderman.auth.dao.user.UserDAO.pageBaseResultMap">
     select distinct u.username,u.user_status,u.dept_code,u.real_name,d.dept_name
-    from tb_role_func rf
-    inner join tb_user_role ur on rf.role_id = ur.role_id
-    inner join tb_user u on ur.user_id = u.user_id
-    inner join tb_dept d on u.dept_code = d.dept_code
+    from auth_role_func rf
+    inner join auth_user_role ur on rf.role_id = ur.role_id
+    inner join auth_user u on ur.user_id = u.user_id
+    inner join auth_dept d on u.dept_code = d.dept_code
     where rf.func_id = #{funcId}
   </select>
 
   <select id="selectResListByFuncId" resultType="com.coderman.auth.vo.resc.RescVO">
     select r.resc_name as rescName,r.resc_url as rescUrl,r.resc_domain as rescDomain,r.resc_id as rescId,r.method_type as methodType
-    from tb_func_resc fr
-    inner join tb_resc r on fr.resc_id = r.resc_id
+    from auth_func_resc fr
+    inner join auth_resc r on fr.resc_id = r.resc_id
     where fr.func_id =  #{funcId}
   </select>
 
@@ -318,8 +318,8 @@
   <select id="page" resultMap="pageResultMap">
     select
        f.func_id, f.func_name, f.func_key, f.parent_id, f.create_time, f.update_time,fp.func_name as parent_func_name,f.func_type,f.func_icon,f.func_sort,f.dir_hide
-    from tb_func f
-    left join tb_func fp on f.parent_id  = fp.func_id
+    from auth_func f
+    left join auth_func fp on f.parent_id  = fp.func_id
     <where>
       <if test="queryVO.funcName!=null and queryVO.funcName!=''">
         and f.func_name like concat('%',#{queryVO.funcName},'%')
@@ -338,9 +338,9 @@
                     select
                     f.func_id
                     from
-                    tb_func f
-                    inner join tb_func_resc fr on f.func_id = fr.func_id
-                    inner join tb_resc r on fr.resc_id = r.resc_id
+                    auth_func f
+                    inner join auth_func_resc fr on f.func_id = fr.func_id
+                    inner join auth_resc r on fr.resc_id = r.resc_id
                     where
                     r.resc_url like concat('%',#{queryVO.rescUrl},'%')
         )
@@ -350,7 +350,7 @@
   </select>
 
   <insert id="insertSelectiveReturnKey" keyColumn="func_id" keyProperty="funcId" parameterType="com.coderman.auth.model.func.FuncModel" useGeneratedKeys="true">
-    insert into tb_func
+    insert into auth_func
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="funcId != null">
         func_id,
@@ -437,11 +437,11 @@
 	f.parent_id,
 	f.create_time,
 	f.update_time
-    from tb_user u
-    inner join tb_user_role ur on u.user_id = ur.user_id
-    inner join tb_role r on ur.role_id = r.role_id
-    inner join tb_role_func rf on r.role_id = rf.role_id
-    inner join tb_func f on rf.func_id = f.func_id
+    from auth_user u
+    inner join auth_user_role ur on u.user_id = ur.user_id
+    inner join auth_role r on ur.role_id = r.role_id
+    inner join auth_role_func rf on r.role_id = rf.role_id
+    inner join auth_func f on rf.func_id = f.func_id
     where u.user_id = #{userId}
   </select>
 
@@ -454,11 +454,11 @@
       f.func_key,
       f.func_icon,
       f.parent_id
-      from tb_user u
-      inner join tb_user_role ur on u.user_id = ur.user_id
-      inner join tb_role r on ur.role_id = r.role_id
-      inner join tb_role_func rf on r.role_id = rf.role_id
-      inner join tb_func f on rf.func_id = f.func_id
+      from auth_user u
+      inner join auth_user_role ur on u.user_id = ur.user_id
+      inner join auth_role r on ur.role_id = r.role_id
+      inner join auth_role_func rf on r.role_id = rf.role_id
+      inner join auth_func f on rf.func_id = f.func_id
       where u.user_id = #{userId} and f.func_type = 'dir' and f.func_key !='root'
   </select>
 
@@ -466,17 +466,17 @@
       select
       distinct
       f.func_key
-      from tb_user u
-      inner join tb_user_role ur on u.user_id = ur.user_id
-      inner join tb_role r on ur.role_id = r.role_id
-      inner join tb_role_func rf on r.role_id = rf.role_id
-      inner join tb_func f on rf.func_id = f.func_id
+      from auth_user u
+      inner join auth_user_role ur on u.user_id = ur.user_id
+      inner join auth_role r on ur.role_id = r.role_id
+      inner join auth_role_func rf on r.role_id = rf.role_id
+      inner join auth_func f on rf.func_id = f.func_id
       where u.user_id = #{userId} and f.func_type = 'func'
   </select>
 
   <select id="selectFuncInfo" resultMap="funcInfoResultMap">
     select  f.func_id, f.func_name, f.func_key, f.parent_id, f.create_time, f.update_time,f.func_type,f.func_sort,f.dir_hide
-    from tb_func f where f.func_id = #{funcId}
+    from auth_func f where f.func_id = #{funcId}
   </select>
 
 

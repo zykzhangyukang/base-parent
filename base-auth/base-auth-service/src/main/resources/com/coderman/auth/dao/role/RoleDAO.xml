@@ -75,7 +75,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_role
+    from auth_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -86,27 +86,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_role
+    from auth_role
     where role_id = #{roleId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_role
+    delete from auth_role
     where role_id = #{roleId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.role.RoleExample">
-    delete from tb_role
+    delete from auth_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.role.RoleModel">
-    insert into tb_role (role_id, role_name, role_desc, 
+    insert into auth_role (role_id, role_name, role_desc, 
       create_time, update_time)
     values (#{roleId,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{roleDesc,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.role.RoleModel">
-    insert into tb_role
+    insert into auth_role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="roleId != null">
         role_id,
@@ -143,13 +143,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.role.RoleExample" resultType="java.lang.Long">
-    select count(*) from tb_role
+    select count(*) from auth_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_role
+    update auth_role
     <set>
       <if test="record.roleId != null">
         role_id = #{record.roleId,jdbcType=INTEGER},
@@ -172,7 +172,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_role
+    update auth_role
     set role_id = #{record.roleId,jdbcType=INTEGER},
       role_name = #{record.roleName,jdbcType=VARCHAR},
       role_desc = #{record.roleDesc,jdbcType=VARCHAR},
@@ -183,7 +183,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.role.RoleModel">
-    update tb_role
+    update auth_role
     <set>
       <if test="roleName != null">
         role_name = #{roleName,jdbcType=VARCHAR},
@@ -201,7 +201,7 @@
     where role_id = #{roleId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.role.RoleModel">
-    update tb_role
+    update auth_role
     set role_name = #{roleName,jdbcType=VARCHAR},
       role_desc = #{roleDesc,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -217,17 +217,17 @@
 
   <select id="selectUserByRoleId" resultType="java.lang.String">
        select distinct u.real_name as realName
-       from tb_user_role ur
-       inner join tb_user u on ur.user_id = u.user_id
+       from auth_user_role ur
+       inner join auth_user u on ur.user_id = u.user_id
        where ur.role_id = #{roleId}
   </select>
 
   <select id="page" resultMap="pageResultMap">
     select
     r.role_id, r.role_name, r.role_desc, r.create_time, r.update_time
-    from tb_role r
-    left join tb_user_role ur on r.role_id  = ur.role_id
-    left join tb_user u on u.user_id  = ur.user_id
+    from auth_role r
+    left join auth_user_role ur on r.role_id  = ur.role_id
+    left join auth_user u on u.user_id  = ur.user_id
     <where>
       <if test="queryVO.roleName!=null and queryVO.roleName!=''">
         and r.role_name like concat('%',#{queryVO.roleName},'%')
@@ -239,10 +239,10 @@
 
   <select id="selectUserRoleList" resultMap="BaseResultMap">
     select role_id,role_name,role_desc,create_time,update_time
-    from tb_role
+    from auth_role
     where role_id in (
        select role_id
-       from tb_user_role where user_id = #{userId}
+       from auth_user_role where user_id = #{userId}
     )
   </select>
 </mapper>

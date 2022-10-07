@@ -77,7 +77,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_resc
+    from auth_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -88,21 +88,21 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_resc
+    from auth_resc
     where resc_id = #{rescId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_resc
+    delete from auth_resc
     where resc_id = #{rescId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.resc.RescExample">
-    delete from tb_resc
+    delete from auth_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.resc.RescModel">
-    insert into tb_resc (resc_id, resc_name, resc_url, 
+    insert into auth_resc (resc_id, resc_name, resc_url, 
       resc_domain, method_type, create_time, 
       update_time)
     values (#{rescId,jdbcType=INTEGER}, #{rescName,jdbcType=VARCHAR}, #{rescUrl,jdbcType=VARCHAR}, 
@@ -110,7 +110,7 @@
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.resc.RescModel">
-    insert into tb_resc
+    insert into auth_resc
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="rescId != null">
         resc_id,
@@ -159,13 +159,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.resc.RescExample" resultType="java.lang.Long">
-    select count(*) from tb_resc
+    select count(*) from auth_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_resc
+    update auth_resc
     <set>
       <if test="record.rescId != null">
         resc_id = #{record.rescId,jdbcType=INTEGER},
@@ -194,7 +194,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_resc
+    update auth_resc
     set resc_id = #{record.rescId,jdbcType=INTEGER},
       resc_name = #{record.rescName,jdbcType=VARCHAR},
       resc_url = #{record.rescUrl,jdbcType=VARCHAR},
@@ -207,7 +207,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.resc.RescModel">
-    update tb_resc
+    update auth_resc
     <set>
       <if test="rescName != null">
         resc_name = #{rescName,jdbcType=VARCHAR},
@@ -231,7 +231,7 @@
     where resc_id = #{rescId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.resc.RescModel">
-    update tb_resc
+    update auth_resc
     set resc_name = #{rescName,jdbcType=VARCHAR},
       resc_url = #{rescUrl,jdbcType=VARCHAR},
       resc_domain = #{rescDomain,jdbcType=VARCHAR},
@@ -246,7 +246,7 @@
   <select id="page" resultMap="BaseResultMap" resultType="com.coderman.auth.vo.resc.RescVO">
     select
     <include refid="Base_Column_List" />
-    from tb_resc
+    from auth_resc
     <where>
       <if test="queryVO.rescUrl!=null and queryVO.rescUrl!=''">
         and resc_url like concat('%',#{queryVO.rescUrl},'%')
@@ -267,7 +267,7 @@
   <select id="selectByKeyword" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from tb_resc
+    from auth_resc
     <where>
       <if test="keyword!=null and keyword!=''">
         and (resc_name like concat('%',#{keyword},'%') or resc_url like concat('%',#{keyword},'%') )
@@ -283,13 +283,13 @@
           r2.resc_url as rescUrl,
           r2.method_type as methodType
       FROM
-          tb_user u
-          INNER JOIN tb_user_role ur ON u.user_id = ur.user_id
-          INNER JOIN tb_role r ON ur.role_id = r.role_id
-          INNER JOIN tb_role_func rf ON r.role_id = rf.role_id
-          INNER JOIN tb_func f ON rf.func_id = f.func_id
-          INNER JOIN tb_func_resc fr ON fr.func_id = f.func_id
-          INNER JOIN tb_resc r2 ON r2.resc_id = fr.resc_id
+          auth_user u
+          INNER JOIN auth_user_role ur ON u.user_id = ur.user_id
+          INNER JOIN auth_role r ON ur.role_id = r.role_id
+          INNER JOIN auth_role_func rf ON r.role_id = rf.role_id
+          INNER JOIN auth_func f ON rf.func_id = f.func_id
+          INNER JOIN auth_func_resc fr ON fr.func_id = f.func_id
+          INNER JOIN auth_resc r2 ON r2.resc_id = fr.resc_id
       WHERE
           u.username = #{username}
   </select>

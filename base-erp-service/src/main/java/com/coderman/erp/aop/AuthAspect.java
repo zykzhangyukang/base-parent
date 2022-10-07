@@ -66,6 +66,10 @@ public class AuthAspect {
     @Autowired
     private AuthErpConfig authErpConfig;
 
+
+    @Autowired
+    private SpringContextUtil springContextUtil;
+
     /**
      * 不拦截的接口
      */
@@ -130,7 +134,7 @@ public class AuthAspect {
 
             if (rescApi == null) {
 
-                rescApi = SpringContextUtil.getBean(RescApi.class);
+                rescApi = springContextUtil.getBean(RescApi.class);
             }
 
             systemAllResourceMap = this.rescApi.getSystemAllRescMap(project).getResult();
@@ -192,7 +196,7 @@ public class AuthAspect {
 
                     if (userApi == null) {
 
-                        userApi = SpringContextUtil.getBean(UserApi.class);
+                        userApi = springContextUtil.getBean(UserApi.class);
                     }
 
                     return userApi.getUserByToken(token).getResult();

@@ -73,7 +73,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from tb_func_resc
+    from auth_func_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -84,27 +84,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tb_func_resc
+    from auth_func_resc
     where func_resc_id = #{funcRescId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tb_func_resc
+    delete from auth_func_resc
     where func_resc_id = #{funcRescId,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="com.coderman.auth.model.func.FuncRescExample">
-    delete from tb_func_resc
+    delete from auth_func_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.auth.model.func.FuncRescModel">
-    insert into tb_func_resc (func_resc_id, func_id, resc_id
+    insert into auth_func_resc (func_resc_id, func_id, resc_id
       )
     values (#{funcRescId,jdbcType=INTEGER}, #{funcId,jdbcType=INTEGER}, #{rescId,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.auth.model.func.FuncRescModel">
-    insert into tb_func_resc
+    insert into auth_func_resc
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="funcRescId != null">
         func_resc_id,
@@ -129,13 +129,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.coderman.auth.model.func.FuncRescExample" resultType="java.lang.Long">
-    select count(*) from tb_func_resc
+    select count(*) from auth_func_resc
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update tb_func_resc
+    update auth_func_resc
     <set>
       <if test="record.funcRescId != null">
         func_resc_id = #{record.funcRescId,jdbcType=INTEGER},
@@ -152,7 +152,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update tb_func_resc
+    update auth_func_resc
     set func_resc_id = #{record.funcRescId,jdbcType=INTEGER},
       func_id = #{record.funcId,jdbcType=INTEGER},
       resc_id = #{record.rescId,jdbcType=INTEGER}
@@ -161,7 +161,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.auth.model.func.FuncRescModel">
-    update tb_func_resc
+    update auth_func_resc
     <set>
       <if test="funcId != null">
         func_id = #{funcId,jdbcType=INTEGER},
@@ -173,14 +173,14 @@
     where func_resc_id = #{funcRescId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.auth.model.func.FuncRescModel">
-    update tb_func_resc
+    update auth_func_resc
     set func_id = #{funcId,jdbcType=INTEGER},
       resc_id = #{rescId,jdbcType=INTEGER}
     where func_resc_id = #{funcRescId,jdbcType=INTEGER}
   </update>
 
   <insert id="insertBatchByFuncId">
-    insert into tb_func_resc (func_id, resc_id
+    insert into auth_func_resc (func_id, resc_id
     )
     values
     <foreach collection="rescIdList" item="item"  separator=",">

@@ -3,16 +3,15 @@ package com.coderman.auth.model.user;
 import com.coderman.api.model.BaseModel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.Date;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
-
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@ApiModel(value="UserModel", description = "")
+@ApiModel(value="UserModel", description = "用户")
 public class UserModel extends BaseModel {
     
 

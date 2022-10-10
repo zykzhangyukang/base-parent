@@ -15,6 +15,7 @@
         <module>base-auth</module>
         <module>base-erp-service</module>
         <module>base-business</module>
+        <module>base-sync-sdk</module>
     </modules>
 
     <groupId>com.coderman</groupId>
@@ -71,6 +72,15 @@
                 <artifactId>base-erp-service</artifactId>
                 <version>${base.version}</version>
             </dependency>
+
+
+            <!-- 同步系统sdk -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-sync-sdk</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
 
             <!-- 基础db队列模块 -->
             <dependency>

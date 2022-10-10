@@ -16,6 +16,6 @@ public class UUIDUtils {
      * @return
      */
     public synchronized static String getPrimaryValue() {
-        return (System.currentTimeMillis()+UUID.randomUUID().toString()).replace("-", "");
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

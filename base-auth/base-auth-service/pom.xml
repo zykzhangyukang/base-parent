@@ -24,10 +24,6 @@
             <artifactId>base-auth-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.coderman</groupId>
-            <artifactId>base-sync-sdk</artifactId>
-        </dependency>
 
     </dependencies>
 

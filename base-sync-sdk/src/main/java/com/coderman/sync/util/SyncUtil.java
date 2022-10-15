@@ -61,7 +61,7 @@ public class SyncUtil {
 
     private static JdbcTemplate jdbcTemplate;
 
-    private static DefaultMQProducer producer;
+    private static DefaultMQProducer defaultMQProducer;
 
     static {
 
@@ -69,7 +69,7 @@ public class SyncUtil {
 
 
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            producer = SpringContextUtil.getBean(DefaultMQProducer.class);
+            defaultMQProducer = SpringContextUtil.getBean(DefaultMQProducer.class);
 
 
             // 初始化队列
@@ -175,7 +175,7 @@ public class SyncUtil {
 
 
                 logger.info("消息队列,将消息放入发送线程队列,uuid:{}",item.getMsgId());
-
+                taskQueue.add(item);
             }
 
         }
@@ -314,7 +314,7 @@ public class SyncUtil {
 
                 // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
                 Message message = new Message("SyncTopic", StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
-                SendResult sendResult = producer.send(message);
+                SendResult sendResult = defaultMQProducer.send(message);
 
                 if (null != sendResult) {
 
@@ -410,7 +410,7 @@ public class SyncUtil {
      */
     public static void clear() {
 
-        if(logger.isInfoEnabled()){
+        if(logger.isDebugEnabled()){
 
 
             StringBuilder sb = new StringBuilder();

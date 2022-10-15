@@ -36,8 +36,3 @@ auth:
 logging:
   level:
     root: info
-
-rocketmq:
-  nameServer: 127.0.0.1:9876
-  producer:
-    group: AUTH_GROUP

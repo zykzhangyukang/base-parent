@@ -298,7 +298,7 @@ public class SyncUtil {
 
         try {
 
-            int resultNum = -1;
+            int resultNum;
 
             if (msgBody.getMqMessageId() != null) {
 

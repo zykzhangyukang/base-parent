@@ -22,6 +22,8 @@ public class MsgCompensationTimer {
 
     @Scheduled(cron = "*/5 * * * * ?")
     private void compensationTask() {
-        this.rocketMqService.resendMsg();
+
+        // todo use xxljob
+        //this.rocketMqService.resendMsg();
     }
 }

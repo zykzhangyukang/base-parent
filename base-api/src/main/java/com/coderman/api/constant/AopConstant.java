@@ -25,12 +25,14 @@ public interface AopConstant {
      * Service层切面
      */
 
+    // 数据源切换
+    public static final int DATA_SOURCE_ASPECT_ORDER = 1200;
+
     // 同步异常
     public static final int SYNC_EXCEPTION_ASPECT_ORDER = 1300;
 
     // 系统异常
     public static final int EXCEPTION_ASPECT_ORDER = 1400;
-
 
 
     // 同步系统

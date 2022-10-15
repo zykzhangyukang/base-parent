@@ -10,6 +10,7 @@ import com.coderman.sync.constant.Constant;
 import com.coderman.sync.vo.MsgBody;
 import com.coderman.sync.vo.MsgItem;
 import com.coderman.sync.vo.PlanMsg;
+import org.apache.commons.codec.language.Nysiis;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -54,6 +55,8 @@ public class SyncUtil {
 
     private final static String INIT_SQL = "select mq_message_id,uuid,msg_content from pub_mq_message where send_status = '" + Constant.MSG_SEND_STATUS_WAIT + "';";
     private final static String INSERT_SQL = "insert into pub_mq_message(uuid,msg_content,src_project,dest_project,create_time,send_status,deal_status,deal_count) values(?,?,?,?,?,?,?,?);";
+    private final static String UPDATE_SENDING_BY_PK_SQL = "update pub_mq_message set deal_count = 0,send_status='" + Constant.MSG_SEND_STATUS_SENDING + "'where send_status='" + Constant.MSG_SEND_STATUS_WAIT + "'and mq_message_id=?;";
+    private final static String UPDATE_FINAL_BY_PK_SQL = "update pub_mq_message set send_status = ?,mid=?,send_time = ? where send_status='" + Constant.MSG_SEND_STATUS_SENDING + "' and mq_message_id = ?";
 
 
     private static JdbcTemplate jdbcTemplate;
@@ -115,7 +118,7 @@ public class SyncUtil {
 
                         TimeUnit.SECONDS.sleep(1);
 
-                        logger.debug("消息处理线程运行中.");
+                        logger.debug("消息发送线程运行中...");
                         continue;
                     }
 
@@ -136,12 +139,16 @@ public class SyncUtil {
 
         // 异常处理
         taskThread.setDaemon(true);
-        taskThread.setName("");
+        taskThread.setName("MQ消息发送线程");
         taskThread.setUncaughtExceptionHandler((t, e) -> {
 
+            logger.error("线程异常退出,name->{}", t.getName(),e);
 
-            dealTask();
-            logger.error("获取队列任务线程异常,e", e);
+            if("MQ消息发送线程".equalsIgnoreCase(t.getName())){
+
+                dealTask();
+            }
+
         });
 
 
@@ -149,6 +156,32 @@ public class SyncUtil {
 
     }
 
+
+    /**
+     * 发送消息
+     */
+    public static void submit(){
+
+        if(null!=LOCAL_MAP.get()){
+
+
+            if(taskQueue.size()  > QUEUE_SIZE_ALERT_NUM){
+
+                logger.error("同步系统队列长度警报,MQ消息队列已经超过"+QUEUE_SIZE_ALERT_NUM+",请及时处理");
+            }
+
+
+            for (MsgBody item : LOCAL_MAP.get()) {
+
+
+                logger.info("消息队列,将消息放入发送线程队列,uuid:{}",item.getMsgId());
+
+            }
+
+        }
+
+        LOCAL_MAP.remove();
+    }
 
     /**
      * 同步消息: 插入消息到数据库,并且把消息体放到ThreadLocal中
@@ -265,21 +298,27 @@ public class SyncUtil {
 
         try {
 
+            int resultNum = -1;
 
             if (msgBody.getMqMessageId() != null) {
 
 
                 // 先把消息的发送状态改为发送中
-                //TODO jdbcTemplate.update();
+                resultNum = jdbcTemplate.update(UPDATE_SENDING_BY_PK_SQL, msgBody.getMqMessageId());
+
+
+                if (resultNum == 0) {
+                    return;
+                }
 
 
                 // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
-                Message message = new Message("SYNC_TOPIC", StringUtils.EMPTY, msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
+                Message message = new Message("SyncTopic", StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
                 SendResult sendResult = producer.send(message);
 
-                if (null == sendResult) {
+                if (null != sendResult) {
 
-                    resultStr = Constant.MSG_SEND_STATUS_FAIL;
+                    mid = sendResult.getMsgId();
                 }
 
             }
@@ -288,11 +327,15 @@ public class SyncUtil {
         } catch (Exception e) {
 
             resultStr = Constant.MSG_SEND_STATUS_FAIL;
+            logger.error("向同步系统发送mq消息失败," + msgBody.getMsg(), e);
 
         } finally {
 
+            // 更新发送状态
+            if (msgBody.getMqMessageId() != null) {
 
-            // TODO jdbcTemplate.update()
+                jdbcTemplate.update(UPDATE_FINAL_BY_PK_SQL, resultStr, mid, formatTime(new Date()), msgBody.getMqMessageId());
+            }
 
         }
     }
@@ -362,4 +405,37 @@ public class SyncUtil {
     }
 
 
+    /**
+     * 清空消息
+     */
+    public static void clear() {
+
+        if(logger.isInfoEnabled()){
+
+
+            StringBuilder sb = new StringBuilder();
+
+            if(null!= LOCAL_MAP.get()){
+
+
+                for (MsgBody item : LOCAL_MAP.get()) {
+                    sb.append(item.getMsgId()).append(",");
+                }
+
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTraceElements) {
+
+                String content = stackTraceElement.toString();
+                stringBuilder.append(content).append("\r\n\t");
+            }
+
+            logger.info("消息队列,清除消息,uuid:{}",sb.toString()+"\r\n\t"+stringBuilder.toString());
+        }
+
+        LOCAL_MAP.remove();
+    }
 }

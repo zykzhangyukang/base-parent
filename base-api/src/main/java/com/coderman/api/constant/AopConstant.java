@@ -10,17 +10,35 @@ public interface AopConstant {
 
 
     /**
-     * 切面顺序
+     * Controller开始层切面
      */
 
     // 权限拦截
-    int AUTH_ASPECT_ORDER = 1;
+    public static final int AUTH_ASPECT_ORDER = 100;
 
 
     // 参数校验
-    int VALID_ASPECT_ORDER = 2;
+    public static final int VALID_ASPECT_ORDER = 300;
 
+
+    /**
+     * Service层切面
+     */
+
+    // 同步异常
+    public static final int SYNC_EXCEPTION_ASPECT_ORDER = 1300;
+
+    // 系统异常
+    public static final int EXCEPTION_ASPECT_ORDER = 1400;
+
+
+
+    // 同步系统
+    /**
+     * controller结束切面
+     */
+    public static final int SYNC_ASPECT_ORDER = 2100;
 
     // 响应过滤
-    int RESULT_ASPECT_ORDER = 2300;
+    public static final int RESULT_ASPECT_ORDER = 2300;
 }

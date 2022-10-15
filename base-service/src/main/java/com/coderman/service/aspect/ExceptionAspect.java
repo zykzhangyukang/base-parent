@@ -1,6 +1,7 @@
 package com.coderman.service.aspect;
 
 
+import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
@@ -19,20 +20,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Date;
-import java.util.Objects;
 
 @Aspect
 @Component
 @Slf4j
-@Order(value = 2500)
+@Order(value = AopConstant.EXCEPTION_ASPECT_ORDER)
 public class ExceptionAspect {
 
 

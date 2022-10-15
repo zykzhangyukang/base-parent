@@ -1,9 +1,11 @@
 package com.coderman.service.util;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
 
+@Component
 public class ServletContextUtil implements ServletContextAware {
 
 

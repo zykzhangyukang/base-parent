@@ -3,15 +3,16 @@ package com.coderman.auth.config;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import com.coderman.service.config.BasicTransactionConfig;
 import org.aopalliance.aop.Advice;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.mybatis.spring.boot.autoconfigure.MybatisProperties;
 import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,8 +23,9 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 
-//@org.springframework.context.annotation.Configuration
-//@EnableConfigurationProperties(MybatisProperties.class)
+@Configuration
+@EnableConfigurationProperties(MybatisProperties.class)
+@MapperScan(basePackages = AuthDatasourceConfig.PACKAGE,sqlSessionFactoryRef = "authSqlSessionFactory")
 public class AuthDatasourceConfig extends BasicTransactionConfig {
 
 
@@ -34,8 +36,7 @@ public class AuthDatasourceConfig extends BasicTransactionConfig {
     public static final String EXPRESSION = "execution(* com.coderman.auth..service..*(..))";
 
 
-    @Bean(value = "datasource")
-    @Primary
+    @Bean(value = "authDatasource")
     @ConfigurationProperties(prefix = "spring.datasource.druid.auth")
     public DataSource dataSource() {
         return DruidDataSourceBuilder.create().build();
@@ -43,30 +44,30 @@ public class AuthDatasourceConfig extends BasicTransactionConfig {
 
 
     @Bean(value = "syncJdbcTemplate")
-    public JdbcTemplate jdbcTemplate(@Qualifier(value = "datasource") DataSource dataSource) {
+    public JdbcTemplate jdbcTemplate(@Qualifier(value = "authDatasource") DataSource dataSource) {
 
         return new JdbcTemplate(dataSource);
     }
 
     @Bean(value = "authTransactionManager")
-    public DataSourceTransactionManager authTransactionManager(@Qualifier(value = "datasource") DataSource dataSource) {
+    public DataSourceTransactionManager authTransactionManager(@Qualifier(value = "authDatasource") DataSource dataSource) {
 
         return new DataSourceTransactionManager(dataSource);
     }
 
 
-    @Bean(name = "sqlSessionFactory")
+    @Bean(name = "authSqlSessionFactory")
     @Primary
-    public SqlSessionFactory order1SqlSessionFactory(@Qualifier(value = "datasource") DataSource dataSource, MybatisProperties properties) throws Exception {
+    public SqlSessionFactory order1SqlSessionFactory(@Qualifier(value = "authDatasource") DataSource dataSource, MybatisProperties properties) throws Exception {
 
         final SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
         sqlSessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(MAPPER_LOCATION));
 
-        Configuration configuration = properties.getConfiguration();
+        org.apache.ibatis.session.Configuration configuration = properties.getConfiguration();
         if (configuration != null && !StringUtils.hasText(properties.getConfigLocation())) {
 
-            configuration = new Configuration();
+            configuration = new org.apache.ibatis.session.Configuration();
 
         }
         sqlSessionFactoryBean.setConfiguration(configuration);

@@ -1,21 +1,19 @@
 package com.coderman.business.handler;
 
-import com.coderman.service.util.ServletContextUtil;
 import com.coderman.service.util.SpringContextUtil;
 import org.apache.commons.collections4.MapUtils;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Component
-@Primary
+
 public class DynamicDataSource extends AbstractRoutingDataSource {
 
     private static final Map<String,String> datasourcePackageMap =  new HashMap<>();
@@ -24,13 +22,13 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     private static String defaultDataSourceName = null;
 
 
-    @PostConstruct
-    public void initMethod(){
-
+    @Override
+    public void afterPropertiesSet() {
 
         Map<Object,Object> targetDataSources = new HashMap<>();
 
-        String domain = ServletContextUtil.getServletContext().getInitParameter("domain");
+        String domain =  System.getProperty("domain");
+
 
         DataSource defaultDataSource = null;
 
@@ -69,6 +67,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         }
 
 
+        super.afterPropertiesSet();
     }
 
     @Override

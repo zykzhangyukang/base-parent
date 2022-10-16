@@ -8,6 +8,9 @@ spring:
     port: 6379
     password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
+rocketmq:
+  nameServer: 119.91.30.131:9876
+
 jdbc:
   common$maxIdle: 20
   common$maxWait: 1000

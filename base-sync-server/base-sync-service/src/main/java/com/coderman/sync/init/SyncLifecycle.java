@@ -1,5 +1,6 @@
 package com.coderman.sync.init;
 
+import com.coderman.sync.context.SyncContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,8 @@ public class SyncLifecycle implements SmartLifecycle {
 
             logger.info("初始化同步计划");
 
-            // TODO
+            // 释放锁
+            SyncContext.getContext().setLockSyncTask(false);
 
             logger.info("初始化同步计划结束");
         }

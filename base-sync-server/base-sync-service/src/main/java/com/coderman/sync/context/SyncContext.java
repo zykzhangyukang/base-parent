@@ -2,6 +2,8 @@ package com.coderman.sync.context;
 
 import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
+import com.coderman.sync.plan.meta.PlanMeta;
+import com.coderman.sync.task.SyncTask;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
@@ -28,6 +31,9 @@ public class SyncContext {
 
     // 数据库名称与类型之间的关系
     private Map<String,String> dbTypeMap = new ConcurrentHashMap<String,String>();
+
+    // 同步计划原始数据
+    private Map<String,PlanMeta> planMetaMap = new ConcurrentHashMap<>();
 
 
     // 是否锁定同步任务,默认锁定
@@ -66,12 +72,12 @@ public class SyncContext {
     /**
      * 同步数据
      * @param msg
-     * @param msgId
-     * @param msgRocketMq
-     * @param reconsumeTimes
+     * @param mqId
+     * @param msgSrc
+     * @param retryTimes
      * @return
      */
-    public String syncData(String msg, String msgId, String msgRocketMq, int reconsumeTimes) {
+    public String syncData(String msg, String mqId, String msgSrc, int retryTimes) {
 
         String result = SyncContext.SYNC_END;
 
@@ -81,8 +87,7 @@ public class SyncContext {
         try {
 
             // 构建同步任务
-            // todo result =
-            logger.info("同步任务:{}", JSON.toJSONString(msg));
+            result = SyncTask.build(msg,mqId,retryTimes).sync();
 
         }catch (Exception e){
 
@@ -128,7 +133,7 @@ public class SyncContext {
 
             try {
 
-                Thread.sleep(500);
+                TimeUnit.MILLISECONDS.sleep(500);
 
             } catch (InterruptedException e) {
 
@@ -139,4 +144,7 @@ public class SyncContext {
         return this.syncTaskCount.incrementAndGet();
     }
 
+    public PlanMeta getPlanMeta(String planCode) {
+        return this.planMetaMap.get(planCode);
+    }
 }

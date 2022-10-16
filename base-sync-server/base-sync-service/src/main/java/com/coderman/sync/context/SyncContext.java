@@ -1,5 +1,6 @@
 package com.coderman.sync.context;
 
+import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -72,7 +73,7 @@ public class SyncContext {
      */
     public String syncData(String msg, String msgId, String msgRocketMq, int reconsumeTimes) {
 
-        String result = SyncContext.SYNC_RETRY;
+        String result = SyncContext.SYNC_END;
 
         // 标记开始同步任务
         this.startSync();
@@ -81,6 +82,7 @@ public class SyncContext {
 
             // 构建同步任务
             // todo result =
+            logger.info("同步任务:{}", JSON.toJSONString(msg));
 
         }catch (Exception e){
 

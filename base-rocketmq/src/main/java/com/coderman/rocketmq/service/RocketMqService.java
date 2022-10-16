@@ -19,6 +19,19 @@ public interface RocketMqService {
     public void sendMsg(String tag,String msg);
 
 
+    // linux:
+    /**
+     * nohup sh mqnamesrv >/usr/local/rocketmq/logs/mqnamesrv.log 2>&1 &
+     *
+     * 修改配置: /config/broker.conf
+     *
+     * namesrvAddr=127.0.0.1:9876
+     * brokerIP1=192.168.200.130#是大写的IP一定要注意！！！修改成自己的IP地址
+     *
+     *
+     * nohup sh mqbroker -n localhost:9876 -c /usr/local/rocketmq/conf/broker.conf >/usr/local/rocketmq/logs/broker.log 2>&1 &
+     *
+     */
 
 
     /**

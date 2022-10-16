@@ -24,11 +24,6 @@
             <artifactId>base-auth-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.coderman</groupId>
-            <artifactId>base-multi-datasource</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

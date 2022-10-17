@@ -40,6 +40,7 @@ public class TableMeta extends BaseModel {
 
         ColumnMeta columnMeta = new ColumnMeta();
         columnMeta.setDest(dest);
+        columnMeta.setSrc(src);
 
         this.getColumnMetas().add(columnMeta);
         return columnMeta;

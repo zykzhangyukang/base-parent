@@ -22,6 +22,10 @@ public class SyncLifecycle implements SmartLifecycle {
     @Autowired
     private DataSourceInitializer dataSourceInitializer;
 
+
+    @Autowired
+    private SyncPlanInitializer syncPlanInitializer;
+
     @Override
     public void start() {
 
@@ -36,8 +40,7 @@ public class SyncLifecycle implements SmartLifecycle {
 
             logger.info("初始化同步计划");
 
-            // 释放锁
-            SyncContext.getContext().setLockSyncTask(false);
+            this.syncPlanInitializer.init();
 
             logger.info("初始化同步计划结束");
         }

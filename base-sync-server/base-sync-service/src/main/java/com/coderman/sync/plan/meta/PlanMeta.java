@@ -35,6 +35,10 @@ public class PlanMeta extends BaseModel {
 
     private boolean columnConvert;
 
+    public boolean containsCode(String tableCode){
+
+        return this.tableCodeList.contains(tableCode);
+    }
 
     public String getUniqueTypeByCode(String code){
 

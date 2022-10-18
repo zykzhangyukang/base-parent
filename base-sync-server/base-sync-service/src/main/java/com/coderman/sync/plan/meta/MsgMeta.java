@@ -110,6 +110,7 @@ public class MsgMeta extends BaseModel {
             List<Object> uniqueList = new ArrayList<>();
 
             MsgTableMeta tableMeta = new MsgTableMeta();
+            tableMeta.setCode(json.getString("code"));
             tableMeta.setUniqueList(uniqueList);
 
 
@@ -131,9 +132,9 @@ public class MsgMeta extends BaseModel {
 
             }
 
-            for (int j = 0; j < ((JSONArray) msgJson.get("unique")).size(); j++) {
+            for (int j = 0; j < ((JSONArray) json.get("unique")).size(); j++) {
 
-                String unique = ((JSONArray) msgJson.get("unique")).get(j).toString();
+                String unique = ((JSONArray) json.get("unique")).get(j).toString();
 
                 if (!"int".equals(tableMeta.getUniqueType()) && StringUtils.isNumeric(unique)) {
                     tableMeta.setUniqueType("int");

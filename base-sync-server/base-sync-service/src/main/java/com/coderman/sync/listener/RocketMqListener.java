@@ -81,8 +81,8 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
 
         } catch (Exception e) {
 
-            logger.error("消息消息失败:{}", e.getMessage());
-            throw new SyncException("消息处理失败:" + e.getMessage());
+            logger.error("消息处理失败:{}", e.getMessage());
+            throw e;
         }
 
 

@@ -385,6 +385,13 @@ public class SyncUtil {
             }
 
             builder.append("]");
+
+
+            if(msgItem.getMustAffectRows() !=null){
+
+                builder.append(",\"affectNum\":\"").append(msgItem.getMustAffectRows()).append("\"");
+            }
+
             builder.append("}");
 
 

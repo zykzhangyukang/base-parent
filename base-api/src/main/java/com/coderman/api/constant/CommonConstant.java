@@ -33,4 +33,9 @@ public interface CommonConstant {
      * 安全码
      */
     String AUTH_SECURITY_CODE ="coderman";
+
+    /**
+     * redis 分布式锁
+     */
+    String REDIS_GLOBAL_LOCK_KEY_CONSTANT = "redis_global_lock_";
 }

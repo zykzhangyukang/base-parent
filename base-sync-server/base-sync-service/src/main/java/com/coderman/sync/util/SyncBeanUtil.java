@@ -1,5 +1,6 @@
 package com.coderman.sync.util;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
@@ -66,11 +67,12 @@ public class SyncBeanUtil {
 
         // 注册TransactionManager
         BeanDefinitionBuilder tmBuilder = BeanDefinitionBuilder.genericBeanDefinition(DataSourceTransactionManager.class);
+        tmBuilder.addPropertyReference("dataSource",dataSourceId);
         beanFactory.registerBeanDefinition(dataSourceId+"_tm",tmBuilder.getBeanDefinition());
 
         // 注册TransactionTemplate
         BeanDefinitionBuilder transBuilder =BeanDefinitionBuilder.genericBeanDefinition(TransactionTemplate.class);
-        transBuilder.addPropertyValue("transactionManager",dataSourceId+"_tm");
+        transBuilder.addPropertyReference("transactionManager",dataSourceId+"_tm");
         transBuilder.addPropertyValue("isolationLevelName","ISOLATION_DEFAULT");
         transBuilder.addPropertyValue("propagationBehaviorName","PROPAGATION_REQUIRED");
         transBuilder.addPropertyValue("timeout",transTimeout);
@@ -82,7 +84,7 @@ public class SyncBeanUtil {
     @SuppressWarnings("all")
     private static BeanDefinitionBuilder createDataSourceBeanDefinitionBuilder(JdbcConfig config,boolean isMSSQL){
 
-        BeanDefinitionBuilder definitionBuilder =BeanDefinitionBuilder.genericBeanDefinition(DataSource.class);
+        BeanDefinitionBuilder definitionBuilder =BeanDefinitionBuilder.genericBeanDefinition(DruidDataSource.class);
 
         if(isMSSQL){
 

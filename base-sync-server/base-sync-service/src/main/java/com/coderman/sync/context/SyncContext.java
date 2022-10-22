@@ -2,6 +2,7 @@ package com.coderman.sync.context;
 
 import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
+import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.meta.TableMeta;
 import com.coderman.sync.task.SyncTask;
@@ -50,13 +51,7 @@ public class SyncContext {
     // 正在进行中的同步任务数量
     private AtomicInteger syncTaskCount = new AtomicInteger(0);
 
-    /**
-     * 消息处理结果
-     *
-     * @return
-     */
-    public static final String SYNC_END = "end";
-    public static final String SYNC_RETRY = "retry";
+
 
     public static SyncContext getContext(){
         return syncContext;
@@ -82,6 +77,16 @@ public class SyncContext {
     }
 
 
+    public String getDbType(String dbname){
+        return this.dbTypeMap.get(dbname);
+    }
+
+
+    public TableMeta getTableMeta(String planCode,String tableCode){
+
+        return this.tableMetaMap.get(planCode+"@"+tableCode);
+    }
+
     /**
      * 同步数据
      * @param msg
@@ -92,7 +97,7 @@ public class SyncContext {
      */
     public String syncData(String msg, String mqId, String msgSrc, int retryTimes) {
 
-        String result = SyncContext.SYNC_END;
+        String result = SyncConstant.SYNC_END;
 
         // 标记开始同步任务
         this.startSync();

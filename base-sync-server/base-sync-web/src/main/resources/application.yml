@@ -20,17 +20,17 @@ jdbc:
   mysql$username: root
   mysql$password: 123456
   mysql$initialSize: 10
-  mysql$minEvictableIdleTimeMillis: 10000
-  mysql$timeBetweenEvicationRunsMills: 10000
+  mysql$minEvictableIdleTimeMillis: 40000
+  mysql$timeBetweenEvictionRunsMillis: 10000
   mysql$testOnBorrow: false
   mysql$testOnReturn: false
   mysql$testWhileIdle: true
   # 业务系统1
-  demo$url: jdbc:mysql://localhost:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-  demo$username: root
-  demo$password: 2120FA78BC6EB99B019C119BD8067DB0
+  bos_sku$url: jdbc:mysql://localhost:3306/bos_sku?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+  bos_sku$username: root
+  bos_sku$password: 2120FA78BC6EB99B019C119BD8067DB0
   # 业务系统2
-  demo2$url: jdbc:mysql://localhost:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-  demo2$username: root
-  demo2$password: 2120FA78BC6EB99B019C119BD8067DB0
+  ecp_pim$url: jdbc:mysql://localhost:3306/ecp_pim?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+  ecp_pim$username: root
+  ecp_pim$password: 2120FA78BC6EB99B019C119BD8067DB0
 

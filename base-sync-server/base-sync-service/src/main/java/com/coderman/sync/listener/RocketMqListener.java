@@ -2,6 +2,7 @@ package com.coderman.sync.listener;
 
 import com.coderman.service.redis.RedisService;
 import com.coderman.sync.constant.PlanConstant;
+import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.exception.SyncException;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 
 @RocketMQMessageListener(consumerGroup = "SYNC_CONSUMER_GROUP", topic = "SyncTopic")
@@ -25,14 +27,14 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
 
     private final static Integer SYNC_REDID_DB = 1;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
 
     @Override
     public void onMessage(MessageExt message) {
 
-        int retryTimeLimit = 10;
+        int retryTimeLimit = 2;
 
         String redisKey = SYNC_MSG_ID + message.getMsgId();
 
@@ -73,7 +75,7 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
 
             String result = SyncContext.getContext().syncData(msg, message.getMsgId(), PlanConstant.MSG_ROCKET_MQ, message.getReconsumeTimes());
 
-            if (!SyncContext.SYNC_END.equalsIgnoreCase(result)) {
+            if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
 
                 logger.error("_sync_mq_listener:同步结果:" + result);
                 throw new SyncException("消息处理失败:" + result);

@@ -1,15 +1,21 @@
 package com.coderman.sync.task;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.PlanConstant;
+import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.plan.meta.MsgMeta;
 import com.coderman.sync.plan.meta.MsgTableMeta;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.result.ResultModel;
+import com.coderman.sync.task.support.GetDataTask;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 
 import java.util.Date;
 
@@ -40,7 +46,7 @@ public class SyncTask {
      * @param retryTimes
      * @return
      */
-    public static SyncTask build(String msg, String mqId,String msgSrc, int retryTimes) {
+    public static SyncTask build(String msg, String mqId, String msgSrc, int retryTimes) {
 
         SyncTask syncTask = new SyncTask();
 
@@ -62,10 +68,10 @@ public class SyncTask {
 
         PlanMeta planMeta = SyncContext.getContext().getPlanMeta(msgMeta.getPlanCode());
 
-        if(planMeta == null){
+        if (planMeta == null) {
 
-            log.error("同步计划不存在,{}",msg);
-            resultModel.setErrorMsg("同步计划不存在,"+msg);
+            log.error("同步计划不存在,{}", msg);
+            resultModel.setErrorMsg("同步计划不存在," + msg);
             return syncTask;
         }
 
@@ -80,9 +86,9 @@ public class SyncTask {
         // 检查所有同步操作是否都存在
         for (MsgTableMeta tableMeta : msgMeta.getTableMetaList()) {
 
-            if(!planMeta.containsCode(tableMeta.getCode())){
+            if (!planMeta.containsCode(tableMeta.getCode())) {
 
-                resultModel.setErrorMsg("同步计划"+planMeta.getCode()+"中,不存在"+tableMeta.getCode()+","+msg);
+                resultModel.setErrorMsg("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg);
                 syncTask.setResultModel(resultModel);
 
                 return syncTask;
@@ -103,6 +109,38 @@ public class SyncTask {
      * @return
      */
     public String sync() {
-        return null;
+
+        TaskResult taskResult  = null;
+
+        try {
+
+            // 1. 从源表查询数据
+            GetDataTask getDataTask = GetDataTask.build(this);
+
+
+            // 2. 执行SQL查询源表操作
+            taskResult =  getDataTask.process();
+
+
+
+            // TODO
+
+            if(SyncConstant.TASK_CODE_SUCCESS.equalsIgnoreCase(taskResult.getCode())){
+
+                return SyncConstant.SYNC_END;
+
+            }else {
+
+                return SyncConstant.SYNC_RETRY;
+            }
+
+        }catch (Throwable e){
+
+            log.error("同步数据错误,msgContent->"+this.resultModel.getMsgContent()+",exception->"+e);
+            throw e;
+        }
+
+
     }
+
 }

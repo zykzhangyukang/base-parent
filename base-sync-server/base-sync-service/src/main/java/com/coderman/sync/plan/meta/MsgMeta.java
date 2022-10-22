@@ -6,6 +6,7 @@ import com.alibaba.fastjson.parser.Feature;
 import com.coderman.api.model.BaseModel;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
+import com.coderman.sync.task.SyncConvert;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -128,6 +129,7 @@ public class MsgMeta extends BaseModel {
                 if (planMeta != null) {
                     originUnitType = planMeta.getUniqueTypeByCode(json.getString("code"));
                 }
+
             } catch (Exception ignored) {
 
             }
@@ -136,10 +138,10 @@ public class MsgMeta extends BaseModel {
 
                 String unique = ((JSONArray) json.get("unique")).get(j).toString();
 
-                if (!"int".equals(tableMeta.getUniqueType()) && StringUtils.isNumeric(unique)) {
-                    tableMeta.setUniqueType("int");
+                if (!SyncConvert.DATA_TYPE_STRING.equals(tableMeta.getUniqueType()) && StringUtils.isNumeric(unique)) {
+                    tableMeta.setUniqueType(SyncConvert.DATA_TYPE_INT);
                 } else {
-                    tableMeta.setUniqueType("string");
+                    tableMeta.setUniqueType(SyncConvert.DATA_TYPE_STRING);
                 }
 
                 if (originUnitType != null) {

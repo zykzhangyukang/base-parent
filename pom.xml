@@ -17,6 +17,7 @@
         <module>base-business</module>
         <module>base-sync-sdk</module>
         <module>base-sync-server</module>
+        <module>base-log</module>
     </modules>
 
     <groupId>com.coderman</groupId>
@@ -63,6 +64,13 @@
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-service</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
+            <!-- 基础日志配置 -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-log</artifactId>
                 <version>${base.version}</version>
             </dependency>
 

@@ -38,4 +38,10 @@ public interface CommonConstant {
      * redis 分布式锁
      */
     String REDIS_GLOBAL_LOCK_KEY_CONSTANT = "redis_global_lock_";
+
+
+    /**
+     * 分页每页显示
+     */
+    Integer SYS_PAGE_SIZE = 20;
 }

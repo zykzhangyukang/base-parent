@@ -1,8 +1,9 @@
 spring:
   datasource:
-    username: root
-    password: DES@2120FA78BC6EB99B019C119BD8067DB0
-    url: jdbc:mysql://localhost:3306/base_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    druid:
+      username: root
+      password: DES@2120FA78BC6EB99B019C119BD8067DB0
+      url: jdbc:mysql://localhost:3306/base_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
     host: 119.91.30.131
     port: 6379

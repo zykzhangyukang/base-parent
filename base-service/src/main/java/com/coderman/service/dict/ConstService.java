@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -67,6 +68,9 @@ public class ConstService implements ApplicationRunner {
     public void init() {
 
         final Set<String> noAllowedConflictGroupSet = new HashSet<>();
+
+        // 冲突记录Map, k=group, v=className
+        final Map<String,Set<String>> conflictRecordMap = new HashMap<>();
 
         StopWatch stopWatch = new StopWatch();
 
@@ -133,6 +137,22 @@ public class ConstService implements ApplicationRunner {
 
 
                         constItems.add(new ConstItem(declaredField.get(null), name));
+
+                        // 冲突记录到map
+                        Set<String> classNameSet = conflictRecordMap.get(group);
+
+                        if(classNameSet == null){
+
+
+                            classNameSet = new HashSet<>();
+                        }
+
+                        classNameSet.add(beanDefinition.getBeanClassName());
+
+                        conflictRecordMap.put(group,classNameSet);
+                        break;
+
+
                     }
                 }
 
@@ -142,6 +162,17 @@ public class ConstService implements ApplicationRunner {
             } catch (Exception e) {
 
                 logger.warn("扫描常量 {} 错误,请检查常量定义修饰符.常量需要用 public static final 修饰.", beanDefinition.getBeanClassName());
+            }
+
+        }
+
+        // 打印冲突
+        for (Map.Entry<String, Set<String>> entry : conflictRecordMap.entrySet()) {
+
+            Set<String> classNameSet = entry.getValue();
+            if(classNameSet!=null && classNameSet.size() >=2){
+
+                logger.error(MessageFormat.format("请请注意,扫描常量类class冲突,group:{},classes:{}",entry.getKey(),classNameSet.toString()));
             }
 
         }
@@ -188,6 +219,17 @@ public class ConstService implements ApplicationRunner {
         }
 
         return list;
+    }
+
+
+    /**
+     * 根据组名获取常量集合
+     *
+     * @param group 常量组
+     * @return 常量集合
+     */
+    public static List<ConstItem> getConstList(String group){
+        return cloneItems(constMap.get(group));
     }
 
 

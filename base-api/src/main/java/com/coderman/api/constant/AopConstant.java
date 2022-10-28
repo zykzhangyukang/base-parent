@@ -43,4 +43,7 @@ public interface AopConstant {
 
     // 响应过滤
     public static final int RESULT_ASPECT_ORDER = 2300;
+
+    // 分页
+    public static final int PAGE_ASPECT_ORDER = 2500;
 }

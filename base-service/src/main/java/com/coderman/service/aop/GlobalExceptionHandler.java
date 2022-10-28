@@ -3,10 +3,13 @@ package com.coderman.service.aop;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.service.service.BaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author coderman
@@ -14,43 +17,32 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @Description: TOD
  * @date 2022/3/519:01
  */
-@RestControllerAdvice
+@ControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(value = BusinessException.class)
-    public ResultVO<String> handleBusinessEx(BusinessException e){
+public class GlobalExceptionHandler extends BaseService {
 
 
-        String message = e.getMessage();
-        ResultVO<String> resultVO = new ResultVO<>();
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResultVO<Void> handlerException(HttpServletRequest request,Exception e){
+
+
+        ResultVO<Void> resultVO = new ResultVO<>();
+
+        if(e instanceof BusinessException){
+
+            resultVO.setMsg(e.getMessage());
+        }else {
+
+            resultVO.setMsg("系统繁忙,请稍后重试");
+        }
+
         resultVO.setCode(ResultConstant.RESULT_CODE_500);
-        resultVO.setMsg(message);
-        resultVO.setResult(null);
+
+        log.error("Controller统一异常处理, 路径:"+request.getRequestURI(),e);
+
         return resultVO;
     }
 
-    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
-    public ResultVO<String> handleMethodEx(HttpRequestMethodNotSupportedException e){
-
-
-        ResultVO<String> resultVO = new ResultVO<>();
-        resultVO.setCode(ResultConstant.RESULT_CODE_500);
-        resultVO.setMsg("请求方式不支持");
-        resultVO.setResult(null);
-        return resultVO;
-    }
-
-
-    @ExceptionHandler(value = Exception.class)
-    public ResultVO<String> handleSystemEx(Exception e){
-
-
-        ResultVO<String> resultVO = new ResultVO<>();
-        resultVO.setCode(ResultConstant.RESULT_CODE_500);
-        resultVO.setMsg("系统异常,请联系技术人员.");
-        resultVO.setResult(null);
-        return resultVO;
-    }
 
 }

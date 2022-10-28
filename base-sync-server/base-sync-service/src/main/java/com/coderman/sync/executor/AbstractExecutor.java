@@ -8,7 +8,6 @@ import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.plan.meta.MsgMeta;
 import com.coderman.sync.sql.meta.SqlMeta;
 import lombok.Data;
-import lombok.Synchronized;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 

@@ -1,6 +1,8 @@
 package com.coderman.service.aspect;
 
 
+import com.coderman.api.constant.AopConstant;
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +19,7 @@ import java.util.List;
 
 @Component
 @Aspect
-@Order(value = 2800)
+@Order(value = AopConstant.PAGE_ASPECT_ORDER)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class PageAspect {
 
@@ -29,8 +31,8 @@ public class PageAspect {
 
         if (result instanceof ResultVO) {
 
-            String maxQueryCount = "2";
-            Integer pageRow = 1;
+            String maxQueryCount = "20000";
+            Integer pageRow = 20;
 
 
             ResultVO resultVO = (ResultVO) result;
@@ -70,7 +72,7 @@ public class PageAspect {
 
                 if (flag) {
 
-                    resultVO.setCode(402);
+                    resultVO.setCode(ResultConstant.RESULT_CODE_402);
                     resultVO.setMsg("系统限制只能显示前" + maxQueryCount + "条记录（最大只能跳转到" + (((Integer.parseInt(maxQueryCount) - 1) / pageRow) + 1) + "页),请把筛选缩小");
                 }
             }

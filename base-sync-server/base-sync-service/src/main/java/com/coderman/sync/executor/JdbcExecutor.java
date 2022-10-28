@@ -1,16 +1,12 @@
 package com.coderman.sync.executor;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.JSONToken;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.sql.meta.SqlMeta;
-import com.coderman.sync.task.SyncConvert;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

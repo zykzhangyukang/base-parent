@@ -1,5 +1,6 @@
 package com.coderman.api.vo;
 
+import com.coderman.api.constant.CommonConstant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -20,7 +21,7 @@ public class PageVO<T> {
     /**
      * 页码显示条数
      */
-    private int pageRow;
+    private int pageRow = CommonConstant.SYS_PAGE_SIZE;
 
     /**
      * 总页数

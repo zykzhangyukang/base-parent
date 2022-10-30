@@ -1,6 +1,5 @@
 package com.coderman.sync.util;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.exception.BusinessException;
@@ -8,23 +7,18 @@ import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.Constant;
 import com.coderman.sync.vo.MsgBody;
-import com.coderman.sync.vo.MsgItem;
 import com.coderman.sync.vo.PlanMsg;
-import org.apache.commons.codec.language.Nysiis;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -33,8 +27,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
-@Component
-@DependsOn(value = "springContextUtil")
+
 public class SyncUtil {
 
 
@@ -440,7 +433,7 @@ public class SyncUtil {
                 stringBuilder.append(content).append("\r\n\t");
             }
 
-            logger.info("消息队列,清除消息,uuid:{}",sb.toString()+"\r\n\t"+stringBuilder.toString());
+            logger.debug("消息队列,清除消息,uuid:{}",sb.toString()+"\r\n\t"+stringBuilder.toString());
         }
 
         LOCAL_MAP.remove();

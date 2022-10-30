@@ -1,7 +1,5 @@
 package com.coderman.sync.task;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
@@ -13,9 +11,7 @@ import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.task.support.GetDataTask;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.Date;
 
@@ -41,10 +37,10 @@ public class SyncTask {
     /**
      * 构建同步任务
      *
-     * @param msg
-     * @param mqId
-     * @param retryTimes
-     * @return
+     * @param msg 消息内容
+     * @param mqId mq消息id
+     * @param retryTimes 重试次数
+     * @return 同步任务
      */
     public static SyncTask build(String msg, String mqId, String msgSrc, int retryTimes) {
 
@@ -106,7 +102,7 @@ public class SyncTask {
     /**
      * 同步数据
      *
-     * @return
+     * @return 同步状态
      */
     public String sync() {
 

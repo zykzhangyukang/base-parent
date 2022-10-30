@@ -99,7 +99,7 @@ public class TransactionConfig {
         readOnlyTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
         transactionAttributeSource.addTransactionalMethod("*", readOnlyTx);
 
-        log.info("============================自定义事务拦截器创建============================");
+        log.info("自定义事务拦截器创建");
         return new TransactionInterceptor(transactionManager, transactionAttributeSource);
     }
 

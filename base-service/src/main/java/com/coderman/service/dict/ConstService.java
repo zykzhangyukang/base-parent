@@ -37,12 +37,9 @@ import java.util.*;
 /**
  * @author coderman
  * @Title: 加载常量类
- * @Description: TOD
  * @date 2022/1/2519:48
  */
-@Component
-@Lazy(value = false)
-public class ConstService implements ApplicationRunner {
+public class ConstService {
 
     /**
      * 存放常量
@@ -60,12 +57,7 @@ public class ConstService implements ApplicationRunner {
     private final static Logger logger = LoggerFactory.getLogger(ConstService.class);
 
 
-    @Autowired
-    private RedisService redisService;
-
-
-    @PostConstruct
-    public void init() {
+    static {
 
         final Set<String> noAllowedConflictGroupSet = new HashSet<>();
 
@@ -74,7 +66,7 @@ public class ConstService implements ApplicationRunner {
 
         StopWatch stopWatch = new StopWatch();
 
-        logger.info("============================扫描项目常量开始============================");
+        logger.info("扫描项目常量开始");
         stopWatch.start();
 
         // 扫描常量class
@@ -114,13 +106,13 @@ public class ConstService implements ApplicationRunner {
 
 
                         // 如果本项目的常量 & 不允许冲突
-                        if (this.isInnerClass(beanDefinition) && !allowedConflict) {
+                        if (isInnerClass(beanDefinition) && !allowedConflict) {
                             noAllowedConflictGroupSet.add(group);
                         }
 
 
                         // 如果不是本项目的常量 & 出现冲突
-                        if (!this.isInnerClass(beanDefinition) && constMap.containsKey(group) && noAllowedConflictGroupSet.contains(group)) {
+                        if (!isInnerClass(beanDefinition) && constMap.containsKey(group) && noAllowedConflictGroupSet.contains(group)) {
 
                             logger.warn("出现冲突 class->{},group->{},name->{},不加入常量.", beanDefinition.getBeanClassName(), group, name);
                             continue;
@@ -178,17 +170,18 @@ public class ConstService implements ApplicationRunner {
         }
 
         stopWatch.stop();
-        logger.info("============================扫描常量完成,耗时:{} 毫秒.============================", stopWatch.getTotalTimeMillis());
+        logger.info("扫描常量完成,耗时:{} 毫秒", stopWatch.getTotalTimeMillis());
+
     }
 
 
     /**
      * 是否属于本项目的常量
      *
-     * @param beanDefinition
+     * @param beanDefinition bean定义
      * @return
      */
-    private boolean isInnerClass(BeanDefinition beanDefinition) {
+    private static boolean isInnerClass(BeanDefinition beanDefinition) {
         return (beanDefinition.getBeanClassName() != null && beanDefinition.getBeanClassName().split("\\.").length > 3)
                 && StringUtils.equals(System.getProperty("domain"), beanDefinition.getBeanClassName().split("\\.")[2]);
     }
@@ -197,7 +190,7 @@ public class ConstService implements ApplicationRunner {
     /**
      * 获取所有常量
      *
-     * @return
+     * @return 所有常量
      */
     public static Map<String, List<ConstItem>> getAllConst() {
         return cloneConstMap();
@@ -207,7 +200,7 @@ public class ConstService implements ApplicationRunner {
     /**
      * 获取所有常量集合
      *
-     * @return
+     * @return 所有常量
      */
     public static List<ConstItems> getAllConstList() {
 
@@ -236,8 +229,8 @@ public class ConstService implements ApplicationRunner {
     /**
      * 克隆对象
      *
-     * @param constItems
-     * @return
+     * @param constItems 常量项
+     * @return 克隆常量
      */
     private static List<ConstItem> cloneItems(List<ConstItem> constItems) {
 
@@ -258,7 +251,7 @@ public class ConstService implements ApplicationRunner {
     /**
      * 克隆一个常量map
      *
-     * @return
+     * @return 常量map
      */
     private static Map<String, List<ConstItem>> cloneConstMap() {
 
@@ -278,6 +271,11 @@ public class ConstService implements ApplicationRunner {
     }
 
 
+    /**
+     * 扫描常量
+     *
+     * @return bean定义
+     */
     private static Set<BeanDefinition> getConstantBeanSet() {
 
         Set<BeanDefinition> constBeanSet = new HashSet<>();
@@ -305,31 +303,4 @@ public class ConstService implements ApplicationRunner {
         return constBeanSet;
     }
 
-
-    /**
-     * 将常量保存到redis中
-     */
-    @Override
-    @SuppressWarnings("all")
-    public void run(ApplicationArguments args) {
-
-        Object obj = redisService.getRedisTemplate().execute((RedisCallback) connection -> {
-
-            connection.select(RedisDbConstant.REDIS_DB_DEFAULT);
-
-            StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-            GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
-
-            byte[] key = stringRedisSerializer.serialize("auth.const.all");
-            byte[] domain = stringRedisSerializer.serialize(System.getProperty("domain"));
-            byte[] value = genericJackson2JsonRedisSerializer.serialize(getAllConstList());
-
-            assert key != null;
-            assert domain != null;
-            assert value != null;
-            return connection.hSet(key, domain, value);
-        });
-
-        logger.info("============================常量数据保存redis完成============================");
-    }
 }

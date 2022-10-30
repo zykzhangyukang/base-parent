@@ -49,7 +49,7 @@
 
         <logger name="java.sql.Connection" level="DEBUG" additivity="false"/>
         <logger name="java.sql.Statement" level="DEBUG" additivity="false"/>
-        <logger name="com.coderman" level="DEBUG" additivity="true"/>
+        <logger name="com.coderman" level="INFO" additivity="true"/>
     </springProfile>
 
 

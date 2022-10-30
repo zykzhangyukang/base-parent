@@ -40,7 +40,7 @@ public class XssFilter implements Filter {
             excludes.addAll(Arrays.asList(url));
         }
 
-        log.info("============================XSS过滤器初始化============================");
+        log.info("XSS过滤器初始化");
     }
 
     @Override

@@ -60,6 +60,13 @@ public class MsgMeta extends BaseModel {
     private List<MsgTableMeta> tableMetaList;
 
 
+    /**
+     * 构建消息元数据
+     * {"plan":"insert_sku_pim_catalog","tables":[{"code":"insert_sku_pim_catalog","unique":["1","2"]}],
+     * "createTime":"2022-10-30 10:32:02","src":"demo","msgId":"93af36808b614a028365faea9a014c05"}
+     * @param msg 消息内容
+     * @return 消息元数据
+     */
     public static MsgMeta build(String msg) {
 
         JSONObject msgJson = (JSONObject) JSONObject.parse(msg, Feature.OrderedField);

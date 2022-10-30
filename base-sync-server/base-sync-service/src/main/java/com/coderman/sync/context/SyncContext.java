@@ -1,6 +1,5 @@
 package com.coderman.sync.context;
 
-import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
@@ -89,11 +88,11 @@ public class SyncContext {
 
     /**
      * 同步数据
-     * @param msg
-     * @param mqId
-     * @param msgSrc
-     * @param retryTimes
-     * @return
+     * @param msg 消息内容
+     * @param mqId mq消息id
+     * @param msgSrc 消息来源
+     * @param retryTimes 重试次数
+     * @return 同步结果
      */
     public String syncData(String msg, String mqId, String msgSrc, int retryTimes) {
 
@@ -122,7 +121,7 @@ public class SyncContext {
     /**
      * 结束同步任务
      *
-     * @return
+     * @return 同步任务数量
      */
     private int endSync() {
 

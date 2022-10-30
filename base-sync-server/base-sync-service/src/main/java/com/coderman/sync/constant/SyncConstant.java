@@ -20,8 +20,6 @@ public interface SyncConstant {
 
     /**
      * 消息处理结果
-     *
-     * @return
      */
     public static final String SYNC_END = "end";
     public static final String SYNC_RETRY = "retry";

@@ -3,18 +3,24 @@ package com.coderman.service.util;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.omg.CORBA.PUBLIC_MEMBER;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -236,8 +242,37 @@ public class ExcelUtil {
      * @param <T>
      * @return
      */
-    private static <T> ResultVO<List<T>> parse(Class<T> clazz, FileInputStream fileInputStream, Integer titleRow, String excelType) {
+    private static <T> ResultVO<List<T>> parse(Class<T> clazz, FileInputStream fileInputStream, Integer titleRow, String excelType) throws Exception {
         return ExcelUtil.parse(clazz, fileInputStream, titleRow + 1, true, excelType, TEMPLATE_SHEET_INDEX);
+    }
+
+
+    /**
+     * 解析没有标题的excel
+     *
+     * @param clazz
+     * @param excelFile
+     * @param dataRow
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> ResultVO<List<T>> parseWithoutTitle(Class<T> clazz, File excelFile, Integer dataRow) throws Exception {
+
+        String excelType = excelFile.getName().substring(excelFile.getName().lastIndexOf("."));
+
+        if (!EXCEL_SUFFIX_XLS.equals(excelType) && !EXCEL_SUFFIX_XLSX.equals(excelType)) {
+
+            return ResultUtil.getList(null, ResultConstant.RESULT_CODE_402, "文件后缀名错误", null);
+        }
+
+        return ExcelUtil.parseWithoutTitle(clazz, new FileInputStream(excelFile), dataRow, excelType);
+    }
+
+
+    public static <T> ResultVO<List<T>> parseWithoutTitle(Class<T> clazz, FileInputStream fileInputStream, Integer dataRow, String excelType) throws Exception {
+
+        return ExcelUtil.parse(clazz, fileInputStream, dataRow, false, excelType, TEMPLATE_SHEET_INDEX);
     }
 
     /**
@@ -252,8 +287,277 @@ public class ExcelUtil {
      * @param <T>
      * @return
      */
-    private static <T> ResultVO<List<T>> parse(Class<T> clazz, FileInputStream fileInputStream, int dataRow, boolean isHasTitle, String excelType, Integer sheetNumber) {
-        return null;
+    @SuppressWarnings("all")
+    private static <T> ResultVO<List<T>> parse(Class<T> clazz, FileInputStream fileInputStream, int dataRow, boolean isHasTitle, String excelType, Integer sheetNumber) throws Exception {
+
+        Workbook workbook = null;
+
+        try {
+
+            if (fileInputStream.getChannel().size() > EXCEL_MAX_SIZE) {
+
+                return ResultUtil.getList(clazz, ResultConstant.RESULT_CODE_402, "文件大小不能超过20m", null);
+            }
+
+            // 2003
+            if (EXCEL_SUFFIX_XLS.equals(excelType)) {
+
+                workbook = new HSSFWorkbook(fileInputStream);
+            } else {
+
+                workbook = new XSSFWorkbook(fileInputStream);
+            }
+
+            Sheet sheet = workbook.getSheetAt(sheetNumber);
+
+            // 根据标题行获取类Set方法集合
+            List<Method> methodList = ExcelUtil.getClassSetMethodList(clazz, sheet, dataRow - 1, isHasTitle);
+
+            List<Integer> requiredColumnList = new ArrayList<>();
+
+            if (isHasTitle) {
+
+                requiredColumnList.addAll(ExcelUtil.getRequiredColumnList(sheet, dataRow - 1));
+            }
+
+            // 根据获取类中时间字段格式化集合
+            Map<Integer, String> dateFormatMap = ExcelUtil.getDateFieldParttern(clazz);
+
+
+            // 解析结果集合
+            List<T> resultList = new ArrayList<>();
+
+            for (int rowIndex = dataRow; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+
+                Row row = sheet.getRow(rowIndex);
+
+                if (row == null) {
+
+                    continue;
+                }
+
+                int columnIndex = DATA_START_COLUMN;
+
+                T object = clazz.newInstance();
+
+                for (Method method : methodList) {
+
+
+                    String errorMessage = StringUtils.EMPTY;
+
+                    String cellValue = ExcelUtil.getCellStringValue(row.getCell(columnIndex));
+
+                    if (requiredColumnList.contains(columnIndex) && StringUtils.isBlank(cellValue)) {
+
+                        errorMessage = "第" + (rowIndex + 1) + "行第" + (columnIndex + 1) + "列数据不能为空";
+                        return ResultUtil.getList(clazz, ResultConstant.RESULT_CODE_402, errorMessage, null);
+                    }
+
+                    if (StringUtils.isBlank(cellValue)) {
+
+                        columnIndex++;
+                        continue;
+                    }
+
+                    Class fieldType = method.getParameterTypes()[0];
+
+                    // 布尔
+                    if (fieldType.equals(Boolean.class)) {
+
+                        try {
+                            method.invoke(object, new Boolean(cellValue));
+                        } catch (Exception e) {
+                            errorMessage = "第" + (rowIndex + 1) + "行第" + (columnIndex + 1) + "列数据不是布尔类型";
+                        }
+                    }
+
+                    // 整型
+                    if (fieldType.equals(Integer.class)) {
+
+                        try {
+                            if (isInteger(cellValue)) {
+
+                                method.invoke(object, new BigDecimal(cellValue).intValue());
+                            } else {
+                                errorMessage = "第" + (rowIndex + 1) + "行第" + (columnIndex + 1) + "列数据不是整数类型";
+                            }
+                        } catch (Exception e) {
+                            errorMessage = "第" + (rowIndex + 1) + "行第" + (columnIndex + 1) + "列数据不是整数类型";
+                        }
+                    }
+
+                    // 小数
+                    if (fieldType.equals(BigDecimal.class)) {
+
+                        try {
+
+                            method.invoke(object, new BigDecimal(cellValue));
+
+                        } catch (Exception e) {
+                            errorMessage = "第" + (rowIndex + 1) + "行第" + (columnIndex + 1) + "列数据不是小数类型";
+                        }
+                    }
+
+                    // 字符串
+                    if (fieldType.equals(String.class)) {
+
+                        method.invoke(object, cellValue);
+                    }
+
+                    // 时间
+                    if (fieldType.equals(Date.class)) {
+
+                        try {
+
+                            method.invoke(object, DateUtils.parseDate(cellValue, dateFormatMap.get(columnIndex)));
+
+                        } catch (Exception e) {
+                            errorMessage = "第" + (rowIndex + 1) + "行第" + (columnIndex + 1) + "列数据不是时间类型";
+                        }
+                    }
+
+                    // 有错误直接返回
+                    if (StringUtils.isNotBlank(errorMessage)) {
+
+                        return ResultUtil.getList(clazz, ResultConstant.RESULT_CODE_402, errorMessage, null);
+                    }
+
+                    columnIndex++;
+                }
+
+                resultList.add(object);
+            }
+
+            return ResultUtil.getSuccessList(clazz, resultList);
+
+        } catch (Exception e) {
+
+            throw e;
+        } finally {
+
+            if (workbook != null) {
+
+                workbook.close();
+            }
+        }
+    }
+
+    private static <T> Map<Integer, String> getDateFieldParttern(Class<T> clazz) {
+
+        Map<Integer, String> datePartternMap = new HashMap<>();
+
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+
+            field.setAccessible(true);
+
+            DateTimeFormat dateTimeFormat = field.getAnnotation(DateTimeFormat.class);
+
+            if (dateTimeFormat != null) {
+
+                datePartternMap.put(i, dateTimeFormat.pattern());
+            }
+        }
+
+        return datePartternMap;
+    }
+
+    private static List<Integer> getRequiredColumnList(Sheet sheet, int titleRow) {
+
+        List<Integer> requiredList = new ArrayList<>();
+
+        Row row = sheet.getRow(titleRow);
+
+        if (row != null) {
+
+            for (int columnIndex = 0; columnIndex < row.getLastCellNum(); columnIndex++) {
+
+                Cell cell = row.getCell(columnIndex);
+                if (cell == null) {
+                    continue;
+                }
+
+                if (cell.getCellComment() != null && DATA_REQUIRE_FLAG.equals(cell.getCellComment().getString().getString().trim())) {
+
+                    requiredList.add(columnIndex);
+                }
+            }
+        }
+
+        return requiredList;
+    }
+
+    /**
+     * 获取字段的set方法
+     * @param clazz
+     * @param sheet
+     * @param titleRow
+     * @param isHasTitle
+     * @param <T>
+     * @return
+     */
+    private static <T> List<Method> getClassSetMethodList(Class<T> clazz, Sheet sheet, int titleRow, boolean isHasTitle) {
+
+        List<Method> methodList = new ArrayList<>();
+
+        Map<String, Method> methodMap = new HashMap<>();
+
+        Method[] methods = clazz.getMethods();
+
+        for (Method method : methods) {
+
+            methodMap.put(method.getName(), method);
+        }
+
+        if (isHasTitle) {
+
+            List<String> titleNameList = new ArrayList<>();
+
+            Row row = sheet.getRow(titleRow);
+
+            if (row != null) {
+
+                for (int columnIndex = 0; columnIndex < row.getLastCellNum(); columnIndex++) {
+
+                    Cell cell = row.getCell(columnIndex);
+
+                    String cellValue = ExcelUtil.getCellStringValue(cell);
+
+                    if (cell != null && StringUtils.isNotBlank(cellValue)) {
+
+                        titleNameList.add(cellValue);
+                    }
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(titleNameList)) {
+
+                Field[] fields = clazz.getDeclaredFields();
+
+                for (Field field : fields) {
+
+                    field.setAccessible(true);
+                    String titleName = field.getAnnotation(ApiModelProperty.class).value();
+
+                    if (titleNameList.contains(titleName)) {
+
+                        methodList.add(methodMap.get("set" + StringUtils.capitalize(field.getName())));
+                    }
+                }
+            }
+        } else {
+
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+
+                field.setAccessible(true);
+                methodList.add(methodMap.get("set" + StringUtils.capitalize(field.getName())));
+            }
+        }
+
+        return methodList;
     }
 
 

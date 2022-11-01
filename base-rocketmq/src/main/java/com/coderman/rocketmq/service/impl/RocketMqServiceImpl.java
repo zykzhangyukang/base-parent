@@ -1,179 +1,98 @@
 package com.coderman.rocketmq.service.impl;
 
-import com.coderman.rocketmq.dao.MqMsgDAO;
-import com.coderman.rocketmq.enums.MsgStatus;
-import com.coderman.rocketmq.model.MqMsgExample;
-import com.coderman.rocketmq.model.MqMsgModel;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.coderman.rocketmq.constant.RocketMqSysConstant;
 import com.coderman.rocketmq.service.RocketMqService;
-import com.coderman.service.util.UUIDUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import com.coderman.rocketmq.vo.BaseMqMessage;
 import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.common.message.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StopWatch;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.apache.rocketmq.spring.support.RocketMQHeaders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import javax.annotation.Resource;
 
-/**
- * @author coderman
- * @date 2022/6/2222:13
- */
-@Service
-@Slf4j
+@Component
 public class RocketMqServiceImpl implements RocketMqService {
 
-    @Autowired
-    private MqMsgDAO mqMsgDAO;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RocketMqServiceImpl.class);
 
-    @Autowired
-    private DefaultMQProducer defaultMQProducer;
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
 
-    @Value("${spring.application.name}")
-    private String applicationName;
-
-
-    private final ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-
-
+    /**
+     * 同步消息
+     * @param topic 主题
+     * @param tag 标签
+     * @param message 消息体
+     * @param <T>
+     * @return
+     */
     @Override
-    public void sendMsg(String tag, String msg) {
-
-        final MqMsgModel msgModel = new MqMsgModel();
-
-        msgModel.setTag(tag);
-        msgModel.setRetry(0);
-        msgModel.setCreateTime(new Date());
-        msgModel.setUuid(UUIDUtils.getPrimaryValue());
-        msgModel.setMsg(msg);
-
-        msgModel.setSendStatus(MsgStatus.wait.name());
-
-        this.mqMsgDAO.insert(msgModel);
-
-        // 先判断是否有事务,如果有本地执行提交之后,在事务提交之后发送消息到RocketMQ
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-
-
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-
-                @Override
-                public void afterCommit() {
-
-                    log.info("rocket send after tx,msg:{}", msg);
-                    sendMsg0(msgModel);
-                }
-            });
-        } else {
-
-            log.info("rocket send after no tx,msg:{}", msg);
-            sendMsg0(msgModel);
-        }
-
+    public <T extends BaseMqMessage> SendResult send(String topic, String tag, T message) {
+        return send(topic + RocketMqSysConstant.DELIMITER + tag, message);
     }
 
-    private void sendMsg0(final MqMsgModel msg) {
-
-        this.threadPoolExecutor.execute(() -> {
-
-            try {
-
-                MqMsgModel model = new MqMsgModel();
-
-                // 先将状态改为发送中
-                if (MsgStatus.fail.name().equals(msg.getSendStatus())) {
-                    model.setRetry(msg.getRetry() + 1);
-                }
-
-                model.setUuid(msg.getUuid());
-                model.setSendStatus(MsgStatus.sending.name());
-
-                mqMsgDAO.updateByPrimaryKeySelective(model);
-
-                // 发送消息,没有抛出异常说明消息发送成功
-                Message message = new Message(applicationName + "_topic", msg.getTag(), StringUtils.EMPTY, msg.getMsg().getBytes(StandardCharsets.UTF_8));
-                SendResult sendResult = defaultMQProducer.send(message);
-
-
-                if (null != sendResult) {
-
-                    model.setMid(sendResult.getMsgId());
-                    model.setSendStatus(MsgStatus.sent.name());
-                } else {
-
-                    model.setSendStatus(MsgStatus.fail.name());
-                }
-
-                mqMsgDAO.updateByPrimaryKeySelective(model);
-
-
-            } catch (Exception e) {
-
-
-                MqMsgModel model = new MqMsgModel();
-
-                model.setUuid(msg.getUuid());
-                model.setSendStatus(MsgStatus.fail.name());
-
-                mqMsgDAO.updateByPrimaryKeySelective(model);
-
-                log.error("send rocket error:{}",e.getMessage());
-            }
-        });
-
+    /**
+     * 延迟消息
+     * @param topic 主题
+     * @param tag 标签
+     * @param message 消息体
+     * @param delayLevel 延迟等级
+     * @param <T>
+     * @return
+     */
+    @Override
+    public <T extends BaseMqMessage> SendResult send(String topic, String tag, T message, int delayLevel) {
+        return send(topic + RocketMqSysConstant.DELIMITER + tag, message, delayLevel);
     }
 
-    @Override
-    public void resendMsg() {
 
-        // 将待发送/发送中，创建时间在10分钟前的消息标记为失败
-        MqMsgExample example = new MqMsgExample();
-        MqMsgExample.Criteria criteria = example.createCriteria();
+    /**
+     * 构建目的地
+     */
+    private String buildDestination(String topic, String tag) {
+        return topic + RocketMqSysConstant.DELIMITER + tag;
+    }
 
-        criteria.andSendStatusIn(Arrays.asList(MsgStatus.sending.name(), MsgStatus.wait.name()));
-        criteria.andCreateTimeLessThanOrEqualTo(new Date(System.currentTimeMillis() - 10 * 60 * 1000));
+    /**
+     * 发送同步消息
+     *
+     * @param destination 目的地
+     * @param message 消息内容
+     * @param <T> 消息
+     * @return 消息
+     */
+    private <T extends BaseMqMessage> SendResult send(String destination, T message) {
 
-        MqMsgModel model = new MqMsgModel();
-        model.setSendStatus(MsgStatus.fail.name());
+        // 更多的其它基础业务处理...
+        Message<T> sendMessage = MessageBuilder.withPayload(message).setHeader(RocketMQHeaders.KEYS, message.getKey()).build();
+        SendResult sendResult = rocketMQTemplate.syncSend(destination, sendMessage);
 
-        this.mqMsgDAO.updateByExampleSelective(model, example);
-
-
-        // 处理发送失败，重试次数在6次以内的记录
-        MqMsgExample mqMsgExample = new MqMsgExample();
-        MqMsgExample.Criteria exampleCriteria = mqMsgExample.createCriteria();
-
-        exampleCriteria.andSendStatusEqualTo(MsgStatus.fail.name());
-        exampleCriteria.andRetryLessThanOrEqualTo(6);
-
-        List<MqMsgModel> mqMsgModels = this.mqMsgDAO.selectByExample(mqMsgExample);
-
-        if (!CollectionUtils.isEmpty(mqMsgModels)) {
-
-            StopWatch stopWatch = new StopWatch();
+        // 此处为了方便查看给日志转了json，根据选择选择日志记录方式，例如ELK采集
+        LOGGER.info("[{}]同步消息[{}]发送结果[{}]", destination, JSON.toJSONString(message), JSONObject.toJSON(sendResult));
+        return sendResult;
+    }
 
 
-            stopWatch.start();
-            for (MqMsgModel mqMsgModel : mqMsgModels) {
+    /**
+     * 发送延迟消息
+     * @param destination 目的地
+     * @param message 消息内容
+     * @param delayLevel 延迟等级
+     * @param <T> 消息
+     * @return 消息
+     */
+    private  <T extends BaseMqMessage> SendResult send(String destination, T message, int delayLevel) {
 
-                this.sendMsg0(mqMsgModel);
-            }
-            stopWatch.stop();
+        Message<T> sendMessage = MessageBuilder.withPayload(message).setHeader(RocketMQHeaders.KEYS, message.getKey()).build();
+        SendResult sendResult = rocketMQTemplate.syncSend(destination, sendMessage, 3000, delayLevel);
 
-
-            log.info("失败消息补偿定时器,本次处理消息size:{}, 失败消息补偿定时器,耗时:{} ms", mqMsgModels.size(), stopWatch.getTotalTimeMillis());
-        }
-
+        LOGGER.info("[{}]延迟等级[{}]消息[{}]发送结果[{}]", destination, delayLevel, JSON.toJSONString(message), JSONObject.toJSON(sendResult));
+        return sendResult;
     }
 }

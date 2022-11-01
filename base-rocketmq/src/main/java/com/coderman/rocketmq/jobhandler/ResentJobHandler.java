@@ -1,6 +1,6 @@
 package com.coderman.rocketmq.jobhandler;
 
-import com.coderman.rocketmq.service.RocketMqService;
+import com.coderman.rocketmq.service.RocketMqSqlService;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
@@ -18,12 +18,12 @@ import javax.annotation.Resource;
 public class ResentJobHandler extends IJobHandler {
 
     @Resource
-    private RocketMqService rocketMqService;
+    private RocketMqSqlService rocketMqSqlService;
 
     @Override
     public ReturnT<String> execute(String param) throws Exception {
 
-        rocketMqService.resendMsg();
+        rocketMqSqlService.resendMsg();
 
         return ReturnT.SUCCESS;
     }

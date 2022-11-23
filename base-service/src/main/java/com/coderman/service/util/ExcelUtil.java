@@ -2,24 +2,30 @@ package com.coderman.service.util;
 
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.ExportPartVO;
 import com.coderman.api.vo.ResultVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -321,7 +327,7 @@ public class ExcelUtil {
             }
 
             // 根据获取类中时间字段格式化集合
-            Map<Integer, String> dateFormatMap = ExcelUtil.getDateFieldParttern(clazz);
+            Map<Integer, String> dateFormatMap = ExcelUtil.getDateFieldPattern(clazz);
 
 
             // 解析结果集合
@@ -442,9 +448,213 @@ public class ExcelUtil {
         }
     }
 
-    private static <T> Map<Integer, String> getDateFieldParttern(Class<T> clazz) {
 
-        Map<Integer, String> datePartternMap = new HashMap<>();
+    public static <T> void export(List<String> hiddenDataList, Integer startRow, List<T> dataList, String templateFileName) throws Exception {
+        ExcelUtil.export(hiddenDataList, startRow, dataList, templateFileName, templateFileName);
+    }
+
+    public static <T> void export(List<String> hiddenDataList, Integer startRow, List<T> dataList, String templateFileName, String downloadFileName) throws Exception {
+        ExcelUtil.export(hiddenDataList, startRow, dataList, templateFileName, downloadFileName, null);
+    }
+
+    private static <T> void export(List<String> hiddenDataList, Integer startRow, List<T> ruleDataList, String templateFileName, String downloadFileName, Integer partSheetNumber) throws Exception {
+
+        List<List<T>> partDataList = null;
+
+        if (partSheetNumber != null && partSheetNumber > 0) {
+
+            partDataList = ListUtils.partition(ruleDataList, partSheetNumber);
+        } else {
+
+            partDataList = Arrays.asList(ruleDataList);
+        }
+
+
+        List<ExportPartVO<T>> exportPartVOList = new ArrayList<>();
+
+        for (List<T> partData : partDataList) {
+
+            ExportPartVO exportPartVO = new ExportPartVO<>();
+
+            exportPartVO.setHiddenDataList(hiddenDataList);
+            exportPartVO.setRuleDataList(partData);
+            exportPartVOList.add(exportPartVO);
+        }
+
+        ExcelUtil.export(exportPartVOList, startRow, templateFileName, downloadFileName);
+    }
+
+
+    public static <T> void export(List<ExportPartVO<T>> exportPartVOList, Integer startRow, String templateFileName, String downloadFileName) throws Exception {
+
+        Workbook workbook = null;
+
+        try {
+
+            String fileSuffix = EXCEL_SUFFIX_XLS;
+
+            InputStream inputStream = ExcelUtil.class.getResourceAsStream("/" + TEMPLATE_FILE_DIRECTORY + "/" + templateFileName + fileSuffix);
+
+            if (inputStream != null) {
+
+                workbook = new HSSFWorkbook(inputStream);
+            } else {
+
+                fileSuffix = EXCEL_SUFFIX_XLSX;
+                inputStream = ExcelUtil.class.getResourceAsStream("/" + TEMPLATE_FILE_DIRECTORY + "/" + templateFileName + fileSuffix);
+
+                if (inputStream == null) {
+
+                    throw new NullPointerException("模板文件为空!");
+                }
+
+                workbook = new XSSFWorkbook(inputStream);
+            }
+
+            int sheetCount = workbook.getNumberOfSheets();
+
+            for (int i = 0; i < sheetCount; i++) {
+                workbook.setSheetHidden(i, true);
+            }
+
+            int sheetNumber = ACTIVE_SHEET_INDEX;
+
+            for (ExportPartVO<T> exportPartVO : exportPartVOList) {
+
+                Sheet exportSheet = workbook.cloneSheet(TEMPLATE_SHEET_INDEX);
+
+                workbook.setSheetOrder(exportSheet.getSheetName(), sheetNumber);
+                workbook.setSheetName(sheetNumber, downloadFileName + "(" + sheetNumber + ")");
+
+                ExcelUtil.writeSheet(exportSheet, startRow, exportPartVO.getHiddenDataList(), exportPartVO.getRuleDataList());
+
+                sheetNumber++;
+            }
+
+            workbook.setActiveSheet(ACTIVE_SHEET_INDEX);
+
+            HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+
+            assert response != null;
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+            response.setHeader("content-disposition", "attachment;filename=" + new String((downloadFileName + fileSuffix).getBytes(), StandardCharsets.ISO_8859_1));
+
+        } catch (Exception e) {
+
+            throw e;
+        } finally {
+
+            if (workbook != null) {
+
+                workbook.close();
+            }
+        }
+
+
+    }
+
+    private static <T> void writeSheet(Sheet sheet, Integer startDataRow, List<String> hiddenDataList, List<T> ruleDataList) throws Exception {
+
+        CellStyle cellBorderStyle = sheet.getWorkbook().createCellStyle();
+
+        cellBorderStyle.setBorderBottom(BorderStyle.THIN);
+        cellBorderStyle.setBorderLeft(BorderStyle.THIN);
+        cellBorderStyle.setBorderTop(BorderStyle.THIN);
+        cellBorderStyle.setBorderRight(BorderStyle.THIN);
+
+        Font font = ExcelUtil.getSheetFont(sheet);
+
+        if (font != null) {
+            cellBorderStyle.setFont(font);
+        }
+
+        ExcelUtil.writeRow(sheet, HIDDEN_DATA_ROW, hiddenDataList, cellBorderStyle);
+
+        ExcelUtil.hiddenRow(sheet, HIDDEN_DATA_ROW);
+
+        if (CollectionUtils.isNotEmpty(ruleDataList)) {
+
+            int exportRowNumber = startDataRow;
+
+
+        }
+
+
+    }
+
+    private static void hiddenRow(Sheet sheet, Integer row) {
+
+        Row rowContent = sheet.getRow(row);
+        if (rowContent != null) {
+
+            rowContent.setZeroHeight(true);
+        }
+    }
+
+    private static void writeRow(Sheet sheet, Integer row, List<String> contentList, CellStyle cellStyle) {
+
+        if (CollectionUtils.isEmpty(contentList)) {
+
+            return;
+        }
+
+        Row rowContent = sheet.getRow(row);
+        if (rowContent == null) {
+
+            rowContent = sheet.createRow(row);
+        }
+
+        int columnIndex = DATA_START_COLUMN;
+
+        for (String content : contentList) {
+
+            Cell cell = rowContent.getCell(columnIndex);
+
+            if (cell == null) {
+
+                cell = rowContent.createCell(columnIndex);
+            }
+
+            cell.setCellType(CellType.STRING);
+
+            if (StringUtils.isNotBlank(content)) {
+
+                cell.setCellValue(content);
+            }
+
+            cell.setCellStyle(cellStyle);
+
+            columnIndex++;
+        }
+    }
+
+    private static Font getSheetFont(Sheet sheet) {
+
+        for (int rowIndex = HIDDEN_DATA_ROW + 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+
+            Row row = sheet.getRow(rowIndex);
+            if (row == null) {
+                continue;
+            }
+
+            for (int columnIndex = DATA_START_COLUMN; columnIndex < row.getLastCellNum(); columnIndex++) {
+
+                Cell cell = row.getCell(columnIndex);
+
+                if (cell != null) {
+
+                    return sheet.getWorkbook().getFontAt(cell.getCellStyle().getFontIndexAsInt());
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    private static <T> Map<Integer, String> getDateFieldPattern(Class<T> clazz) {
+
+        Map<Integer, String> dateFormatMap = new HashMap<>();
 
         Field[] fields = clazz.getDeclaredFields();
 
@@ -457,11 +667,11 @@ public class ExcelUtil {
 
             if (dateTimeFormat != null) {
 
-                datePartternMap.put(i, dateTimeFormat.pattern());
+                dateFormatMap.put(i, dateTimeFormat.pattern());
             }
         }
 
-        return datePartternMap;
+        return dateFormatMap;
     }
 
     private static List<Integer> getRequiredColumnList(Sheet sheet, int titleRow) {
@@ -491,6 +701,7 @@ public class ExcelUtil {
 
     /**
      * 获取字段的set方法
+     *
      * @param clazz
      * @param sheet
      * @param titleRow

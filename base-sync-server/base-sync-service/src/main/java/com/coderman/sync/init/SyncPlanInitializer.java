@@ -42,7 +42,7 @@ public class SyncPlanInitializer {
                             "        <callback dest=\"pim\" desc=\"新增商品目录\"/>\n" +
                             "    </callbacks>\n" +
                             "    <table code=\"insert_sku_pim_catalog\" src=\"sku_catalog\" dest=\"ecp_catalog\" type=\"insert\">\n" +
-                            "        <unique src=\"catalog_id\" dest=\"catalog_id\" />\n" +
+                            "        <unique src=\"catalog_id\" dest=\"catalog_id\"  />\n" +
                             "        <relate src=\"catalog_id\" dest=\"catalog_id\" />\n" +
                             "        <column src=\"catalog_id\" dest=\"catalog_id\" />\n" +
                             "        <column src=\"uuid\" dest=\"uuid\" />\n" +

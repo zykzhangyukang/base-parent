@@ -22,57 +22,57 @@ import java.util.*;
 @Slf4j
 public class TaskUtil {
 
-    protected static TaskResult validateResult(List<SqlMeta> sqlMetaList, MsgMeta msgMeta,Throwable throwable){
+    protected static TaskResult validateResult(List<SqlMeta> sqlMetaList, MsgMeta msgMeta, Throwable throwable) {
 
         TaskResult taskResult = new TaskResult();
         taskResult.setResultList(sqlMetaList);
 
-        if(null !=throwable){
+        if (null != throwable) {
 
             taskResult.setCode(SyncConstant.TASK_CODE_FAIL);
             taskResult.setRetry(true);
 
-            if(throwable instanceof SyncException){
+            if (throwable instanceof SyncException) {
 
 
                 SyncException ex = (SyncException) throwable;
 
-                switch (ex.getErrorCodeEnum()){
+                switch (ex.getErrorCodeEnum()) {
 
                     case DB_NOT_CONNECT:
-                        taskResult.setErrorMsg("配置错误,无法获取数据库链接,"+ex.getMessage());
+                        taskResult.setErrorMsg("配置错误,无法获取数据库链接," + ex.getMessage());
                         break;
                     default:
-                        taskResult.setErrorMsg("未知异常,"+ex.getMessage());
+                        taskResult.setErrorMsg("未知异常," + ex.getMessage());
                 }
 
-                log.error("同步系统异常:{}",throwable.getMessage());
+                log.error("同步系统异常:{}", throwable.getMessage());
 
 
-            }else if(throwable instanceof CannotGetJdbcConnectionException){
+            } else if (throwable instanceof CannotGetJdbcConnectionException) {
 
-                taskResult.setErrorMsg("无法获取数据库连接,"+throwable.getMessage());
-            }else if(throwable instanceof TransactionTimedOutException){
+                taskResult.setErrorMsg("无法获取数据库连接," + throwable.getMessage());
+            } else if (throwable instanceof TransactionTimedOutException) {
 
-                taskResult.setErrorMsg("事务超时:"+throwable.getMessage());
-            }else if(throwable instanceof DuplicateKeyException){
+                taskResult.setErrorMsg("事务超时:" + throwable.getMessage());
+            } else if (throwable instanceof DuplicateKeyException) {
 
-                taskResult.setErrorMsg("主键重复,"+throwable.getMessage());
-            }else if(throwable instanceof BadSqlGrammarException){
+                taskResult.setErrorMsg("主键重复," + throwable.getMessage());
+            } else if (throwable instanceof BadSqlGrammarException) {
 
-                taskResult.setErrorMsg("SQL参数异常,"+throwable.getMessage());
-            }else if(throwable instanceof DataIntegrityViolationException){
+                taskResult.setErrorMsg("SQL参数异常," + throwable.getMessage());
+            } else if (throwable instanceof DataIntegrityViolationException) {
 
-                taskResult.setErrorMsg("数据异常,"+throwable.getMessage());
-            }else {
+                taskResult.setErrorMsg("数据异常," + throwable.getMessage());
+            } else {
 
-                taskResult.setErrorMsg("未知异常,"+throwable.getMessage());
+                taskResult.setErrorMsg("未知异常," + throwable.getMessage());
             }
 
             return taskResult;
         }
 
-        if(CollectionUtils.isEmpty(sqlMetaList)){
+        if (CollectionUtils.isEmpty(sqlMetaList)) {
 
             taskResult.setCode(SyncConstant.TASK_CODE_FAIL);
             taskResult.setErrorMsg("任务创建异常");
@@ -86,27 +86,27 @@ public class TaskUtil {
 
         for (MsgTableMeta msgTableMeta : msgMeta.getTableMetaList()) {
 
-            metaMap.put(msgTableMeta.getCode(),msgTableMeta);
+            metaMap.put(msgTableMeta.getCode(), msgTableMeta);
         }
 
         for (SqlMeta sqlMeta : sqlMetaList) {
 
 
-            if(SyncConstant.OPERATE_TYPE_SELECT.equalsIgnoreCase(sqlMeta.getSqlType())){
+            if (SyncConstant.OPERATE_TYPE_SELECT.equalsIgnoreCase(sqlMeta.getSqlType())) {
 
 
                 // 既然发了同步计划,一定要有同步的数据,否则视为异常
-                if(CollectionUtils.isEmpty(sqlMeta.getResultList())){
+                if (CollectionUtils.isEmpty(sqlMeta.getResultList())) {
 
                     taskResult.setCode(SyncConstant.TASK_CODE_FAIL);
-                    taskResult.setErrorMsg(sqlMeta.getTableCode()+"中源表数据不存在");
+                    taskResult.setErrorMsg(sqlMeta.getTableCode() + "中源表数据不存在");
                     taskResult.setRetry(true);
 
                     return taskResult;
                 }
 
                 // 查询出来的结果集应该大于等于消息中的uniqueKey的数据
-                if(sqlMeta.getParamList().get(0).length > sqlMeta.getResultList().size()){
+                if (sqlMeta.getParamList().get(0).length > sqlMeta.getResultList().size()) {
 
                     List<Object> resultList = new ArrayList<>();
                     for (Map<String, Object> resultMap : sqlMeta.getResultList()) {
@@ -114,25 +114,25 @@ public class TaskUtil {
                         resultList.add(resultMap.get(sqlMeta.getUniqueKey()));
                     }
 
-                    List<Object> paramList = ListUtils.subtract(resultList, Arrays.asList(sqlMeta.getParamList().get(0)));
+                    List<Object> paramList = ListUtils.subtract(Arrays.asList(sqlMeta.getParamList().get(0)), resultList);
 
 
                     // 可能依赖的数据还没有从其他地方同步过来,等待下次重试
 
                     taskResult.setCode(SyncConstant.TASK_CODE_FAIL);
-                    taskResult.setErrorMsg(sqlMeta.getTableCode()+"中源表数据不存在,unique:["+ StringUtils.join(paramList,",")+"]");
+                    taskResult.setErrorMsg(sqlMeta.getTableCode() + " 中源表数据不存在,unique:[" + StringUtils.join(paramList, ",") + "]");
                     taskResult.setRetry(true);
-
                     return taskResult;
+
                 }
-            }else {
+            } else {
 
                 MsgTableMeta msgTableMeta = metaMap.get(sqlMeta.getTableCode());
 
-                if(null !=msgTableMeta && null !=msgTableMeta.getAffectNum() && msgTableMeta.getAffectNum() >0 && sqlMeta.getAffectNum().intValue()!=msgTableMeta.getAffectNum().intValue()){
+                if (null != msgTableMeta && null != msgTableMeta.getAffectNum() && msgTableMeta.getAffectNum() > 0 && sqlMeta.getAffectNum().intValue() != msgTableMeta.getAffectNum().intValue()) {
 
                     taskResult.setCode(SyncConstant.TASK_CODE_FAIL);
-                    taskResult.setErrorMsg("数据库操作实际影响行数与与消息中预估不一致,["+sqlMeta.getAffectNum()+","+msgTableMeta.getAffectNum()+"],语句->"+sqlMeta.getSql());
+                    taskResult.setErrorMsg("数据库操作实际影响行数与与消息中预估不一致,[" + sqlMeta.getAffectNum() + "," + msgTableMeta.getAffectNum() + "],语句->" + sqlMeta.getSql());
                     taskResult.setRetry(true);
 
                     return taskResult;

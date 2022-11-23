@@ -80,6 +80,7 @@ public class GetDataTask extends AbstractTask {
             sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_SELECT);
             sqlMeta.setUniqueKey(tableMeta.getUnique().getKey());
             sqlMeta.setParamList(SyncConvert.toArrayList(paramList));
+            sqlMeta.setTableCode(tableMeta.getCode());
 
             executor.sql(sqlMeta);
         }

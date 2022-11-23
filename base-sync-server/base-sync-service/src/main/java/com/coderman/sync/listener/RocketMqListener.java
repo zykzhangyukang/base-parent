@@ -46,7 +46,9 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
                 logger.error("consumeMessage-重复消息,标记成功:" + message.getMsgId());
                 return;
             }
+
         } catch (Exception e) {
+
             logger.error("consumeMessage-exception:" + e.getMessage());
         }
 
@@ -77,13 +79,12 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
 
             if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
 
-                logger.error("_sync_mq_listener:同步结果:" + result);
                 throw new SyncException("消息处理失败:" + result);
             }
 
         } catch (Exception e) {
 
-            logger.error("消息处理失败:{}", e.getMessage());
+            logger.error("消息处理异常:{}", e.getMessage());
             throw e;
         }
 

@@ -14,11 +14,13 @@ public class SyncException extends RuntimeException{
 
     public SyncException(String message) {
         super(message);
+        this.message = message;
     }
 
 
     public SyncException(ErrorCodeEnum errorCodeEnum,String message) {
         super(message);
         this.errorCodeEnum = errorCodeEnum;
+        this.message = message;
     }
 }

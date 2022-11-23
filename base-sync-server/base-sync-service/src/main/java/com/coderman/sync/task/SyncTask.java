@@ -1,9 +1,11 @@
 package com.coderman.sync.task;
 
+import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
+import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.plan.meta.MsgMeta;
 import com.coderman.sync.plan.meta.MsgTableMeta;
 import com.coderman.sync.plan.meta.PlanMeta;
@@ -37,8 +39,8 @@ public class SyncTask {
     /**
      * 构建同步任务
      *
-     * @param msg 消息内容
-     * @param mqId mq消息id
+     * @param msg        消息内容
+     * @param mqId       mq消息id
      * @param retryTimes 重试次数
      * @return 同步任务
      */
@@ -55,7 +57,7 @@ public class SyncTask {
         resultModel.setStatus(PlanConstant.RESULT_STATUS_SUCCESS);
         resultModel.setMsgCreateTime(msgMeta.getCreateDate());
         resultModel.setMsgContent(msg);
-        resultModel.setMsgId(mqId);
+        resultModel.setMsgId(msgMeta.getMsgId());
         resultModel.setMqId(mqId);
         resultModel.setRepeatCount(retryTimes);
         resultModel.setSyncTime(new Date());
@@ -68,6 +70,7 @@ public class SyncTask {
 
             log.error("同步计划不存在,{}", msg);
             resultModel.setErrorMsg("同步计划不存在," + msg);
+            syncTask.setResultModel(resultModel);
             return syncTask;
         }
 
@@ -84,17 +87,13 @@ public class SyncTask {
 
             if (!planMeta.containsCode(tableMeta.getCode())) {
 
-                resultModel.setErrorMsg("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg);
-                syncTask.setResultModel(resultModel);
-
-                return syncTask;
+                throw new SyncException("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg);
             }
         }
 
         syncTask.setMsgMeta(msgMeta);
         syncTask.setPlanMeta(planMeta);
         syncTask.setResultModel(resultModel);
-
         return syncTask;
     }
 
@@ -106,7 +105,15 @@ public class SyncTask {
      */
     public String sync() {
 
-        TaskResult taskResult  = null;
+        TaskResult taskResult;
+
+
+        // 判断同步任务是否正常
+        if (StringUtils.isNotBlank(this.resultModel.getErrorMsg())) {
+
+
+            return SyncConstant.SYNC_RETRY;
+        }
 
         try {
 
@@ -115,24 +122,21 @@ public class SyncTask {
 
 
             // 2. 执行SQL查询源表操作
-            taskResult =  getDataTask.process();
+            taskResult = getDataTask.process();
 
 
-
-            // TODO
-
-            if(SyncConstant.TASK_CODE_SUCCESS.equalsIgnoreCase(taskResult.getCode())){
+            if (SyncConstant.TASK_CODE_SUCCESS.equalsIgnoreCase(taskResult.getCode())) {
 
                 return SyncConstant.SYNC_END;
 
-            }else {
+            } else {
 
                 return SyncConstant.SYNC_RETRY;
             }
 
-        }catch (Throwable e){
+        } catch (Throwable e) {
 
-            log.error("同步数据错误,msgContent->"+this.resultModel.getMsgContent()+",exception->"+e);
+            this.resultModel.setErrorMsg(e.getMessage());
             throw e;
         }
 

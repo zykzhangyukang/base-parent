@@ -14,7 +14,7 @@ public class SyncConvert {
     public static List<String> SUPPORT_TYPE = Arrays.asList("int","string","objectid");
 
     public static final String DATA_TYPE_INT = "int";
-    public static final String DATA_TYPE_STRING = "int";
+    public static final String DATA_TYPE_STRING = "string";
     public static final String DATA_TYPE_OBJECTID = "objectid";
 
 

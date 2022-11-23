@@ -35,6 +35,12 @@
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-sync-sdk</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

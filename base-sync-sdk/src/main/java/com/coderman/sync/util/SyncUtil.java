@@ -135,9 +135,9 @@ public class SyncUtil {
         taskThread.setName("MQ消息发送线程");
         taskThread.setUncaughtExceptionHandler((t, e) -> {
 
-            logger.error("线程异常退出,name->{}", t.getName(),e);
+            logger.error("线程异常退出,name->{}", t.getName(), e);
 
-            if("MQ消息发送线程".equalsIgnoreCase(t.getName())){
+            if ("MQ消息发送线程".equalsIgnoreCase(t.getName())) {
 
                 dealTask();
             }
@@ -153,21 +153,21 @@ public class SyncUtil {
     /**
      * 发送消息
      */
-    public static void submit(){
+    public static void submit() {
 
-        if(null!=LOCAL_MAP.get()){
+        if (null != LOCAL_MAP.get()) {
 
 
-            if(taskQueue.size()  > QUEUE_SIZE_ALERT_NUM){
+            if (taskQueue.size() > QUEUE_SIZE_ALERT_NUM) {
 
-                logger.error("同步系统队列长度警报,MQ消息队列已经超过"+QUEUE_SIZE_ALERT_NUM+",请及时处理");
+                logger.error("同步系统队列长度警报,MQ消息队列已经超过" + QUEUE_SIZE_ALERT_NUM + ",请及时处理");
             }
 
 
             for (MsgBody item : LOCAL_MAP.get()) {
 
 
-                logger.info("消息队列,将消息放入发送线程队列,uuid:{}",item.getMsgId());
+                logger.info("消息队列,将消息放入发送线程队列,uuid:{}", item.getMsgId());
                 taskQueue.add(item);
             }
 
@@ -380,7 +380,7 @@ public class SyncUtil {
             builder.append("]");
 
 
-            if(msgItem.getMustAffectRows() !=null){
+            if (msgItem.getMustAffectRows() != null) {
 
                 builder.append(",\"affectNum\":\"").append(msgItem.getMustAffectRows()).append("\"");
             }
@@ -410,12 +410,12 @@ public class SyncUtil {
      */
     public static void clear() {
 
-        if(logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
 
 
             StringBuilder sb = new StringBuilder();
 
-            if(null!= LOCAL_MAP.get()){
+            if (null != LOCAL_MAP.get()) {
 
 
                 for (MsgBody item : LOCAL_MAP.get()) {
@@ -433,7 +433,7 @@ public class SyncUtil {
                 stringBuilder.append(content).append("\r\n\t");
             }
 
-            logger.debug("消息队列,清除消息,uuid:{}",sb.toString()+"\r\n\t"+stringBuilder.toString());
+            logger.debug("消息队列,清除消息,uuid:{}", sb.toString() + "\r\n\t" + stringBuilder.toString());
         }
 
         LOCAL_MAP.remove();

@@ -1,10 +1,13 @@
 package com.coderman.sync.context;
 
+import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.meta.TableMeta;
 import com.coderman.sync.task.SyncTask;
+import com.coderman.sync.task.base.BaseTask;
+import com.coderman.sync.task.support.WriteBackTask;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +111,7 @@ public class SyncContext {
 
         } catch (Exception e) {
 
-            logger.error("同步数据错误:" + e.getMessage() + "exception->" + e);
+            logger.error("同步数据出错:" ,e);
 
         } finally {
 
@@ -214,5 +217,17 @@ public class SyncContext {
 
     public void releaseSyncLocker() {
         this.lockSyncTask = false;
+    }
+
+
+    public void addTaskToDelayQueue(BaseTask task) {
+
+        logger.debug("addTaskToDelayQueue-start:{}", JSON.toJSONString(task));
+
+
+        task.setDelayTime(60);
+
+
+        logger.debug("addTaskToDelayQueue-end");
     }
 }

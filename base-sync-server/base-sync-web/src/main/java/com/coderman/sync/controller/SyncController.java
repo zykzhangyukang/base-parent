@@ -5,7 +5,6 @@ import com.coderman.api.vo.ResultVO;
 import com.coderman.sync.util.MsgBuilder;
 import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
-import com.coderman.sync.vo.PlanMsg;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,11 +15,11 @@ public class SyncController {
 
     @GetMapping(value = "/sync")
     public ResultVO<Void> sync() {
-        PlanMsg planMsg = MsgBuilder
-                .create("insert_sku_pim_catalog", ProjectEnum.SKU, ProjectEnum.PIM)
-                .addIntList("insert_sku_pim_catalog", Arrays.asList(1, 2))
-                .build();
-        SyncUtil.sync(planMsg);
+        SyncUtil.sync(
+                MsgBuilder.create("insert_datasource1_datasource2_user", ProjectEnum.SYS1, ProjectEnum.SYS2)
+                        .addIntList("update_datasource1_datasource2_user", Arrays.asList(1))
+                        .build()
+        );
 
         return ResultUtil.getSuccess();
     }

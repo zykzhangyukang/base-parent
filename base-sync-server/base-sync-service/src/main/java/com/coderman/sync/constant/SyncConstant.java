@@ -4,6 +4,10 @@ public interface SyncConstant {
 
     // 数据库类型 mysql
     public static final String DB_TYPE_MYSQL = "mysql";
+    public static final String DB_TYPE_MONGO = "mongo";
+    public static final String DB_TYPE_MSSQL = "mssql";
+    public static final String DB_TYPE_ORACLE = "oracle";
+
 
     /**
      * 消息类型: 回调,同步

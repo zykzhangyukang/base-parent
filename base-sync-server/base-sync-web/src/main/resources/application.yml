@@ -3,7 +3,7 @@ spring:
     druid:
       username: root
       password: DES@2120FA78BC6EB99B019C119BD8067DB0
-      url: jdbc:mysql://localhost:3306/bos_sku?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://localhost:3306/datasource1?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
     host: 119.91.30.131
     port: 6379
@@ -29,11 +29,11 @@ jdbc:
   mysql$testOnReturn: false
   mysql$testWhileIdle: true
   # 业务系统1
-  bos_sku$url: jdbc:mysql://localhost:3306/bos_sku?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-  bos_sku$username: root
-  bos_sku$password: 2120FA78BC6EB99B019C119BD8067DB0
+  datasource1$url: jdbc:mysql://localhost:3306/datasource1?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+  datasource1$username: root
+  datasource1$password: 2120FA78BC6EB99B019C119BD8067DB0
   # 业务系统2
-  ecp_pim$url: jdbc:mysql://localhost:3306/ecp_pim?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-  ecp_pim$username: root
-  ecp_pim$password: 2120FA78BC6EB99B019C119BD8067DB0
+  datasource2$url: jdbc:mysql://localhost:3306/datasource2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+  datasource2$username: root
+  datasource2$password: 2120FA78BC6EB99B019C119BD8067DB0
 

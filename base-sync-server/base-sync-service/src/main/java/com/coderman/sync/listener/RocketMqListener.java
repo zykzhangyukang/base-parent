@@ -4,22 +4,21 @@ import com.coderman.service.redis.RedisService;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
-import com.coderman.sync.exception.SyncException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
-import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-@RocketMQMessageListener(consumerGroup = "SYNC_CONSUMER_GROUP", topic = "SyncTopic")
 @Component
-public class RocketMqListener implements RocketMQListener<MessageExt> {
+public class RocketMqListener implements MessageListenerConcurrently {
 
     private final static Logger logger = LoggerFactory.getLogger(RocketMqListener.class);
     private final static String SYNC_MSG_ID = "sync_msg_id";
@@ -32,19 +31,20 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
 
 
     @Override
-    public void onMessage(MessageExt message) {
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> messageExtList, ConsumeConcurrentlyContext context) {
 
         int retryTimeLimit = 2;
 
-        String redisKey = SYNC_MSG_ID + message.getMsgId();
+        String redisKey = SYNC_MSG_ID + messageExtList.get(0).getMsgId();
 
         try {
 
             String syncMsgIdFlag = redisService.getString(redisKey, SYNC_REDID_DB);
+
             if (StringUtils.isNotBlank(syncMsgIdFlag) && SYNC_MSG_ID_FLAG.equalsIgnoreCase(syncMsgIdFlag)) {
 
-                logger.error("consumeMessage-重复消息,标记成功:" + message.getMsgId());
-                return;
+                logger.error("consumeMessage-重复消息,标记成功:" + messageExtList.get(0).getMsgId());
+                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
 
         } catch (Exception e) {
@@ -53,43 +53,49 @@ public class RocketMqListener implements RocketMQListener<MessageExt> {
         }
 
 
-        // 获取消息
-        String msg;
+        for (MessageExt message : messageExtList) {
 
-        try {
+            // 获取消息
+            String msg;
 
-            if (message.getReconsumeTimes() > retryTimeLimit) {
+            try {
 
-                logger.error("投送次数超过:" + retryTimeLimit + "次,不处理当前消息,当前" + message.getReconsumeTimes() + "次,msgID:" + message.getMsgId());
-                return;
+                if (message.getReconsumeTimes() > retryTimeLimit) {
+
+                    logger.error("投送次数超过:" + retryTimeLimit + "次,不处理当前消息,当前" + message.getReconsumeTimes() + "次,msgID:" + message.getMsgId());
+                    continue;
+                }
+
+                msg = new String(message.getBody(), StandardCharsets.UTF_8);
+
+            } catch (Exception e) {
+
+                logger.error("MQ消息解码失败:{}", e.getMessage());
+                return ConsumeConcurrentlyStatus.RECONSUME_LATER;
             }
 
-            msg = new String(message.getBody(), StandardCharsets.UTF_8);
 
-        } catch (Exception e) {
+            try {
 
-            logger.error("MQ消息解码失败:{}", e.getMessage());
-            throw new SyncException("MQ消息解码失败:" + e.getMessage());
-        }
+                String result = SyncContext.getContext().syncData(msg, message.getMsgId(), PlanConstant.MSG_ROCKET_MQ, message.getReconsumeTimes());
 
+                if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
 
-        try {
+                    logger.error("RocketMqListener同步结果:{}", result);
+                    return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                }
 
-            String result = SyncContext.getContext().syncData(msg, message.getMsgId(), PlanConstant.MSG_ROCKET_MQ, message.getReconsumeTimes());
+            } catch (Exception e) {
 
-            if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
-
-                throw new SyncException("消息处理失败:" + result);
+                logger.error("消息处理异常:{}", e.getMessage());
+                return ConsumeConcurrentlyStatus.RECONSUME_LATER;
             }
 
-        } catch (Exception e) {
-
-            logger.error("消息处理异常:{}", e.getMessage());
-            throw e;
         }
-
 
         // 如果没有异常都任务消费成功
         redisService.setString(redisKey, SYNC_MSG_ID_FLAG, 60, SYNC_REDID_DB);
+
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
     }
 }

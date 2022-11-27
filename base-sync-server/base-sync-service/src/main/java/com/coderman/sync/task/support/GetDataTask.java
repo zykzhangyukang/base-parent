@@ -11,10 +11,14 @@ import com.coderman.sync.sql.SelectBuilder;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
 public class GetDataTask extends AbstractTask {
+
+
+    private boolean onlyDelete;
 
 
     public GetDataTask(SyncTask syncTask) {
@@ -58,6 +62,13 @@ public class GetDataTask extends AbstractTask {
 
             TableMeta tableMeta = SyncContext.getContext().getTableMeta(syncTask.getPlanMeta().getCode(), msgTableMeta.getCode());
 
+
+            if (SyncConstant.OPERATE_TYPE_DELETE.equals(tableMeta.getType())) {
+
+                this.onlyDelete = true;
+                continue;
+            }
+
             // 构建查询语句
             SelectBuilder selectBuilder = SelectBuilder.create(dbType);
             selectBuilder.table(tableMeta.getSrc());
@@ -85,9 +96,20 @@ public class GetDataTask extends AbstractTask {
             executor.sql(sqlMeta);
         }
 
+        if (CollectionUtils.isNotEmpty(executor.getSqlList()) && this.onlyDelete) {
+
+            this.onlyDelete = false;
+        }
 
         super.setExecutor(executor);
     }
 
 
+    public boolean isOnlyDelete() {
+        return onlyDelete;
+    }
+
+    public void setOnlyDelete(boolean onlyDelete) {
+        this.onlyDelete = onlyDelete;
+    }
 }

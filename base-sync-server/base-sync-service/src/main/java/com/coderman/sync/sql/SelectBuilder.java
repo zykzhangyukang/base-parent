@@ -121,6 +121,7 @@ public class SelectBuilder {
     }
 
 
+    @SuppressWarnings("all")
     public String sql() {
 
 

@@ -11,6 +11,8 @@ import com.coderman.sync.plan.meta.MsgTableMeta;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.task.support.GetDataTask;
+import com.coderman.sync.task.support.SyncDataTask;
+import com.coderman.sync.task.support.WriteBackTask;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,10 @@ public class SyncTask {
 
     // 同步时间
     private Date syncTime;
+
+    public SyncTask() {
+        this.syncTime = new Date();
+    }
 
     /**
      * 构建同步任务
@@ -87,7 +93,9 @@ public class SyncTask {
 
             if (!planMeta.containsCode(tableMeta.getCode())) {
 
-                throw new SyncException("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg);
+                resultModel.setErrorMsg(("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg));
+                syncTask.setResultModel(resultModel);
+                return syncTask;
             }
         }
 
@@ -105,12 +113,11 @@ public class SyncTask {
      */
     public String sync() {
 
-        TaskResult taskResult;
+        TaskResult taskResult = new TaskResult();
 
 
         // 判断同步任务是否正常
         if (StringUtils.isNotBlank(this.resultModel.getErrorMsg())) {
-
 
             return SyncConstant.SYNC_RETRY;
         }
@@ -120,25 +127,58 @@ public class SyncTask {
             // 1. 从源表查询数据
             GetDataTask getDataTask = GetDataTask.build(this);
 
+            if (getDataTask.isOnlyDelete()) {
 
-            // 2. 执行SQL查询源表操作
-            taskResult = getDataTask.process();
-
-
-            if (SyncConstant.TASK_CODE_SUCCESS.equalsIgnoreCase(taskResult.getCode())) {
-
-                return SyncConstant.SYNC_END;
+                taskResult.setCode(SyncConstant.TASK_CODE_SUCCESS);
 
             } else {
 
-                return SyncConstant.SYNC_RETRY;
+                taskResult = getDataTask.process();
             }
+
+
+            if (SyncConstant.TASK_CODE_FAIL.equalsIgnoreCase(taskResult.getCode())) {
+
+                this.resultModel.setErrorMsg(this.resultModel.getErrorMsg() + taskResult.getErrorMsg());
+                return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
+            }
+
+
+            // 2. 同步数据
+            SyncDataTask syncDataTask = SyncDataTask.build(this, taskResult);
+            taskResult = syncDataTask.process();
+
+            if (SyncConstant.TASK_CODE_FAIL.equalsIgnoreCase(taskResult.getCode())) {
+
+                this.resultModel.setErrorMsg(this.resultModel.getErrorMsg() + taskResult.getErrorMsg());
+                return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
+            }
+
+            // 同步完数据,就认为处理成功
+            this.resultModel.setStatus(PlanConstant.RESULT_STATUS_SUCCESS);
+
+
+            // 3. 回写状态
+            WriteBackTask writeBackTask = WriteBackTask.build(this);
+            taskResult = writeBackTask.process();
+
+
+            // 失败不影响流程,可以向下走
+            if (SyncConstant.TASK_CODE_FAIL.equalsIgnoreCase(taskResult.getCode())) {
+
+                this.resultModel.setErrorMsg(this.resultModel.getErrorMsg() + taskResult.getErrorMsg());
+                SyncContext.getContext().addTaskToDelayQueue(writeBackTask);
+            }
+
+            return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
 
         } catch (Throwable e) {
 
+            log.error("同步数据出错,msgContent->" + this.resultModel.getMsgContent() + ",exception->" + e);
             this.resultModel.setErrorMsg(e.getMessage());
-            throw e;
         }
+
+        return SyncConstant.SYNC_RETRY;
 
 
     }

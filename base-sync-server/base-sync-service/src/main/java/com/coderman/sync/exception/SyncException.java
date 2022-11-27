@@ -8,19 +8,24 @@ import lombok.Data;
 @Data
 public class SyncException extends RuntimeException{
 
-    String message;
 
     private ErrorCodeEnum errorCodeEnum;
 
-    public SyncException(String message) {
-        super(message);
-        this.message = message;
+
+    public SyncException(ErrorCodeEnum codeEnum){
+
+        super();
+        this.errorCodeEnum = codeEnum;
     }
 
 
     public SyncException(ErrorCodeEnum errorCodeEnum,String message) {
         super(message);
         this.errorCodeEnum = errorCodeEnum;
-        this.message = message;
+    }
+
+    public ErrorCodeEnum getCode(){
+
+        return this.errorCodeEnum;
     }
 }

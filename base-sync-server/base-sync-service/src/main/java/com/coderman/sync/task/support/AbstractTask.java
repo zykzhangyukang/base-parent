@@ -8,6 +8,7 @@ import com.coderman.sync.task.base.BaseTask;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -44,4 +45,23 @@ public abstract class AbstractTask extends BaseTask {
         return TaskUtil.validateResult(sqlMetaList,this.syncTask.getMsgMeta(),ex);
     }
 
+    public SyncTask getSyncTask() {
+        return syncTask;
+    }
+
+    public void setSyncTask(SyncTask syncTask) {
+        this.syncTask = syncTask;
+    }
+
+    public AbstractExecutor getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(AbstractExecutor executor) {
+        this.executor = executor;
+    }
+
+    public static Logger getLog() {
+        return log;
+    }
 }

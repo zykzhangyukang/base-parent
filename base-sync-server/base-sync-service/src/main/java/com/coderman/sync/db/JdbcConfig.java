@@ -1,7 +1,9 @@
 package com.coderman.sync.db;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public abstract class JdbcConfig extends AbstractDbConfig{
 
@@ -36,8 +38,11 @@ public abstract class JdbcConfig extends AbstractDbConfig{
 
     private String timeBetweenEvictionRunsMillis;
     private String minEvictableIdleTimeMillis;
-    private final String validationQuery = "SELECT 'x'";
+    private String validationQuery = "SELECT 'x'";
     private String testWhileIdle;
     private String testOnBorrow;
     private String testOnReturn;
+
+
+
 }

@@ -1,11 +1,10 @@
 package com.coderman.sync.task;
 
-import com.alibaba.fastjson.JSON;
+import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
-import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.plan.meta.MsgMeta;
 import com.coderman.sync.plan.meta.MsgTableMeta;
 import com.coderman.sync.plan.meta.PlanMeta;
@@ -13,9 +12,11 @@ import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.task.support.GetDataTask;
 import com.coderman.sync.task.support.SyncDataTask;
 import com.coderman.sync.task.support.WriteBackTask;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Date;
 
@@ -26,16 +27,16 @@ import java.util.Date;
 @Data
 public class SyncTask {
 
-    // 同步计划对象
+    @ApiModelProperty(value = "同步计划对象")
     private PlanMeta planMeta;
 
-    // 封装消息对象
+    @ApiModelProperty(value = "封装消息对象")
     private MsgMeta msgMeta;
 
-    // 封装同步结果
+    @ApiModelProperty(value = "封装同步结果")
     private ResultModel resultModel;
 
-    // 同步时间
+    @ApiModelProperty(value = "同步时间")
     private Date syncTime;
 
     public SyncTask() {
@@ -93,6 +94,7 @@ public class SyncTask {
 
             if (!planMeta.containsCode(tableMeta.getCode())) {
 
+                log.error("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg);
                 resultModel.setErrorMsg(("同步计划" + planMeta.getCode() + "中,不存在" + tableMeta.getCode() + "," + msg));
                 syncTask.setResultModel(resultModel);
                 return syncTask;
@@ -119,6 +121,9 @@ public class SyncTask {
         // 判断同步任务是否正常
         if (StringUtils.isNotBlank(this.resultModel.getErrorMsg())) {
 
+            // 插入同步记录
+            this.insertRecord();
+
             return SyncConstant.SYNC_RETRY;
         }
 
@@ -140,6 +145,10 @@ public class SyncTask {
             if (SyncConstant.TASK_CODE_FAIL.equalsIgnoreCase(taskResult.getCode())) {
 
                 this.resultModel.setErrorMsg(this.resultModel.getErrorMsg() + taskResult.getErrorMsg());
+
+                // 插入同步记录
+                this.insertRecord();
+
                 return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
             }
 
@@ -151,6 +160,10 @@ public class SyncTask {
             if (SyncConstant.TASK_CODE_FAIL.equalsIgnoreCase(taskResult.getCode())) {
 
                 this.resultModel.setErrorMsg(this.resultModel.getErrorMsg() + taskResult.getErrorMsg());
+
+                // 插入同步记录
+                this.insertRecord();
+
                 return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
             }
 
@@ -170,17 +183,28 @@ public class SyncTask {
                 SyncContext.getContext().addTaskToDelayQueue(writeBackTask);
             }
 
+            // 插入同步记录
+            this.insertRecord();
+
             return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
 
         } catch (Throwable e) {
 
-            log.error("同步数据出错,msgContent->" + this.resultModel.getMsgContent() + ",exception->" + e);
+            log.error("同步数据出错,msgContent->" + this.resultModel.getMsgContent() + "\n,exception->" + e);
             this.resultModel.setErrorMsg(e.getMessage());
+
+            // 插入同步记录
+            this.insertRecord();
         }
 
         return SyncConstant.SYNC_RETRY;
 
 
+    }
+
+    private void insertRecord() {
+        MongoTemplate mongoTemplate = SpringContextUtil.getBean("mongoTemplate");
+        mongoTemplate.insert(this.resultModel);
     }
 
 }

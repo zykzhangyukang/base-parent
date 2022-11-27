@@ -14,6 +14,17 @@ public enum  ErrorCodeEnum {
 
 
     /**
+     * mongo执行异常
+     */
+    DB_MONGO_ERROR(11),
+
+
+    /**
+     * mongo执行异常
+     */
+    DB_MONGO_DUPLICATE(12),
+
+    /**
      * SQL参数多余
      */
     SQL_PARAM_EXCEED(20),

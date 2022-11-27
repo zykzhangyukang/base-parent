@@ -1,9 +1,7 @@
 package com.coderman.sync.init;
 
 import com.coderman.service.config.PropertyConfig;
-import com.coderman.sync.db.AbstractDbConfig;
-import com.coderman.sync.db.DbConfigBuilder;
-import com.coderman.sync.db.MySQLConfig;
+import com.coderman.sync.db.*;
 import com.coderman.sync.util.SyncBeanUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
@@ -36,8 +34,19 @@ public class DataSourceInitializer {
                 if(dbConfig instanceof MySQLConfig){
 
                     SyncBeanUtil.registerMySQLDataSource((MySQLConfig) dbConfig);
-                }
 
+                }else if( dbConfig instanceof MSSQLConfig){
+
+                    SyncBeanUtil.registerMSSQLDataSource((MSSQLConfig) dbConfig);
+
+                }else if(dbConfig instanceof OracleConfig){
+
+                    SyncBeanUtil.registerOracleDataSource((OracleConfig) dbConfig);
+
+                }else if(dbConfig instanceof MongoConfig){
+
+                    SyncBeanUtil.registerMongoDataSource((MongoConfig) dbConfig);
+                }
 
             }
 

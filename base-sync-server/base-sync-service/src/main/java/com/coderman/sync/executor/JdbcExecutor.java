@@ -47,10 +47,10 @@ public class JdbcExecutor extends AbstractExecutor {
                     throw new SyncException(ErrorCodeEnum.SQL_PARAM_EXCEED);
                 }
 
-                // 打印sql日志
-                this.printLog(sqlMeta.getSql(), sqlMeta.getParamList());
-
                 try {
+
+                    // 打印sql日志
+                    this.printLog(sqlMeta.getSql(), sqlMeta.getParamList());
 
                     // 查询数据
                     List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sqlMeta.getSql(), sqlMeta.getParamList().get(0));
@@ -84,60 +84,62 @@ public class JdbcExecutor extends AbstractExecutor {
                 noSelectList.add(sqlMeta);
 
             }
+        }
 
-            if (CollectionUtils.isNotEmpty(noSelectList)) {
-
-
-                TransactionTemplate transactionTemplate = super.getTransactionTemplate();
-
-                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+        if (CollectionUtils.isNotEmpty(noSelectList)) {
 
 
-                        for (SqlMeta meta : noSelectList) {
+            TransactionTemplate transactionTemplate = super.getTransactionTemplate();
 
-                            int[] affects;
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 
-                            try {
 
-                                affects = jdbcTemplate.batchUpdate(meta.getSql(), meta.getParamList(), meta.getArgTypes());
+                    for (SqlMeta meta : noSelectList) {
 
-                            } catch (Exception e) {
+                        int[] affects;
 
-                                log.error("execute_exception tableCode:{},param:{}", meta.getTableCode(), JSON.toJSONString(meta), e);
-                                throw e;
-                            }
+                        try {
 
-                            int count = 0;
+                            // 打印sql日志
+                            printLog(meta.getSql(), meta.getParamList());
 
-                            for (int affect : affects) {
+                            affects = jdbcTemplate.batchUpdate(meta.getSql(), meta.getParamList(), meta.getArgTypes());
 
-                                // oracle对于成功的批处理,该数据包含了所有的-2,1或正整数表示
-                                if (affect == -2) {
+                        } catch (Exception e) {
 
-                                    affect = 1;
-                                }
-
-                                if (affect < 0) {
-
-                                    affect = affect * -1;
-                                }
-
-                                count += affect;
-                            }
-
-                            if (meta.getAffectNum() != null && meta.getAffectNum() > count) {
-
-                                throw new RuntimeException(String.format("计划编号:%s,预计受影响行数:%s,实际受影响行数:%s", meta.getTableCode(), meta.getAffectNum(), count));
-                            }
-
-                            meta.setAffectNum(count);
+                            log.error("执行同步sql错误 tableCode:{},error:{}", meta.getTableCode(), e.getCause().getLocalizedMessage());
+                            throw e;
                         }
-                    }
-                });
-            }
 
+                        int count = 0;
+
+                        for (int affect : affects) {
+
+                            // oracle对于成功的批处理,该数据包含了所有的-2,1或正整数表示
+                            if (affect == -2) {
+
+                                affect = 1;
+                            }
+
+                            if (affect < 0) {
+
+                                affect = affect * -1;
+                            }
+
+                            count += affect;
+                        }
+
+                        if (meta.getAffectNum() != null && meta.getAffectNum() > count) {
+
+                            throw new RuntimeException(String.format("计划编号:%s,预计受影响行数:%s,实际受影响行数:%s", meta.getTableCode(), meta.getAffectNum(), count));
+                        }
+
+                        meta.setAffectNum(count);
+                    }
+                }
+            });
         }
 
 
@@ -155,7 +157,6 @@ public class JdbcExecutor extends AbstractExecutor {
 
             stringBuilder.append("执行sql语句->");
             stringBuilder.append(sql);
-            stringBuilder.append("[");
 
             for (Object[] objects : paramList) {
 
@@ -163,8 +164,6 @@ public class JdbcExecutor extends AbstractExecutor {
                         .append(StringUtils.join(objects, ","))
                         .append("]");
             }
-
-            stringBuilder.append("]");
 
             log.info(stringBuilder.toString());
         }

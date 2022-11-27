@@ -47,6 +47,14 @@ public class SyncPlanInitializer {
                             "        <column src=\"age\" dest=\"age\" />\n" +
                             "        <column src=\"create_time\" dest=\"create_time\" />\n" +
                             "    </table>\n" +
+                            "    <table code=\"insert_datasource1_datasource2_user\" src=\"db1_user\" dest=\"db2_user\" type=\"insert\">\n" +
+                            "        <unique src=\"user_id\" dest=\"user_id\"  />\n" +
+                            "        <relate src=\"user_id\" dest=\"user_id\" />\n" +
+                            "        <column src=\"user_id\" dest=\"user_id\" />\n" +
+                            "        <column src=\"username\" dest=\"username\" />\n" +
+                            "        <column src=\"age\" dest=\"age\" />\n" +
+                            "        <column src=\"create_time\" dest=\"create_time\" />\n" +
+                            "    </table>\n" +
                             "    <table code=\"delete_datasource1_datasource2_user\" src=\"db1_user\" dest=\"db2_user\" type=\"delete\">\n" +
                             "        <unique src=\"user_id\" dest=\"user_id\" />\n" +
                             "        <relate src=\"user_id\" dest=\"user_id\" />\n" +

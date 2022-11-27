@@ -34,7 +34,7 @@ public class SqlMeta {
     /**
      * 参数类型
      */
-    private int[] argTypes;
+    private int[] argTypes = {};
 
 
     /**

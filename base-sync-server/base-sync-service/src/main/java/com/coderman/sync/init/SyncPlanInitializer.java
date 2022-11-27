@@ -34,29 +34,22 @@ public class SyncPlanInitializer {
                     setUud(UUIDUtils.getPrimaryValue());
                     setUpdateTime(new Date());
                     setPlanContent("<sync_plan>\n" +
-                            "    <code>insert_sku_pim_catalog</code>\n" +
+                            "    <code>insert_datasource1_datasource2_user</code>\n" +
                             "    <name>新增商品目录</name>\n" +
-                            "    <database src=\"bos_sku\" dest=\"ecp_pim\" />\n" +
-                            "    <project src=\"sku\" dest=\"pim\" />\n" +
-                            "    <callbacks>\n" +
-                            "        <callback dest=\"pim\" desc=\"新增商品目录\"/>\n" +
-                            "    </callbacks>\n" +
-                            "    <table code=\"insert_sku_pim_catalog\" src=\"sku_catalog\" dest=\"ecp_catalog\" type=\"insert\">\n" +
-                            "        <unique src=\"catalog_id\" dest=\"catalog_id\"  />\n" +
-                            "        <relate src=\"catalog_id\" dest=\"catalog_id\" />\n" +
-                            "        <column src=\"catalog_id\" dest=\"catalog_id\" />\n" +
-                            "        <column src=\"uuid\" dest=\"uuid\" />\n" +
-                            "        <column src=\"catalog_code\" dest=\"catalog_code\" />\n" +
-                            "        <column src=\"keyword\" dest=\"keyword\" />\n" +
-                            "        <column src=\"catalog_name\" dest=\"catalog_name\" />\n" +
-                            "        <column src=\"parent_id\" dest=\"parent_id\" />\n" +
-                            "        <column src=\"sort\" dest=\"sort\" />\n" +
+                            "    <database src=\"datasource1\" dest=\"datasource2\" />\n" +
+                            "    <project src=\"sys1\" dest=\"sys2\" />\n" +
+                            "\n" +
+                            "    <table code=\"update_datasource1_datasource2_user\" src=\"db1_user\" dest=\"db2_user\" type=\"update\">\n" +
+                            "        <unique src=\"user_id\" dest=\"user_id\"  />\n" +
+                            "        <relate src=\"user_id\" dest=\"user_id\" />\n" +
+                            "        <column src=\"user_id\" dest=\"user_id\" />\n" +
+                            "        <column src=\"username\" dest=\"username\" />\n" +
+                            "        <column src=\"age\" dest=\"age\" />\n" +
+                            "        <column src=\"create_time\" dest=\"create_time\" />\n" +
                             "    </table>\n" +
-                            "    <table code=\"insert_sku_pim_catalog_intro\" src=\"sku_catalog_intro\" dest=\"ecp_catalog_intro\" type=\"insert\">\n" +
-                            "        <unique src=\"catalog_id\" dest=\"catalog_id\" />\n" +
-                            "        <relate src=\"catalog_id\" dest=\"catalog_id\" />\n" +
-                            "        <column src=\"catalog_id\" dest=\"catalog_id\" />\n" +
-                            "        <column src=\"catalog_intro\" dest=\"catalog_intro\" />\n" +
+                            "    <table code=\"delete_datasource1_datasource2_user\" src=\"db1_user\" dest=\"db2_user\" type=\"delete\">\n" +
+                            "        <unique src=\"user_id\" dest=\"user_id\" />\n" +
+                            "        <relate src=\"user_id\" dest=\"user_id\" />\n" +
                             "    </table>\n" +
                             "</sync_plan>");
                 }}

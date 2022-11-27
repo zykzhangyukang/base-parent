@@ -236,7 +236,7 @@ public class UpdateBuilder {
 
         String resultStr = builder.toString();
 
-        log.info("构建SQL执行语句->" + resultStr);
+        log.debug("构建SQL执行语句->" + resultStr);
         return resultStr;
     }
 }

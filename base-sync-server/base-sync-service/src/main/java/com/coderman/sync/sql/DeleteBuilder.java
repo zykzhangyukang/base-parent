@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -160,7 +159,7 @@ public class DeleteBuilder {
         }
 
         String resultStr = builder.toString();
-        log.info("构建SQL执行语句->" + resultStr);
+        log.debug("构建SQL执行语句->" + resultStr);
 
         return resultStr;
     }

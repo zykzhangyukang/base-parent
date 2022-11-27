@@ -19,6 +19,12 @@
         <dependency>
             <groupId>com.coderman</groupId>
             <artifactId>base-service</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.coderman</groupId>
+                    <artifactId>base-log</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -26,14 +32,15 @@
             <artifactId>base-sync-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
         </dependency>
 
 

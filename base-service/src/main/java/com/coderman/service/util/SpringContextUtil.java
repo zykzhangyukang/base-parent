@@ -34,26 +34,15 @@ public class SpringContextUtil implements ApplicationContextAware, DisposableBea
     }
 
     public static <T> T getBean(Class<T> clazz) throws BeansException{
-
-        if(clazz == null){
-            return null;
-        }
-
+        checkApplicationContext();
         return (T) applicationContext.getBean(clazz);
     }
 
+
     @SuppressWarnings("all")
     public static <T> T getBean(String beanName){
-
-        if(beanName == null){
-            return null;
-        }
-
+        checkApplicationContext();
         return (T) applicationContext.getBean(beanName);
-    }
-
-    public static void clearHolder(){
-        applicationContext = null;
     }
 
 
@@ -62,12 +51,17 @@ public class SpringContextUtil implements ApplicationContextAware, DisposableBea
      * @param event
      */
     public static void publishEvent(ApplicationEvent event){
-        if(applicationContext == null){
-            return;
-        }
+        checkApplicationContext();
         applicationContext.publishEvent(event);
     }
 
+
+    private static void checkApplicationContext(){
+
+        if(applicationContext == null){
+            throw new IllegalStateException("applicationContext未注入!");
+        }
+    }
 
     @Override
     public void destroy() throws Exception {

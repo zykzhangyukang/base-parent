@@ -57,6 +57,7 @@ public class TaskUtil {
                 taskResult.setErrorMsg("事务超时:" + throwable.getMessage());
             } else if (throwable instanceof DuplicateKeyException) {
 
+                taskResult.setRetry(false);
                 taskResult.setErrorMsg("主键重复," + throwable.getMessage());
             } else if (throwable instanceof BadSqlGrammarException) {
 
@@ -118,12 +119,12 @@ public class TaskUtil {
 
 
                     // 可能依赖的数据还没有从其他地方同步过来,等待下次重试
+                    log.error(sqlMeta.getTableCode() + " 中源表数据不存在,unique:[" + StringUtils.join(paramList, ",") + "]");
 
                     taskResult.setCode(SyncConstant.TASK_CODE_FAIL);
                     taskResult.setErrorMsg(sqlMeta.getTableCode() + " 中源表数据不存在,unique:[" + StringUtils.join(paramList, ",") + "]");
                     taskResult.setRetry(true);
                     return taskResult;
-
                 }
             } else {
 

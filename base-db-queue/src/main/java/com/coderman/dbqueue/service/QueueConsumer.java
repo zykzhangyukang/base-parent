@@ -10,8 +10,8 @@ package com.coderman.dbqueue.service;
 import com.coderman.dbqueue.dao.QueueDAO;
 import com.coderman.dbqueue.model.QueueNode;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public abstract class QueueConsumer {
 
 
-    @Autowired
+    @Resource
     private QueueDAO queueDAO;
 
 

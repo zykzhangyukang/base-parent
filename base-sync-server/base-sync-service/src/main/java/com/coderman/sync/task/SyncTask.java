@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Date;
 
@@ -68,7 +68,7 @@ public class SyncTask {
         resultModel.setMqId(mqId);
         resultModel.setRepeatCount(retryTimes);
         resultModel.setSyncTime(new Date());
-        resultModel.setPlanSrc(msgSrc);
+        resultModel.setMsgSrc(msgSrc);
         resultModel.setErrorMsg(StringUtils.EMPTY);
 
         PlanMeta planMeta = SyncContext.getContext().getPlanMeta(msgMeta.getPlanCode());
@@ -203,8 +203,35 @@ public class SyncTask {
     }
 
     private void insertRecord() {
-        MongoTemplate mongoTemplate = SpringContextUtil.getBean("mongoTemplate");
-        mongoTemplate.insert(this.resultModel);
+
+
+        SpringContextUtil.getBean(JdbcTemplate.class).update(
+                "insert into " +
+                        "pub_sync_result(uuid,plan_uuid,plan_code,plan_name,msg_src" +
+                        ",mq_id,msg_id,msg_content,src_project,dest_project,sync_content," +
+                        "msg_create_time,sync_time,status,error_msg,repeat_count,remark,sync_to_es)" +
+                        " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+
+                preparedStatement -> {
+                    preparedStatement.setString(1, UUIDUtils.getPrimaryValue());
+                    preparedStatement.setString(2, resultModel.getPlanUuid());
+                    preparedStatement.setString(3, resultModel.getPlanCode());
+                    preparedStatement.setString(4, resultModel.getPlanName());
+                    preparedStatement.setString(5, resultModel.getMsgSrc());
+                    preparedStatement.setString(6, resultModel.getMqId());
+                    preparedStatement.setString(7, resultModel.getMsgId());
+                    preparedStatement.setString(8, resultModel.getMsgContent());
+                    preparedStatement.setString(9, resultModel.getSrcProject());
+                    preparedStatement.setString(10, resultModel.getDestProject());
+                    preparedStatement.setString(11, resultModel.getSyncContent());
+                    preparedStatement.setObject(12, resultModel.getMsgCreateTime());
+                    preparedStatement.setObject(13, resultModel.getSyncTime());
+                    preparedStatement.setString(14, resultModel.getStatus());
+                    preparedStatement.setString(15, resultModel.getErrorMsg());
+                    preparedStatement.setInt(16, resultModel.getRepeatCount());
+                    preparedStatement.setString(17, resultModel.getRemark());
+                    preparedStatement.setBoolean(18, resultModel.isSyncToEs());
+                });
     }
 
 }

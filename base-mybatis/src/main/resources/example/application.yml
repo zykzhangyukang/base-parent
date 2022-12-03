@@ -16,7 +16,7 @@ mybatis:
 
 # redis 配置
 #  redis:
-#    host: 119.91.30.131
+#    host: 116.205.181.9
 #    port: 6379
 #    password: DES@2120FA78BC6EB99B019C119BD8067DB0
 

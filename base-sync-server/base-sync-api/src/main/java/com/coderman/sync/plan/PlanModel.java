@@ -12,7 +12,7 @@ import java.util.Date;
 public class PlanModel extends BaseModel {
 
     @ApiModelProperty(value = "uuid")
-    private String uud;
+    private String uuid;
 
     @ApiModelProperty(value = "计划编号")
     private String planCode;
@@ -27,7 +27,7 @@ public class PlanModel extends BaseModel {
     private String srcProject;
 
     @ApiModelProperty(value = "目标系统")
-    private String descProject;
+    private String destProject;
 
     @ApiModelProperty(value = "计划内容")
     private String planContent;

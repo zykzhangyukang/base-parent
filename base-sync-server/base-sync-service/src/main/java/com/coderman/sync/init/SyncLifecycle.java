@@ -7,6 +7,7 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Lazy(value = false)
@@ -18,11 +19,11 @@ public class SyncLifecycle implements SmartLifecycle {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    @Autowired
+    @Resource
     private DataSourceInitializer dataSourceInitializer;
 
 
-    @Autowired
+    @Resource
     private SyncPlanInitializer syncPlanInitializer;
 
     @Override

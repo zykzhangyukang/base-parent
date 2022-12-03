@@ -27,7 +27,7 @@ public class ResultModel extends BaseModel {
     private String planName;
 
     @ApiModelProperty(value = "来源")
-    private String planSrc;
+    private String msgSrc;
 
     @ApiModelProperty(value = "MQ消息id")
     private String mqId;

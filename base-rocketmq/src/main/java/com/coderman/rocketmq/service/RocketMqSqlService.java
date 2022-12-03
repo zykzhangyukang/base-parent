@@ -1,12 +1,16 @@
 package com.coderman.rocketmq.service;
 
 /**
+ *
+ * https://blog.csdn.net/qq_35378008/article/details/105077446
+ *
  * @author coderman
  * @Title: rocketMq 服务
  * @date 2022/6/2222:12
  */
 public interface RocketMqSqlService {
 
+    // windows
     /**
      * 发送同步消息通过SQL发送
      *

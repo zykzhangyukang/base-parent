@@ -5,19 +5,19 @@ spring:
       password: DES@2120FA78BC6EB99B019C119BD8067DB0
       url: jdbc:mysql://localhost:3306/datasource1?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
-    host: 119.91.30.131
+    host: 116.205.181.9
     port: 6379
     password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
 rocketmq:
-  nameServer: 119.91.30.131:9876
+  nameServer: 116.205.181.9:9876
   producer:
     group: boot-demo
 
 
 sync:
   rocketmq:
-    namesrv-addr: 119.91.30.131:9876
+    namesrv-addr: 116.205.181.9:9876
     instance-name: SyncServer
     consumer-group: SyncConsumer
     topic: SyncTopic

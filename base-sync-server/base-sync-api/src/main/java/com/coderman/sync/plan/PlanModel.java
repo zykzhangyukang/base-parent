@@ -37,4 +37,8 @@ public class PlanModel extends BaseModel {
 
     @ApiModelProperty(value = "修改时间")
     private Date updateTime;
+
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
+
 }

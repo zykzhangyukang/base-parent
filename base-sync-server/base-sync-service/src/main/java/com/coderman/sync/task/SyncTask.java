@@ -61,7 +61,7 @@ public class SyncTask {
         // 构建同步结果记录
         ResultModel resultModel = new ResultModel();
         resultModel.setUuid(UUIDUtils.getPrimaryValue());
-        resultModel.setStatus(PlanConstant.RESULT_STATUS_SUCCESS);
+        resultModel.setStatus(PlanConstant.RESULT_STATUS_FAIL);
         resultModel.setMsgCreateTime(msgMeta.getCreateDate());
         resultModel.setMsgContent(msg);
         resultModel.setMsgId(msgMeta.getMsgId());
@@ -101,6 +101,7 @@ public class SyncTask {
             }
         }
 
+        resultModel.setStatus(PlanConstant.RESULT_STATUS_SUCCESS);
         syncTask.setMsgMeta(msgMeta);
         syncTask.setPlanMeta(planMeta);
         syncTask.setResultModel(resultModel);

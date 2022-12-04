@@ -183,7 +183,7 @@
    insert into auth_role_func(role_id,func_id)
     select
        #{roleId},func_id
-    from tb_func
+    from auth_func
     where func_key in
     <foreach collection="funcKeyList" item="item" open="(" close=")" separator=",">
       #{item}

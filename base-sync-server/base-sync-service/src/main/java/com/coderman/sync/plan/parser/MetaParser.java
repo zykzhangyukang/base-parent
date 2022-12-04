@@ -36,7 +36,7 @@ public class MetaParser {
         planBuilder.addDbMeta(dbEle.attr("src").trim(), dbEle.attr("dest").trim());
 
         // 回调
-        Element callbacksEle = dbEle.selectFirst("callbacks");
+        Element callbacksEle = document.selectFirst("callbacks");
         if (null != callbacksEle) {
 
             Elements callbacks = callbacksEle.select("callback");

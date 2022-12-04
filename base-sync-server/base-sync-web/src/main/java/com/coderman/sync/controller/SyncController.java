@@ -47,7 +47,7 @@ public class SyncController {
         SyncUtil.sync(
                 MsgBuilder.create("insert_datasource1_datasource2_user", ProjectEnum.SYS1, ProjectEnum.SYS2)
                         .addIntList("insert_datasource1_datasource2_user", Arrays.asList(userId))
-//                        .addIntList("update_datasource1_datasource2_user",  Arrays.asList(userId))
+                        .addIntList("update_datasource1_datasource2_user",  Arrays.asList(userId))
                         .build()
         );
 

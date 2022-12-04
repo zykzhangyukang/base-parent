@@ -31,6 +31,11 @@
         <ip2region.version>1.7.2</ip2region.version>
         <commons-io.version>2.8.0</commons-io.version>
         <poi.version>4.1.2</poi.version>
+        <mongo.java.driver.version>3.5.0</mongo.java.driver.version>
+        <dbcp.version>1.4</dbcp.version>
+        <mssql.version>8.2.0.jre8</mssql.version>
+        <ojdbc6.version>11.2.0.3</ojdbc6.version>
+        <spring.data.mongodb.version>1.10.23.RELEASE</spring.data.mongodb.version>
     </properties>
 
 
@@ -138,6 +143,35 @@
                 <version>${poi.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>${mongo.java.driver.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${dbcp.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${ojdbc6.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-mongodb</artifactId>
+                <version>${spring.data.mongodb.version}</version>
+            </dependency>
 
 
         </dependencies>

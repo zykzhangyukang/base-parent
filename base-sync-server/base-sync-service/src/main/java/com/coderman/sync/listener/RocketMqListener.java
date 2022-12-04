@@ -39,7 +39,7 @@ public class RocketMqListener implements MessageListenerConcurrently {
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> messageExtList, ConsumeConcurrentlyContext context) {
 
-        int retryTimeLimit = 6;
+        int retryTimeLimit = 8;
 
         String redisKey = SYNC_MSG_ID + messageExtList.get(0).getMsgId();
 

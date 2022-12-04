@@ -68,8 +68,9 @@ public class AuthDatasourceConfig extends BasicTransactionConfig {
         if (configuration != null && !StringUtils.hasText(properties.getConfigLocation())) {
 
             configuration = new org.apache.ibatis.session.Configuration();
-
+            configuration.setMapUnderscoreToCamelCase(true);
         }
+
         sqlSessionFactoryBean.setConfiguration(configuration);
         return sqlSessionFactoryBean.getObject();
     }

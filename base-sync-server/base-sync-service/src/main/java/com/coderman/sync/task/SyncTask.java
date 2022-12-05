@@ -81,6 +81,21 @@ public class SyncTask {
             return syncTask;
         }
 
+
+        // 这里判断一下该同步消息是否已经被处理成功过.
+        JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
+        Integer count = jdbcTemplate.queryForObject("select count(1) as c from pub_sync_result where msg_id=? and msg_create_time < ? and status=? and msg_src = ?", Integer.class,
+                resultModel.getMsgId(), new Date(), PlanConstant.RESULT_STATUS_SUCCESS, msgSrc);
+
+        if (count != null && count > 0) {
+
+            log.error("该同步任务已处理,msgId=" + resultModel.getMsgId());
+            resultModel.setErrorMsg("该同步任务已处理,msgId=" + resultModel.getMsgId());
+            syncTask.setResultModel(resultModel);
+            return syncTask;
+        }
+
+
         // 完善同步结果记录
         resultModel.setPlanCode(planMeta.getCode());
         resultModel.setPlanName(planMeta.getName());
@@ -101,7 +116,6 @@ public class SyncTask {
             }
         }
 
-        resultModel.setStatus(PlanConstant.RESULT_STATUS_SUCCESS);
         syncTask.setMsgMeta(msgMeta);
         syncTask.setPlanMeta(planMeta);
         syncTask.setResultModel(resultModel);
@@ -121,6 +135,11 @@ public class SyncTask {
 
         // 判断同步任务是否正常
         if (StringUtils.isNotBlank(this.resultModel.getErrorMsg())) {
+
+            if (StringUtils.contains(this.resultModel.getErrorMsg(), "该同步任务已处理")) {
+
+                return SyncConstant.SYNC_END;
+            }
 
             // 插入同步记录
             this.insertRecord();

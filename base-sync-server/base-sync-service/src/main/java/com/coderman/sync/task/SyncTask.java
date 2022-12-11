@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * 同步任务
@@ -83,11 +84,12 @@ public class SyncTask {
 
 
         // 这里判断一下该同步消息是否已经被处理成功过.
-        JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-        Integer count = jdbcTemplate.queryForObject("select count(1) as c from pub_sync_result where msg_id=? and msg_create_time < ? and status=? and msg_src = ?", Integer.class,
-                resultModel.getMsgId(), new Date(), PlanConstant.RESULT_STATUS_SUCCESS, msgSrc);
+        String sql = "select count(1) as c from pub_sync_result where msg_id=? and msg_create_time < ? and status=? and msg_src = ?";
 
-        if (count != null && count > 0) {
+        int count = Optional.ofNullable(SpringContextUtil.getBean(JdbcTemplate.class)
+                .queryForObject(sql, Integer.class, resultModel.getMsgId(), new Date(), PlanConstant.RESULT_STATUS_SUCCESS, msgSrc)).orElse(0);
+
+        if (count > 0) {
 
             log.error("该同步任务已处理,msgId=" + resultModel.getMsgId());
             resultModel.setErrorMsg("该同步任务已处理,msgId=" + resultModel.getMsgId());

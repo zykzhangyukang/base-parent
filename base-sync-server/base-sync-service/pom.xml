@@ -58,10 +58,9 @@
             <artifactId>spring-data-mongodb</artifactId>
         </dependency>
 
-
         <dependency>
-            <groupId>com.coderman</groupId>
-            <artifactId>base-sync-sdk</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
     </dependencies>
 

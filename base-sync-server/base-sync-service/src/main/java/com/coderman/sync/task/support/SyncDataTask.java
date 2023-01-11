@@ -1,6 +1,7 @@
 package com.coderman.sync.task.support;
 
 import com.coderman.sync.constant.SyncConstant;
+import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.executor.AbstractExecutor;
@@ -14,6 +15,7 @@ import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.TaskResult;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import java.util.*;
@@ -38,6 +40,7 @@ public class SyncDataTask extends AbstractTask {
         SyncDataTask syncDataTask = new SyncDataTask(syncTask);
 
         syncDataTask.createExecutor(taskResult);
+
         return syncDataTask;
     }
 
@@ -61,92 +64,93 @@ public class SyncDataTask extends AbstractTask {
 
                 resultMetaMap.put(sqlMeta.getTableCode(), sqlMeta);
             }
-        }
-
-        for (MsgTableMeta msgTableMeta : syncTask.getMsgMeta().getTableMetaList()) {
 
 
-            TableMeta tableMeta = SyncContext.getContext().getTableMeta(syncTask.getPlanMeta().getCode(), msgTableMeta.getCode());
-
-            // 封装对象和参数集合
-            SqlMeta sqlMeta = new SqlMeta();
-            sqlMeta.setTableCode(tableMeta.getCode());
-
-            if (SyncConstant.OPERATE_TYPE_INSERT.equals(tableMeta.getType())) {
+            for (MsgTableMeta msgTableMeta : syncTask.getMsgMeta().getTableMetaList()) {
 
 
-                // 插入操作
-                InsertBuilder insertBuilder = InsertBuilder.create(dbType);
-                insertBuilder.table(tableMeta.getDest());
+                TableMeta tableMeta = SyncContext.getContext().getTableMeta(syncTask.getPlanMeta().getCode(), msgTableMeta.getCode());
 
-                int[] paramTypeList = new int[tableMeta.getColumnMetas().size()];
+                // 封装对象和参数集合
+                SqlMeta sqlMeta = new SqlMeta();
+                sqlMeta.setTableCode(tableMeta.getCode());
 
-                int i = 0;
+                if (SyncConstant.OPERATE_TYPE_INSERT.equals(tableMeta.getType())) {
 
-                for (ColumnMeta columnMeta : tableMeta.getColumnMetas()) {
 
-                    insertBuilder.column(columnMeta.getDest());
-                    paramTypeList[i] = JdbcUtils.TYPE_UNKNOWN;
-                    i++;
+                    // 插入操作
+                    InsertBuilder insertBuilder = InsertBuilder.create(dbType);
+                    insertBuilder.table(tableMeta.getDest());
+
+                    int[] paramTypeList = new int[tableMeta.getColumnMetas().size()];
+
+                    int i = 0;
+
+                    for (ColumnMeta columnMeta : tableMeta.getColumnMetas()) {
+
+                        insertBuilder.column(columnMeta.getDest());
+                        paramTypeList[i] = JdbcUtils.TYPE_UNKNOWN;
+                        i++;
+                    }
+
+                    insertBuilder.column("sync_time");
+                    List<Object[]> paramList = this.generateParam(resultMetaMap, msgTableMeta, tableMeta, syncTask.getSyncTime(), true);
+
+                    insertBuilder.groupCount(paramList.size());
+                    sqlMeta.setParamList(paramList);
+                    sqlMeta.setSql(insertBuilder.sql());
+                    sqlMeta.setArgTypes(paramTypeList);
+                    sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_INSERT);
                 }
 
-                insertBuilder.column("sync_time");
-                List<Object[]> paramList = this.generateParam(resultMetaMap, msgTableMeta, tableMeta, syncTask.getSyncTime(), true);
+                if (SyncConstant.OPERATE_TYPE_DELETE.equals(tableMeta.getType())) {
 
-                insertBuilder.groupCount(paramList.size());
-                sqlMeta.setParamList(paramList);
-                sqlMeta.setSql(insertBuilder.sql());
-                sqlMeta.setArgTypes(paramTypeList);
-                sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_INSERT);
-            }
+                    DeleteBuilder deleteBuilder = DeleteBuilder.create(dbType);
+                    deleteBuilder.table(tableMeta.getDest());
+                    deleteBuilder.whereIn(tableMeta.getUnique().getValue(), msgTableMeta.getUniqueList().size());
+                    deleteBuilder.groupCount(1);
 
-            if (SyncConstant.OPERATE_TYPE_DELETE.equals(tableMeta.getType())) {
+                    sqlMeta.setSql(deleteBuilder.sql());
+                    sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_DELETE);
 
-                DeleteBuilder deleteBuilder = DeleteBuilder.create(dbType);
-                deleteBuilder.table(tableMeta.getDest());
-                deleteBuilder.whereIn(tableMeta.getUnique().getValue(), msgTableMeta.getUniqueList().size());
-                deleteBuilder.groupCount(1);
+                    String targetType = msgTableMeta.getUniqueType();
 
-                sqlMeta.setSql(deleteBuilder.sql());
-                sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_DELETE);
+                    if ("_id".equals(tableMeta.getUnique().getValue())) {
+                        targetType = SyncConvert.DATA_TYPE_OBJECTID;
+                    }
 
-                String targetType = msgTableMeta.getUniqueType();
-
-                if ("_id".equals(tableMeta.getUnique().getValue())) {
-                    targetType = SyncConvert.DATA_TYPE_OBJECTID;
+                    sqlMeta.setParamList(SyncConvert.toArrayList(SyncConvert.convert(msgTableMeta.getUniqueList(), targetType)));
                 }
 
-                sqlMeta.setParamList(SyncConvert.toArrayList(SyncConvert.convert(msgTableMeta.getUniqueList(), targetType)));
-            }
+                if (SyncConstant.OPERATE_TYPE_UPDATE.equals(tableMeta.getType())) {
 
-            if (SyncConstant.OPERATE_TYPE_UPDATE.equals(tableMeta.getType())) {
+                    UpdateBuilder updateBuilder = UpdateBuilder.create(dbType);
+                    updateBuilder.table(tableMeta.getDest());
 
-                UpdateBuilder updateBuilder = UpdateBuilder.create(dbType);
-                updateBuilder.table(tableMeta.getDest());
+                    int[] paramTypeList = new int[tableMeta.getColumnMetas().size()];
+                    int i = 0;
 
-                int[] paramTypeList = new int[tableMeta.getColumnMetas().size()];
-                int i = 0;
+                    for (ColumnMeta columnMeta : tableMeta.getColumnMetas()) {
 
-                for (ColumnMeta columnMeta : tableMeta.getColumnMetas()) {
+                        updateBuilder.column(columnMeta.getDest());
+                        paramTypeList[i] = JdbcUtils.TYPE_UNKNOWN;
+                        i++;
+                    }
 
-                    updateBuilder.column(columnMeta.getDest());
-                    paramTypeList[i] = JdbcUtils.TYPE_UNKNOWN;
-                    i++;
+                    updateBuilder.column("sync_time");
+                    updateBuilder.whereIn(tableMeta.getUnique().getValue(), 1);
+
+                    List<Object[]> paramList = this.generateParam(resultMetaMap, msgTableMeta, tableMeta, syncTask.getSyncTime(), false);
+                    updateBuilder.groupCount(paramList.size());
+
+                    sqlMeta.setParamList(paramList);
+                    sqlMeta.setSql(updateBuilder.sql());
+                    sqlMeta.setArgTypes(paramTypeList);
+                    sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_UPDATE);
                 }
 
-                updateBuilder.column("sync_time");
-                updateBuilder.whereIn(tableMeta.getUnique().getValue(), 1);
-
-                List<Object[]> paramList = this.generateParam(resultMetaMap, msgTableMeta, tableMeta, syncTask.getSyncTime(), false);
-                updateBuilder.groupCount(paramList.size());
-
-                sqlMeta.setParamList(paramList);
-                sqlMeta.setSql(updateBuilder.sql());
-                sqlMeta.setArgTypes(paramTypeList);
-                sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_UPDATE);
+                executor.sql(sqlMeta);
             }
-
-            executor.sql(sqlMeta);
         }
 
     }

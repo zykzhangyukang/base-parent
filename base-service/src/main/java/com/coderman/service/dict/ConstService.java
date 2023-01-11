@@ -3,6 +3,7 @@ package com.coderman.service.dict;
 import com.coderman.api.anntation.ConstList;
 import com.coderman.api.anntation.Constant;
 import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.service.anntation.ClassPathScanningComponentProvider;
 import com.coderman.service.redis.RedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.io.Resource;
@@ -47,11 +50,6 @@ public class ConstService {
     private final static Map<String, List<ConstItem>> constMap = new HashMap<>();
 
     /**
-     * 读取器工厂
-     */
-    private final static CachingMetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
-
-    /**
      * 日志打印
      */
     private final static Logger logger = LoggerFactory.getLogger(ConstService.class);
@@ -70,7 +68,8 @@ public class ConstService {
         stopWatch.start();
 
         // 扫描常量class
-        Set<BeanDefinition> constantBeanSet = getConstantBeanSet();
+        ClassPathScanningComponentProvider provider = new ClassPathScanningComponentProvider(false);
+        Set<BeanDefinition> constantBeanSet = provider.findCandidateComponents("com/coderman/**/constant");
 
         for (BeanDefinition beanDefinition : constantBeanSet) {
 
@@ -268,39 +267,6 @@ public class ConstService {
         }
 
         return map;
-    }
-
-
-    /**
-     * 扫描常量
-     *
-     * @return bean定义
-     */
-    private static Set<BeanDefinition> getConstantBeanSet() {
-
-        Set<BeanDefinition> constBeanSet = new HashSet<>();
-        try {
-            ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-            Resource[] resources = resourcePatternResolver.getResources("classpath*:com/coderman/**/constant/**/*.class");
-
-            for (Resource resource : resources) {
-
-                if (resource.isReadable()) {
-
-                    MetadataReader metadataReader = readerFactory.getMetadataReader(resource);
-                    ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
-                    sbd.setResource(resource);
-                    sbd.setSource(resource);
-                    constBeanSet.add(sbd);
-                }
-            }
-
-            return constBeanSet;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return constBeanSet;
     }
 
 }

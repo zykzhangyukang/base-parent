@@ -2,8 +2,10 @@ package com.coderman.sync.task;
 
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
+import com.coderman.sync.callback.meta.CallbackTask;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
+import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.plan.meta.MsgMeta;
 import com.coderman.sync.plan.meta.MsgTableMeta;
@@ -18,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
@@ -151,6 +155,13 @@ public class SyncTask {
 
         try {
 
+            // 回调消息
+            if (1 == 1) {
+
+                CallbackContext.getCallbackContext().addTask(Collections.singletonList(new CallbackTask()));
+            }
+
+
             // 1. 从源表查询数据
             GetDataTask getDataTask = GetDataTask.build(this);
 
@@ -226,8 +237,9 @@ public class SyncTask {
 
     private void insertRecord() {
 
+        JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
 
-        SpringContextUtil.getBean(JdbcTemplate.class).update(
+        jdbcTemplate.update(
                 "insert into " +
                         "pub_sync_result(uuid,plan_uuid,plan_code,plan_name,msg_src" +
                         ",mq_id,msg_id,msg_content,src_project,dest_project,sync_content," +
@@ -254,6 +266,21 @@ public class SyncTask {
                     preparedStatement.setString(17, resultModel.getRemark());
                     preparedStatement.setBoolean(18, resultModel.isSyncToEs());
                 });
+
+        // 重试成功需要把之前失败的消息标记为成功
+        if (PlanConstant.RESULT_STATUS_SUCCESS.equals(this.resultModel.getStatus()) && null != this.resultModel.getRepeatCount() && this.resultModel.getRepeatCount() > 0) {
+
+
+            jdbcTemplate.update("update pub_sync_result set status=?,remark=? where msg_id=? and status=?", preparedStatement -> {
+
+                preparedStatement.setString(1, PlanConstant.RESULT_STATUS_SUCCESS);
+                preparedStatement.setString(2, "系统将其标记成功");
+                preparedStatement.setString(3, this.resultModel.getMsgId());
+                preparedStatement.setString(4, PlanConstant.RESULT_STATUS_FAIL);
+            });
+
+        }
+
     }
 
 }

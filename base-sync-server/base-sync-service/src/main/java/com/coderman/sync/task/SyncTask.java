@@ -155,12 +155,6 @@ public class SyncTask {
 
         try {
 
-            // 回调消息
-            if (1 == 1) {
-
-                CallbackContext.getCallbackContext().addTask(Collections.singletonList(new CallbackTask()));
-            }
-
 
             // 1. 从源表查询数据
             GetDataTask getDataTask = GetDataTask.build(this);

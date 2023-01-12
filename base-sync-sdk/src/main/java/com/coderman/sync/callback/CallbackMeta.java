@@ -14,7 +14,7 @@ public class CallbackMeta {
     public CallbackMeta() {
     }
 
-    public CallbackMeta(String className, String methodName, Class instantClass) {
+    public CallbackMeta(String className, String methodName, Class<?> instantClass) {
         this.className = className;
         this.methodName = methodName;
         this.instantClass = instantClass;

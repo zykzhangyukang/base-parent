@@ -15,7 +15,7 @@ public class BaseTask implements Delayed {
     }
 
 
-    public Integer getRetry() {
+    public Integer getRetryTimes() {
         return retry.getAndIncrement();
     }
 

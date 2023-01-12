@@ -1,8 +1,11 @@
 package com.coderman.sync.context;
 
+import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.callback.CallBackExecutor;
 import com.coderman.sync.callback.meta.CallbackTask;
+import com.coderman.sync.thread.CallbackRetryThread;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -13,19 +16,22 @@ import java.util.List;
 
 @Component
 @Lazy(false)
+@Slf4j
 @DependsOn("springContextUtil")
 public class CallbackContext {
 
-
     private static CallbackContext callbackContext;
-
 
     @Resource
     private CallBackExecutor callBackExecutor;
 
 
+    @Resource
+    private CallbackRetryThread callbackRetryThread;
+
+
     @PostConstruct
-    private void  init(){
+    private void init() {
 
         CallbackContext.callbackContext = SpringContextUtil.getBean(CallbackContext.class);
     }
@@ -46,9 +52,32 @@ public class CallbackContext {
         }
     }
 
-    private void addTask(CallbackTask callbackTask) {
+    public void addTask(CallbackTask callbackTask) {
 
 
         this.callBackExecutor.addTask(callbackTask);
+    }
+
+    public void addTaskToDelayQueue(CallbackTask callbackTask) {
+
+        if (callbackTask.getRetryTimes() == 0) {
+
+            callbackTask.setDelayTime(10);
+
+        } else if (callbackTask.getRetryTimes() == 1) {
+
+            callbackTask.setDelayTime(30);
+
+        } else if (callbackTask.getRetryTimes() == 2) {
+
+            callbackTask.setDelayTime(60);
+
+        } else {
+
+            log.error("超过重试次数,禁止重试，callbackTask:{}", JSON.toJSONString(callbackTask));
+            return;
+        }
+
+        this.callbackRetryThread.add(callbackTask);
     }
 }

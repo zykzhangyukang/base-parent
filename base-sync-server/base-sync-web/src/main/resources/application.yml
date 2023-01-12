@@ -43,3 +43,5 @@ jdbc:
   datasource2$username: root
   datasource2$password: 2120FA78BC6EB99B019C119BD8067DB0
 
+callback:
+  demo: http://127.0.0.1:8084

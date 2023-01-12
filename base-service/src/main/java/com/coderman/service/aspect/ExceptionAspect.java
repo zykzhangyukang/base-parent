@@ -33,7 +33,7 @@ import java.util.Date;
 public class ExceptionAspect {
 
 
-    private Logger logger = LoggerFactory.getLogger(ExceptionAspect.class);
+    private final Logger logger = LoggerFactory.getLogger(ExceptionAspect.class);
 
     @Pointcut("(execution(* com.coderman..service..*(..))) && @within(org.springframework.stereotype.Service)")
     public void serviceAspect() {

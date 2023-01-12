@@ -11,6 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 public class SyncMsg {
 
+    private String msgId;
+
+
     private String planCode;
 
 

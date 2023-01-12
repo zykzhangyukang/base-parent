@@ -33,4 +33,9 @@ public interface PlanConstant {
      */
     @ConstList(group = "msg_source",name = "MQ")
     public static final String MSG_ROCKET_MQ = "rocket_mq";
+
+    /**
+     * 回调状态
+     */
+    public static final String CALLBACK_STATUS_WAIT = "wait";
 }

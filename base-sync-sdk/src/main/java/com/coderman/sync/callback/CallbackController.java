@@ -6,8 +6,6 @@ import com.alibaba.fastjson.parser.Feature;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.util.SpringContextUtil;
-import com.coderman.service.util.UUIDUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

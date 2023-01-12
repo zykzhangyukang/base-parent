@@ -8,6 +8,7 @@ import com.coderman.sync.plan.meta.TableMeta;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.base.BaseTask;
 import com.coderman.sync.task.support.WriteBackTask;
+import com.coderman.sync.thread.SyncRetryThread;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,9 @@ public class SyncContext {
 
     private final static Logger logger = LoggerFactory.getLogger(SyncContext.class);
 
+    // 同步重试线程
+    @Resource
+    private SyncRetryThread syncRetryThread;
 
     private static SyncContext syncContext;
 
@@ -226,7 +231,7 @@ public class SyncContext {
 
 
         task.setDelayTime(60);
-
+        this.syncRetryThread.addTask(task);
 
         logger.debug("addTaskToDelayQueue-end");
     }

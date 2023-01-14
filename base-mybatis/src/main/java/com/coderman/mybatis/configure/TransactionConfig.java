@@ -18,6 +18,7 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.List;
 @Slf4j
 public class TransactionConfig {
 
-    @Autowired
+    @Resource
     private DataSource dataSource;
 
 

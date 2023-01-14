@@ -1,6 +1,7 @@
 package com.coderman.sync.callback.meta;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +13,16 @@ public class CallBackNode {
 
     private List<String> unavailableList = new ArrayList<>();
 
-    public String getCallbackUrl(){
+    public String getCallbackUrl() {
 
-        if(null == this.availableList || this.availableList.size() == 0){
+        if (null == this.availableList || this.availableList.size() == 0) {
 
             return null;
         }
 
         int num = this.availableList.size();
 
-        if(num == 1){
+        if (num == 1) {
 
             return this.getAvailableList().get(0);
         }
@@ -30,5 +31,37 @@ public class CallBackNode {
         int randomIndex = random % num;
 
         return this.availableList.get(randomIndex);
+    }
+
+    public void addCallbackUrl(String callbackUrl) {
+
+        this.availableList.add(callbackUrl);
+    }
+
+    public void addNoneCallbackUrl(String callbackUrl) {
+
+        this.unavailableList.add(callbackUrl);
+    }
+
+    public void resetAvailableNode() {
+
+        if (this.availableList.size() == 0) {
+
+            this.availableList.add(this.unavailableList.get(0));
+        }
+    }
+
+    public void switchAvailableNode(String callbackUrl) {
+
+        synchronized (this) {
+
+            if (StringUtils.isNotBlank(callbackUrl)) {
+
+                this.availableList.remove(callbackUrl);
+                this.availableList.add(0, callbackUrl);
+                this.unavailableList.remove(callbackUrl);
+            }
+
+        }
     }
 }

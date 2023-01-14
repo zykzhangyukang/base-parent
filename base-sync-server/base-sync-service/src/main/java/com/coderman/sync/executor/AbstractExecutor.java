@@ -143,4 +143,8 @@ public abstract class AbstractExecutor {
     public void setMsgMeta(MsgMeta msgMeta) {
         this.msgMeta = msgMeta;
     }
+
+    public void clear() {
+        this.sqlList = null;
+    }
 }

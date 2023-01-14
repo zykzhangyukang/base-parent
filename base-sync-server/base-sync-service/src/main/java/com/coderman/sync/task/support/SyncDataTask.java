@@ -8,6 +8,7 @@ import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.executor.AbstractExecutor;
+import com.coderman.sync.executor.MongoExecutor;
 import com.coderman.sync.plan.meta.CallbackMeta;
 import com.coderman.sync.plan.meta.ColumnMeta;
 import com.coderman.sync.plan.meta.MsgTableMeta;
@@ -20,6 +21,8 @@ import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.TaskResult;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import java.util.*;
@@ -61,12 +64,90 @@ public class SyncDataTask extends AbstractTask {
 
             }
 
-             super.getSyncTask().getResultModel().setSyncContent("同步内容todo");
+            super.getSyncTask().getResultModel().setSyncContent(this.getSyncContent(super.getExecutor()));
         }
 
         return taskResult;
     }
 
+
+    private String getSyncContent(AbstractExecutor executor) {
+
+        String syncContent;
+
+        List<String> sqlList = new ArrayList<>();
+        List<Integer> effectList = new ArrayList<>();
+
+        if (executor instanceof MongoExecutor) {
+
+            for (SqlMeta sqlMeta : executor.getSqlList()) {
+
+                sqlList.add(sqlMeta.getSql());
+                effectList.add(sqlMeta.getAffectNum());
+            }
+
+            String sql = "\"sql\"[" + StringUtils.join(sqlList, ",") + "]";
+
+            syncContent = "{" + sql + ",\"影响条数\"[" + StringUtils.join(effectList, ",") + "]}";
+
+        } else {
+
+            for (SqlMeta sqlMeta : executor.getSqlList()) {
+
+
+                StringBuilder tempBuilder = new StringBuilder();
+                tempBuilder.append("\"").append(sqlMeta.getSql()).append("\":[");
+
+                List<String> tempList = new ArrayList<>();
+
+                for (Object[] paramObj : sqlMeta.getParamList()) {
+
+
+                    List<Object> pTmpList = new ArrayList<>();
+
+                    for (Object obj : paramObj) {
+
+                        if (null == obj) {
+
+                            pTmpList.add("\"\"");
+
+                        } else if (obj instanceof String) {
+
+
+                            if (((String) obj).contains("\"")) {
+
+                                obj = ((String) obj).replace("\"", "\\\"");
+                            }
+
+                            pTmpList.add("\"" + obj + "\"");
+
+                        } else if (obj instanceof Date) {
+
+                            pTmpList.add("\"" + DateFormatUtils.format((Date) obj,"yyyy-MM-dd HH:mm:ss") + "\"");
+
+                        } else {
+
+                            pTmpList.add(obj);
+                        }
+                    }
+
+                    tempList.add("[" + StringUtils.join(pTmpList, ",") + "]");
+
+                }
+
+                tempBuilder.append(StringUtils.join(tempList, ",")).append("]");
+
+                sqlList.add(tempBuilder.toString());
+
+                effectList.add(sqlMeta.getAffectNum());
+            }
+
+            syncContent = "{" + StringUtils.join(sqlList, ",") + ",\"影响行数\":[" + StringUtils.join(effectList, ",") + "]}";
+
+        }
+
+        return syncContent;
+    }
 
 
     public static SyncDataTask build(SyncTask syncTask, TaskResult taskResult) {
@@ -189,7 +270,7 @@ public class SyncDataTask extends AbstractTask {
         }
 
         // 回调记录
-        if(CollectionUtils.isNotEmpty(syncTask.getPlanMeta().getCallbackMetas())){
+        if (CollectionUtils.isNotEmpty(syncTask.getPlanMeta().getCallbackMetas())) {
 
             SqlMeta sqlMeta = this.insertCallbackRecord(syncTask, destDb, dbType, syncTask.getPlanMeta().getCallbackMetas());
 

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.parser.Feature;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.util.SpringContextUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,19 +16,24 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 @RestController
 @RequestMapping(value = "/${domain}/callback")
 public class CallbackController {
 
 
     @PostMapping(value = "/notify")
-    @SuppressWarnings("all")
     public ResultVO<Void> callback(String msg, HttpServletRequest request) throws Exception {
 
-        CallbackScannerService service = SpringContextUtil.getBean(CallbackScannerService.class);
+        if(StringUtils.equals(msg,"ping")){
+
+            return ResultUtil.getSuccess();
+        }
 
         // 构建消息参数
         SyncMsg syncMsg = this.parseMsg(msg);
+
+        CallbackScannerService service = SpringContextUtil.getBean(CallbackScannerService.class);
 
         // 执行回调方法
         CallbackMeta callbackMeta = service.getCallbackMeta(syncMsg.getPlanCode());

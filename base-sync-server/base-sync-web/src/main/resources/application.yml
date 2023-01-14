@@ -45,3 +45,5 @@ jdbc:
 
 callback:
   demo: http://127.0.0.1:8084
+  pim: http://127.0.0.1:8084
+  so: http://127.0.0.1:8084

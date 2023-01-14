@@ -38,4 +38,7 @@ public interface PlanConstant {
      * 回调状态
      */
     public static final String CALLBACK_STATUS_WAIT = "wait";
+    public static final String CALLBACK_STATUS_ING = "ing";
+    public static final String CALLBACK_STATUS_FAIL = "fail";
+    public static final String CALLBACK_STATUS_SUCCESS = "success";
 }

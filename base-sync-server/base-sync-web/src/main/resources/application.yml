@@ -11,6 +11,7 @@ spring:
 
 
 sync:
+  # rocketmq配置
   rocketmq:
     namesrv-addr: 116.205.181.9:9876
     instance-name: SyncServer
@@ -18,8 +19,10 @@ sync:
     topic: SyncTopic
     consume-thread-min: 20
     consume-thread-max: 40
+  # 同步回调配置
   callback:
-    targets:
+    dest-list:
+
       - project: pim
         url: http://127.0.0.1:8084
 

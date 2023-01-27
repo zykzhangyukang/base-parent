@@ -1,9 +1,9 @@
 package com.coderman.sync.callback;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coderman.service.config.PropertyConfig;
 import com.coderman.sync.callback.meta.CallBackNode;
 import com.coderman.sync.callback.meta.CallbackTask;
+import com.coderman.sync.config.CallbackConfig;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.CallbackContext;
@@ -120,11 +120,11 @@ public class CallBackExecutor {
 
     private void initCallbackUrl() {
 
-        List<Callback> targets = callbackConfig.getTargets();
+        List<CallbackConfig.Callback> targets = callbackConfig.getDestList();
 
         if(CollectionUtils.isNotEmpty(targets)){
 
-            for (Callback callback : targets) {
+            for (CallbackConfig.Callback callback : targets) {
 
                 String project = callback.getProject();
                 String[] hosts = callback.getUrl().split(",");

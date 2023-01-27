@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 import java.io.IOException;
@@ -56,6 +57,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Lazy(false)
 @Slf4j
 public class CallBackExecutor {
+
+    @Resource
+    private CallbackConfig callbackConfig;
 
     private final ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
     private HttpClientBuilder httpClientBuilder = null;
@@ -116,33 +120,38 @@ public class CallBackExecutor {
 
     private void initCallbackUrl() {
 
-        Map<String, String> callbackMap = PropertyConfig.getDictMap("callback");
+        List<Callback> targets = callbackConfig.getTargets();
 
-        for (String project : callbackMap.keySet()) {
+        if(CollectionUtils.isNotEmpty(targets)){
 
-            String[] hosts = callbackMap.get(project).split(",");
+            for (Callback callback : targets) {
 
-            CallBackNode callBackNode = new CallBackNode();
+                String project = callback.getProject();
+                String[] hosts = callback.getUrl().split(",");
 
-            for (String host : hosts) {
+                CallBackNode callBackNode = new CallBackNode();
 
-                String callbackUrl = host + "/" + project + "/callback/notify";
+                for (String host : hosts) {
 
-                boolean result = this.checkNodeAvailable(callbackUrl, this.getClient(callbackUrl));
+                    String callbackUrl = host + "/" + project + "/callback/notify";
 
-                if (result) {
+                    boolean result = this.checkNodeAvailable(callbackUrl, this.getClient(callbackUrl));
 
-                    callBackNode.addCallbackUrl(callbackUrl);
+                    if (result) {
 
-                } else {
+                        callBackNode.addCallbackUrl(callbackUrl);
 
-                    callBackNode.addNoneCallbackUrl(callbackUrl);
+                    } else {
+
+                        callBackNode.addNoneCallbackUrl(callbackUrl);
+                    }
                 }
+
+                callBackNode.resetAvailableNode();
+
+                this.callBackNodeMap.put(project, callBackNode);
+
             }
-
-            callBackNode.resetAvailableNode();
-
-            this.callBackNodeMap.put(project, callBackNode);
         }
     }
 

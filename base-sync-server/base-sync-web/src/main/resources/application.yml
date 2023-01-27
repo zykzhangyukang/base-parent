@@ -18,6 +18,17 @@ sync:
     topic: SyncTopic
     consume-thread-min: 20
     consume-thread-max: 40
+  callback:
+    targets:
+      - project: pim
+        url: http://127.0.0.1:8084
+
+      - project: so
+        url: http://127.0.0.1:8084
+
+      - project: demo
+        url: http://127.0.0.1:8084
+
 
 
 jdbc:
@@ -42,8 +53,3 @@ jdbc:
   datasource2$url: jdbc:mysql://localhost:3306/datasource2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   datasource2$username: root
   datasource2$password: 2120FA78BC6EB99B019C119BD8067DB0
-
-callback:
-  demo: http://127.0.0.1:8084
-  pim: http://127.0.0.1:8084
-  so: http://127.0.0.1:8084

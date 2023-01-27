@@ -49,7 +49,7 @@ public class SyncDataTask extends AbstractTask {
 
         TaskResult taskResult = super.process();
 
-        // 数据同步成功吧回调加入队列中
+        // 数据同步成功把回调加入队列中
         if (SyncConstant.TASK_CODE_SUCCESS.equals(taskResult.getCode())) {
 
             if (CollectionUtils.isNotEmpty(taskResult.getResultList())) {

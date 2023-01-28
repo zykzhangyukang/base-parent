@@ -3,6 +3,7 @@ package com.coderman.service.aspect;
 import com.coderman.api.constant.AopConstant;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.util.ReflectUtil;
+import com.coderman.swagger.annotation.ApiReturnIgnore;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import lombok.extern.slf4j.Slf4j;
@@ -56,8 +57,14 @@ public class ResultAspect {
         // 获取当前方法上的Swagger注解
         Map<String, List<String>> returnParamsMap =  new HashMap<>();
         ApiReturnParams apiReturnParams = method.getAnnotation(ApiReturnParams.class);
+        ApiReturnIgnore apiReturnIgnore = method.getAnnotation(ApiReturnIgnore.class);
 
-        if(null!=apiReturnParams){
+        if(null !=apiReturnIgnore){
+
+            return result;
+        }
+
+        if (null != apiReturnParams) {
 
             ApiReturnParam[] apiReturnParamsArray = apiReturnParams.value();
 
@@ -66,6 +73,8 @@ public class ResultAspect {
                 returnParamsMap.put(apiReturnParam.name() , Arrays.asList(apiReturnParam.value()));
             }
         }
+
+
 
         if(! (result instanceof ResultVO)){
 

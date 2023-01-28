@@ -16,7 +16,7 @@ public interface PlanService {
      * @param queryVO     查询参数
      * @return
      */
-    ResultVO<PageVO<List<PlanVO>>> page(Integer currentPage, Integer pageSize, PlanVO queryVO);
+    List<PlanVO> page(Integer currentPage, Integer pageSize, PlanVO queryVO);
 
 
     /**

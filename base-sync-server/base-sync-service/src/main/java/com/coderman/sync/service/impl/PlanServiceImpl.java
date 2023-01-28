@@ -29,10 +29,10 @@ public class PlanServiceImpl implements PlanService {
      * @return
      */
     @Override
-    public ResultVO<PageVO<List<PlanVO>>> page(Integer currentPage, Integer pageSize, PlanVO queryVO) {
+    public List<PlanVO> page(Integer currentPage, Integer pageSize, PlanVO queryVO) {
 
         StringBuilder countSql = new StringBuilder("select count(1) ");
-        StringBuilder realSql = new StringBuilder("select uuid,plan_code,src_db,dest_db,src_project,dest_project,status,create_time,update_time");
+        StringBuilder realSql = new StringBuilder("select uuid,plan_code,src_db,dest_db,src_project,dest_project,status,create_time,update_time,plan_content");
         StringBuilder sql = new StringBuilder(" from pub_sync_plan where 1=1");
 
         if (currentPage == null) {
@@ -90,9 +90,7 @@ public class PlanServiceImpl implements PlanService {
         params.add(pageSize);
 
         // 查询
-        List<PlanVO> planVOList = this.jdbcTemplate.query(realSql.toString(), new BeanPropertyRowMapper<>(PlanVO.class), params.toArray());
-
-        return ResultUtil.getSuccessPage(PlanVO.class, new PageVO<>(count == null ? 0 : count, planVOList, currentPage, pageSize));
+        return this.jdbcTemplate.query(realSql.toString(), new BeanPropertyRowMapper<>(PlanVO.class), params.toArray());
     }
 
     @Override

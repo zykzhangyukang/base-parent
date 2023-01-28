@@ -22,13 +22,6 @@ sync:
   # 同步回调配置
   callback:
     dest-list:
-
-      - project: pim
-        url: http://127.0.0.1:8084
-
-      - project: so
-        url: http://127.0.0.1:8084
-
       - project: demo
         url: http://127.0.0.1:8084
 

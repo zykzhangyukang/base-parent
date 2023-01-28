@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <title>消息服务系统</title>
     <meta name="viewport" content="width=device-width"  charset="UTF-8" />
@@ -55,7 +55,7 @@
         </div>
     </div>
 </div>
-<div data-options="region:'south',border:false" style="height:20px;">
+<div data-options="region:'south',border:true" style="height:20px;">
     <div class="define-bottom">
 
     </div>
@@ -71,7 +71,7 @@
 
         <div id="mainTab" class="easyui-tabs" data-options="fit:true,onSelect:onTabSelect" style="display: inline-block; position: absolute;">
             <div title="首页" data-options="closable:false" style="overflow:hidden;background-color:#fff;">
-                <iframe scrolling="auto" frameborder="0" src="/plan.html"  style="width:100%;height:100%"></iframe>
+                <iframe scrolling="auto" frameborder="0" src="/plan.html" style="width:calc(100% - 170px);;height:99%;"></iframe>
             </div>
         </div>
     </div>
@@ -189,7 +189,7 @@
         if (!$('#mainTab').tabs('exists', item.text)) {
             $('#mainTab').tabs('add', {
                 title: item.text,
-                content: '<iframe scrolling="auto" frameborder="0"  src="' + item.url + '" style="width:100%;height:99%;"></iframe>',
+                content: '<iframe scrolling="auto" frameborder="0"  src="' + item.url + '" style="width:calc(100% - 170px);height:99%;"></iframe>',
                 closable: true,
                 icon: item.iconCls,
                 id: item.id

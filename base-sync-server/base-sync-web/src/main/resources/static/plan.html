@@ -1,69 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <title>同步计划</title>
     <link href="/easyui/themes/icon.css" rel="stylesheet" />
     <link href="/easyui/themes/bootstrap/easyui.css" rel="stylesheet" />
+    <script src="/easyui/jquery.min.js"></script>
+    <script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="/easyui/jquery.easyui.min.js"></script>
 </head>
+<style>
+    xmp{
+        font-family: Consolas !important;
+    }
+</style>
 <body>
 
+<!-- 表格 -->
 <div id="sync_plan_tb"></div>
 </body>
 
-<!-- 下面是我们页面上的三个编辑按钮，我们要将3个方法实现出来 -->
-<div id="toolbar">
-    <input class="easyui-textbox" data-options="iconCls:'icon-search'">
+<!-- 同步内容显示弹框 -->
+<div id="show_content_dialog" style="font-size: 14px;!important;">
+</div>
+<!-- 同步内容新增弹框 -->
+<div id="show_plan_add_dialog">
+    <textarea id="NewsIntro" name="NewsIntro"   style="font-family: Consolas !important;font-size:11px;width:99%; height:99%;border: 1px solid #eeeeee;outline: none"></textarea>
+</div>
 
-    <a  class="easyui-linkbutton" iconCls="icon-add" plain="true" >新增</a>
-    <a  class="easyui-linkbutton" iconCls="icon-search" plain="true" >查看</a>
-    <a class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
-    <a  class="easyui-linkbutton" iconCls="icon-remove" plain="true">启用/禁用</a>
+<!-- 工具栏 -->
+<div id="toolbar">
+
+    <a  class="easyui-linkbutton" iconCls="icon-add" plain="false" id="show_plan_add_btn">新增</a>
+    <a  class="easyui-linkbutton" iconCls="icon-search" plain="false" id="show_content_btn">查看</a>
+    <a class="easyui-linkbutton" iconCls="icon-edit" plain="false">编辑</a>
+    <a  class="easyui-linkbutton" iconCls="icon-remove" plain="false">启用/禁用</a>
+
     <hr/>
 
+    <label>
+        <input class="easyui-textbox" data-options="iconCls:'icon-search'">
+    </label>
 </div>
-<script src="/easyui/jquery.min.js"></script>
-<script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
-<script src="/easyui/jquery.easyui.min.js"></script>
+
 <script>
-    $('#sync_plan_tb').datagrid({
-        height: 340,
-        url: '/sync/plan/page',
-        method: 'POST',
-        idField: 'uuid',
-        striped: false,
-        fit: true,
-        singleSelect: false,
-        rownumbers: true,
-        pagination: true,
-        nowrap: false,
-        pageSize: 10,
-        toolbar: '#toolbar',
-        pageList: [10, 20, 50, 100, 150, 200],
-        showFooter: true,
-        columns: [[
-            { field: 'uuid', checkbox: true },
-            { field: 'planCode', title: '同步计划编号', width: 250,align: 'center' },
-            { field: 'srcDb', title: '源数据库', width: 180, align: 'center' },
-            { field: 'destDb', title: '目标数据库', width: 180, align: 'center' },
-            { field: 'srcProject', title: '源系统', width: 180, align: 'center' },
-            { field: 'destProject', title: '目标系统', width: 180, align: 'center' },
-            { field: 'status', title: '启用状态', width: 150, align: 'center' },
-            { field: 'createTime', title: '创建时间', width: 200, align: 'center' },
-            { field: 'updateTime', title: '更新时间', width: 200, align: 'center' },
-            { field: 'viewContent', title: '同步计划内容', width: 150, align: 'center' },
-        ]],
-        onBeforeLoad: function (param) {
-        },
-        onLoadSuccess: function (data) {
 
-        },
-        onLoadError: function () {
+    $(function () {
 
-        },
-        onClickCell: function (rowIndex, field, value) {
+        let table = $('#sync_plan_tb').datagrid({
+            url: '/sync/plan/page',
+            method: 'POST',
+            idField: 'uuid',
+            height: 800,
+            striped: false,
+            fitColumns: true,
+            singleSelect: true,
+            rownumbers: true,
+            pagination: true,
+            nowrap: false,
+            pageSize: 10,
+            toolbar: '#toolbar',
+            pageList: [10, 20, 50, 100, 150, 200],
+            showFooter: true,
+            columns: [[
+                {field: 'uuid', checkbox: true},
+                {field: 'planCode', title: '同步计划编号', width: 200, align: 'center'},
+                {field: 'srcDb', title: '源数据库', width: 180, align: 'center'},
+                {field: 'destDb', title: '目标数据库', width: 180, align: 'center'},
+                {field: 'srcProject', title: '源系统', width: 180, align: 'center'},
+                {field: 'destProject', title: '目标系统', width: 180, align: 'center'},
+                {
+                    field: 'status', title: '启用状态', width: 150, align: 'center', formatter: function (value) {
+                        return value === 'normal' ? "<font color='#19be6b'>启用</font>" : "<font color='red'>禁用</font>";
+                    }
+                },
+                {field: 'createTime', title: '创建时间', width: 200, align: 'center'},
+                {field: 'updateTime', title: '更新时间', width: 200, align: 'center'},
+            ]]
+        });
 
-        }
-    });
+        /**
+         * 显示同步计划内容
+         *
+         * @returns {*}
+         */
+        $("#show_content_btn").click(function () {
+            let row = $('#sync_plan_tb').datagrid('getSelected');
+            if(!row){
+                return $.messager.alert('警告','请选择要操作的记录');
+            }
+            $('#show_content_dialog').window({
+                title: "同步编号:"+row.planCode,
+                width:800,
+                height:600,
+                modal:true
+            });
+            $("#show_content_dialog").html("<xmp>"+row.planContent+"</xmp>")
+        })
+
+        /**
+         * 显示新增同步计划弹框
+         */
+        $("#show_plan_add_btn").click(function () {
+            $('#show_plan_add_dialog').window({
+                title: "新增",
+                width:800,
+                height:600,
+                modal:true
+            });
+        })
+
+    })
 </script>
 </html>

@@ -1,6 +1,6 @@
 package com.coderman.sync.service;
 
-import com.coderman.api.vo.PageVO;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.sync.vo.PlanVO;
 
@@ -16,7 +16,7 @@ public interface PlanService {
      * @param queryVO     查询参数
      * @return
      */
-    List<PlanVO> page(Integer currentPage, Integer pageSize, PlanVO queryVO);
+    JSONObject page(Integer currentPage, Integer pageSize, PlanVO queryVO);
 
 
     /**
@@ -26,4 +26,31 @@ public interface PlanService {
      * @return
      */
     ResultVO<String> selectContent(String uuid);
+
+
+    /**
+     * 同步计划更新
+     *
+     * @param planVO 参数对象
+     * @return
+     */
+    ResultVO<Void> updatePlan(PlanVO planVO);
+
+
+    /**
+     * 启用/禁用 同步内容
+     *
+     * @param uuid uuid
+     * @return
+     */
+    ResultVO<Void> updateStatus(String uuid);
+
+
+    /**
+     * 同步计划新增
+     *
+     * @param planVO 参数对象
+     * @return
+     */
+    ResultVO<Void> savePlan(PlanVO planVO);
 }

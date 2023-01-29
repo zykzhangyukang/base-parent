@@ -16,6 +16,6 @@ public interface Constant {
      */
     public static final String MSG_DEAL_STATUS_WAIT = "wait";
     public static final String MSG_DEAL_STATUS_SUCCESS = "success";
-    public static final String MSG_DEAL_STATUS_fail = "fail";
+    public static final String MSG_DEAL_STATUS_FAIL = "fail";
     public static final String MSG_DEAL_STATUS_NONEED = "noneed";
 }

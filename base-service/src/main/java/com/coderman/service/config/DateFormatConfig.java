@@ -34,7 +34,7 @@ public class DateFormatConfig {
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilder() {
 
         return builder -> {
-            TimeZone tz = TimeZone.getTimeZone("UTC");
+            TimeZone tz = TimeZone.getTimeZone("GMT+8");
             DateFormat df = new SimpleDateFormat(pattern);
             df.setTimeZone(tz);
             builder.failOnEmptyBeans(false)

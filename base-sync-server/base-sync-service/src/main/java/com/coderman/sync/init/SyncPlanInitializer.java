@@ -1,5 +1,6 @@
 package com.coderman.sync.init;
 
+import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.plan.PlanModel;
 import com.coderman.sync.plan.meta.PlanMeta;
@@ -22,13 +23,14 @@ public class SyncPlanInitializer {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
-    private final static String sql = "select uuid,plan_code,src_db,dest_db,src_project,dest_project,plan_content,status,create_time,update_time from pub_sync_plan where status= ?";
+    private final static String sql = "select uuid,plan_code,src_db,dest_db,src_project,dest_project,plan_content,status," +
+            "create_time,update_time from pub_sync_plan where status= ?";
 
     public synchronized void init() {
 
 
         // 查询同步计划
-        List<PlanModel> planModelList = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(PlanModel.class), "normal");
+        List<PlanModel> planModelList = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(PlanModel.class), PlanConstant.STATUS_NORMAL);
 
 
         List<PlanMeta> resultList = new ArrayList<>();

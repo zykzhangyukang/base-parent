@@ -1,5 +1,7 @@
 package com.coderman.sync.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnIgnore;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -12,7 +14,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/${domain}/plan")
@@ -20,6 +21,27 @@ public class PlanController {
 
     @Resource
     private PlanService planService;
+
+
+    @PostMapping(value = "/update")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_STRING, value = "uuid"),
+            @ApiImplicitParam(name = "content", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_STRING, value = "同步计划内容"),
+    })
+    public ResultVO<Void> updatePlan(@RequestBody PlanVO planVO) {
+
+        return this.planService.updatePlan(planVO);
+    }
+
+    @PostMapping(value = "/save")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "content", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_STRING, value = "同步计划内容"),
+    })
+    public ResultVO<Void> savePlan(@RequestBody PlanVO planVO) {
+
+        return this.planService.savePlan(planVO);
+    }
+
 
     @PostMapping(value = "/page")
     @ApiImplicitParams({
@@ -31,8 +53,8 @@ public class PlanController {
                     "uuid", "planCode", "status"}),
     })
     @ApiReturnIgnore
-    public List<PlanVO> page(@RequestParam(value = "currentPage",defaultValue = "1") Integer currentPage,
-                                               @RequestParam(value = "pageSize",defaultValue = "15") Integer pageSize, PlanVO queryVO) {
+    public JSONObject page(@RequestParam(value = "page",defaultValue = "1") Integer currentPage,
+                           @RequestParam(value = "rows",defaultValue = "15") Integer pageSize, PlanVO queryVO) {
 
         return this.planService.page(currentPage, pageSize, queryVO);
     }
@@ -44,8 +66,16 @@ public class PlanController {
     })
     public ResultVO<String> selectContent(String uuid) {
 
-
         return this.planService.selectContent(uuid);
+    }
+
+    @GetMapping(value = "/status")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.DATA_STRING, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+    })
+    public ResultVO<Void> updateStatus(String uuid) {
+
+        return this.planService.updateStatus(uuid);
     }
 
 }

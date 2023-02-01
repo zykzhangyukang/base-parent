@@ -1,4 +1,4 @@
-package com.coderman.sync.service;
+package com.coderman.sync.service.plan;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.vo.ResultVO;

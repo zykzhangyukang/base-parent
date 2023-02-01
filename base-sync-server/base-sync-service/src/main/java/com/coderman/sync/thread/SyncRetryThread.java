@@ -94,7 +94,7 @@ public class SyncRetryThread {
             }
         });
 
-        log.info("同步失败重试线程启动...");
+        log.info("同步重试线程启动...");
 
     }
 

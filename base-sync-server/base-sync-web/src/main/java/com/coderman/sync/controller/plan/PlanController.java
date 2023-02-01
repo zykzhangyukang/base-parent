@@ -1,13 +1,12 @@
-package com.coderman.sync.controller;
+package com.coderman.sync.controller.plan;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnIgnore;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
-import com.coderman.sync.service.PlanService;
+import com.coderman.sync.service.plan.PlanService;
 import com.coderman.sync.vo.PlanVO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

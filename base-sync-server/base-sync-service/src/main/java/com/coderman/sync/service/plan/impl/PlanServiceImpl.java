@@ -1,4 +1,4 @@
-package com.coderman.sync.service.impl;
+package com.coderman.sync.service.plan.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.util.ResultUtil;
@@ -6,10 +6,9 @@ import com.coderman.api.vo.ResultVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.PlanConstant;
-import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.parser.MetaParser;
-import com.coderman.sync.service.PlanService;
+import com.coderman.sync.service.plan.PlanService;
 import com.coderman.sync.vo.PlanVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

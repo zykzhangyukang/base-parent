@@ -6,8 +6,8 @@
     <link href="/easyui/themes/icon.css" rel="stylesheet" />
     <link href="/easyui/themes/bootstrap/easyui.css" rel="stylesheet" />
     <script src="/easyui/jquery.min.js"></script>
-    <script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
     <script src="/easyui/jquery.easyui.min.js"></script>
+    <script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
 </head>
 <style>
     xmp{
@@ -32,6 +32,9 @@
 <div id="sync_plan_tb"></div>
 </body>
 
+
+<textarea id="copy" style="display:none;"></textarea>
+
 <!-- 同步内容显示弹框 -->
 <div id="add_content_dialog" style="font-size: 14px;!important;background-color: #ffffff">
     <textarea id="add_content" style="width: 100%;height: 95%;font-size: 15px;border:1px #eeeeee solid;font-family: 'Ubuntu Mono'"></textarea>
@@ -47,13 +50,30 @@
 <!-- 工具栏 -->
 <div id="toolbar">
 
-    <a  class="easyui-linkbutton" iconCls="icon-add" plain="false" id="add_plan_btn">新增</a>
-    <a  class="easyui-linkbutton" iconCls="icon-mini-refresh" plain="false" id="refresh_plan_btn">刷新</a>
-    <hr/>
+    <a  class="easyui-linkbutton" iconCls="icon-standard-add" plain="false" id="add_plan_btn">新增</a>
+    <a  class="easyui-linkbutton" iconCls="icon-reload" plain="false" id="refresh_plan_btn">刷新</a>
+    <hr color="#eee"/>
 
     <label>
-        <input class="easyui-textbox" data-options="iconCls:'icon-search'">
+        状态:
+        <select id="plan_status" class="easyui-combobox"  name="plan_status" style="width:100px;">
+            <option value="" name="" >全部</option>
+            <option value="normal" name="normal" >启用</option>
+            <option value="forbid" name="forbid" >禁用</option>
+        </select>
     </label>
+
+    <label>
+        同步编号:
+        <input class="easyui-textbox" id="plan_code">
+    </label>
+
+    <label>
+        <div style="user-select: none" id="search_plan_btn" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索</div>
+    </label>
+
+    <hr color="#eee"/>
+
 </div>
 
 <script>
@@ -74,6 +94,9 @@
             pageSize: 15,
             toolbar: '#toolbar',
             pageList: [15, 50, 100, 150, 200],
+            beforePageText: '第',
+            afterPageText: '页    共 {pages} 页',
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
             showFooter: true,
             columns: [[
                 {field: 'uuid', checkbox: true},
@@ -90,7 +113,7 @@
                 {field: 'createTime', title: '创建时间', width: 200, align: 'center'},
                 {field: 'updateTime', title: '更新时间', width: 200, align: 'center'},
                 {field: 'opBtn', title: '操作', width: 250, align: 'center',formatter: function (value,row) {
-                        return "<a class=\"edit_plan_btn\">编辑</a>&nbsp;&nbsp;<a class=\"status_plan_btn\">状态</a></a>";
+                        return "<a class=\"edit_plan_btn\">编辑</a>&nbsp;&nbsp;<a class=\"status_plan_btn\">状态</a>&nbsp;&nbsp;<a class=\"remove_plan_btn\">删除</a>";
                     }},
             ]],
             onLoadSuccess:function () {
@@ -98,7 +121,7 @@
                 // 启用禁用同步计划
                 $(".status_plan_btn").linkbutton({
                     plain: false,
-                    iconCls: 'icon-lock',
+                    iconCls: 'icon-standard-lock',
                     onClick: function () {
 
                         let uuid = $(this).parent().parent().parent().children().eq(0).find("input").val();
@@ -128,19 +151,45 @@
 
                         let uuid = $(this).parent().parent().parent().children().eq(0).find("input").val();
 
-                        $.get("/sync/plan/content?uuid=" + uuid, function (obj) {
+                        $('#edit_content_dialog').dialog({
+                            closed: false,
+                            onOpen: function () {
+                                $.get("/sync/plan/content?uuid=" + uuid, function (obj) {
+                                    if(obj.code === 200){
+                                        $("#edit_content").val(obj.result);
+                                        $("#hide_uuid").val(uuid);
+                                    }
 
-                            if(obj.code === 200){
+                                }, "json");
+                            },
+                            onClose: function () {
+                                $("#edit_content").val('');
+                            },
+                        })
 
-                                $("#edit_content").text(obj.result);
-                                $('#edit_content_dialog').dialog({
-                                    closed: false,
-                                })
-                                $("#hide_uuid").val(uuid);
+                    },
+                });
+
+                // 删除同步计划
+                $(".remove_plan_btn").linkbutton({
+                    plain: false,
+                    iconCls: 'icon-remove',
+                    onClick: function () {
+                        let uuid = $(this).parent().parent().parent().children().eq(0).find("input").val();
+                        $.messager.confirm('是否继续操作?','您是否要删除该同步计划?',function(r){
+                            if (r){
+                                $.get("/sync/plan/delete?uuid="+ uuid,function(obj){
+                                    if(obj.code === 200){
+
+                                        table.datagrid("reload");
+
+                                    }else {
+                                        $.messager.alert('错误',obj.msg,'info');
+                                    }
+                                },"json");
                             }
-
-                        }, "json");
-                    }
+                        });
+                    },
                 });
             }
         });
@@ -155,7 +204,6 @@
             width: 800,
             height: 600,
             closed: true,
-            iconCls: 'icon-edit',
             cache: false,
             modal: true,
             toolbar:[{
@@ -189,8 +237,32 @@
                     });
 
                 }
+            },{
+                text: '复制',
+                iconCls: 'icon-standard-page-copy',
+                handler: function () {
+                    copyText($("#edit_content").val());
+                    $('#edit_content_dialog').dialog({
+                        closed: true,
+                    })
+                }
             }]
         });
+
+
+        /**
+         * 将文本内容复制到剪切板
+         * @param str 复制内容
+         */
+        function copyText(str) {
+            let c = $('#copy');
+            c.text(str).show();
+            const ele = document.getElementById("copy");
+            ele.select();
+            document.execCommand('copy', false, null);
+            c.hide();
+        }
+
 
         /**
          * 刷新表格
@@ -199,6 +271,16 @@
          */
         $("#refresh_plan_btn").click(function () {
            table.datagrid("reload")
+        })
+
+        /**
+         * 搜索
+         *
+         * @returns {*}
+         */
+        $("#search_plan_btn").click(function () {
+            table.datagrid("options").queryParams = {status: $("#plan_status").val(),planCode:$("#plan_code").val()};
+            table.datagrid("reload")
         })
 
 
@@ -216,6 +298,9 @@
                 closed: false,
                 cache: false,
                 modal: true,
+                onClose: function () {
+                    $("#add_content").val('');
+                },
                 toolbar:[{
                     text:'新增',
                     iconCls:'icon-save',
@@ -243,6 +328,12 @@
                             }
 
                         });
+
+                    }
+                },{
+                    text:'粘贴',
+                    iconCls: 'icon-standard-paste-plain',
+                    handler: function () {
 
                     }
                 }]

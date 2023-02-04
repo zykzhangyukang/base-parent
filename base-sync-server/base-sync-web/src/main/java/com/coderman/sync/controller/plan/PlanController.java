@@ -68,6 +68,15 @@ public class PlanController {
         return this.planService.selectContent(uuid);
     }
 
+    @GetMapping(value = "/delete")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.DATA_STRING, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+    })
+    public ResultVO<Void> deletePlan(String uuid) {
+
+        return this.planService.deletePlan(uuid);
+    }
+
     @GetMapping(value = "/status")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.DATA_STRING, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),

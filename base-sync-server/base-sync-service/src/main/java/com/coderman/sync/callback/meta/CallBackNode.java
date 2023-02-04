@@ -64,4 +64,20 @@ public class CallBackNode {
 
         }
     }
+
+
+    public void switchUnAvailableNode(String callbackUrl){
+
+        synchronized (this) {
+
+            if (StringUtils.isNotBlank(callbackUrl)) {
+
+                this.unavailableList.remove(callbackUrl);
+                this.unavailableList.add(0, callbackUrl);
+                this.availableList.remove(callbackUrl);
+            }
+
+        }
+
+    }
 }

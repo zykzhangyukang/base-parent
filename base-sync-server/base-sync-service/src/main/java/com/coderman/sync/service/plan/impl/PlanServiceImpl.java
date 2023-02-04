@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlanServiceImpl implements PlanService {
@@ -64,6 +65,12 @@ public class PlanServiceImpl implements PlanService {
         Assert.notNull(destProject, "destProject is null");
         Assert.notNull(srcProject, "srcProject is null");
 
+        List<PlanVO> planVOByCode = this.getPlanVOByCode(planCode);
+
+        if (CollectionUtils.isNotEmpty(planVOByCode)) {
+
+            return ResultUtil.getWarn("已存在编号为 " + planCode + " 的同步计划");
+        }
 
         int count = jdbcTemplate.update(
                 "insert into pub_sync_plan(uuid,plan_code,src_db,dest_db,src_project,dest_project,plan_content,status,create_time,update_time) " +
@@ -92,7 +99,39 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    @LogError(value = "同步计划分页更新")
+    @LogError(value = "同步计划删除")
+    public ResultVO<Void> deletePlan(String uuid) {
+
+        List<PlanVO> planVOByUuid = this.getPlanVOByUuid(uuid);
+
+        if (CollectionUtils.isEmpty(planVOByUuid)) {
+
+            return ResultUtil.getWarn("同步计划不存在,请刷新重试!");
+        }
+
+        PlanVO planVO = planVOByUuid.get(0);
+
+        if (!StringUtils.equals(planVO.getStatus(), PlanConstant.STATUS_FORBID)) {
+
+            return ResultUtil.getWarn("只能删除禁用状态的同步计划");
+        }
+
+        List<Object> params = new ArrayList<>();
+
+        params.add(uuid);
+
+        int rowCount = this.jdbcTemplate.update("delete from pub_sync_plan where uuid=?", params.toArray());
+
+        if (rowCount <= 0) {
+
+            return ResultUtil.getWarn("删除同步计划失败!");
+        }
+
+        return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "同步计划更新")
     public ResultVO<Void> updatePlan(PlanVO planVO) {
 
         String uuid = planVO.getUuid();
@@ -133,6 +172,18 @@ public class PlanServiceImpl implements PlanService {
         Assert.notNull(destProject, "destProject is null");
         Assert.notNull(srcProject, "srcProject is null");
 
+        List<PlanVO> planVOByCode = this.getPlanVOByCode(planCode);
+
+        if (CollectionUtils.isNotEmpty(planVOByCode)) {
+
+            Optional<PlanVO> optional = planVOByCode.stream().filter(e -> !StringUtils.equals(e.getUuid(), uuid)).findAny();
+            if (optional.isPresent()) {
+
+                return ResultUtil.getWarn("已存在编号为 " + planCode + " 的同步计划");
+            }
+        }
+
+
         int count = this.jdbcTemplate.update("update pub_sync_plan set plan_content=? ,plan_code = ?,src_db=?,dest_db=?,src_project=?,dest_project=?,update_time=?" +
                 " where uuid=?", planContent, planCode, srcDb, destDb, srcProject, destProject, new Date(), uuid);
 
@@ -154,7 +205,7 @@ public class PlanServiceImpl implements PlanService {
             return ResultUtil.getWarn("uuid不能为空");
         }
 
-        List<PlanVO> list = getPlanVOS(uuid);
+        List<PlanVO> list = getPlanVOByUuid(uuid);
 
         if (CollectionUtils.isEmpty(list)) {
 
@@ -176,13 +227,24 @@ public class PlanServiceImpl implements PlanService {
     }
 
 
-    private List<PlanVO> getPlanVOS(String uuid) {
+    private List<PlanVO> getPlanVOByUuid(String uuid) {
 
         List<Object> params = new ArrayList<>();
 
         params.add(uuid);
 
         return this.jdbcTemplate.query("select plan_content,status from pub_sync_plan where uuid=?",
+                new BeanPropertyRowMapper<>(PlanVO.class), params.toArray());
+    }
+
+
+    private List<PlanVO> getPlanVOByCode(String code) {
+
+        List<Object> params = new ArrayList<>();
+
+        params.add(code);
+
+        return this.jdbcTemplate.query("select uuid,plan_content,status from pub_sync_plan where plan_code=?",
                 new BeanPropertyRowMapper<>(PlanVO.class), params.toArray());
     }
 
@@ -271,7 +333,7 @@ public class PlanServiceImpl implements PlanService {
             return ResultUtil.getWarn("uuid不能为空");
         }
 
-        List<PlanVO> list = getPlanVOS(uuid);
+        List<PlanVO> list = getPlanVOByUuid(uuid);
 
         if (CollectionUtils.isEmpty(list)) {
 

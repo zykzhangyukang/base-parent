@@ -265,6 +265,28 @@ public class CallBackExecutor {
         return result;
     }
 
+    /**
+     * 失败次数超过3次切换节点为不可用
+     *
+     * @param callback 回调任务
+     * @param callbackUrl 回调url
+     */
+    private void checkSwitchNode(CallbackTask callback,String callbackUrl){
+
+        if(!this.unFailMap.containsKey(callbackUrl)){
+
+            this.unFailMap.put(callbackUrl,new AtomicInteger(0));
+        }
+
+        int failCount = this.unFailMap.get(callbackUrl).incrementAndGet();
+
+        if(failCount>3){
+
+            this.callBackNodeMap.get(callback.getProject()).switchUnAvailableNode(callbackUrl);
+            this.unFailMap.put(callbackUrl,new AtomicInteger(0));
+        }
+
+    }
 
     /**
      * 获取http客户端
@@ -531,6 +553,8 @@ public class CallBackExecutor {
             }
 
             log.error("回调失败异常,e:{}",e.getMessage(),e);
+
+            this.checkSwitchNode(callback,callbackUrl);
 
         } finally {
 

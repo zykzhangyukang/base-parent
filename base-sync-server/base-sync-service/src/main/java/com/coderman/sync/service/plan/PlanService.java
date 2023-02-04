@@ -53,4 +53,13 @@ public interface PlanService {
      * @return
      */
     ResultVO<Void> savePlan(PlanVO planVO);
+
+
+    /**
+     * 同步计划删除
+     *
+     * @param uuid uuid
+     * @return
+     */
+    ResultVO<Void> deletePlan(String uuid);
 }

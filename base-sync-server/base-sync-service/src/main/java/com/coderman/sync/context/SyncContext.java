@@ -5,10 +5,11 @@ import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.meta.TableMeta;
+import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.base.BaseTask;
-import com.coderman.sync.task.support.WriteBackTask;
 import com.coderman.sync.thread.SyncRetryThread;
+import com.coderman.sync.thread.ResultToEsThread;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,11 @@ public class SyncContext {
     // 同步重试线程
     @Resource
     private SyncRetryThread syncRetryThread;
+
+    // 同步es线程
+    @Resource
+    private ResultToEsThread resultToEsThread;
+
 
     private static SyncContext syncContext;
 
@@ -97,7 +103,7 @@ public class SyncContext {
      * 同步数据
      *
      * @param msg        消息内容
-     * @param mqMsgId       mq消息id
+     * @param mqMsgId    mq消息id
      * @param msgSrc     消息来源
      * @param retryTimes 重试次数
      * @return 同步结果
@@ -116,7 +122,7 @@ public class SyncContext {
 
         } catch (Exception e) {
 
-            logger.error("同步数据出错:" ,e);
+            logger.error("同步数据出错:", e);
 
         } finally {
 
@@ -124,6 +130,16 @@ public class SyncContext {
         }
 
         return result;
+    }
+
+
+    /**
+     * 同步记录同步到es
+     *
+     * @param resultModel 同步记录
+     */
+    public void syncToEs(ResultModel resultModel) {
+        this.resultToEsThread.addTask(resultModel);
     }
 
     /**

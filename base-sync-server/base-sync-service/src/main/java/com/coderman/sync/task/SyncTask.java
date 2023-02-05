@@ -261,6 +261,9 @@ public class SyncTask {
                     preparedStatement.setBoolean(18, resultModel.isSyncToEs());
                 });
 
+        // 同步到ES
+        SyncContext.getContext().syncToEs(resultModel);
+
         // 重试成功需要把之前失败的消息标记为成功
         if (PlanConstant.RESULT_STATUS_SUCCESS.equals(this.resultModel.getStatus()) && null != this.resultModel.getRepeatCount() && this.resultModel.getRepeatCount() > 0) {
 

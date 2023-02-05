@@ -37,7 +37,7 @@
 
 <!-- 同步内容显示弹框 -->
 <div id="add_content_dialog" style="font-size: 14px;!important;background-color: #ffffff">
-    <textarea id="add_content" style="width: 100%;height: 95%;font-size: 15px;border:1px #eeeeee solid;font-family: 'Ubuntu Mono'"></textarea>
+    <textarea id="add_content" style="width: 100%;height: 95%;display:none;font-size: 15px;border:1px #eeeeee solid;font-family: 'Ubuntu Mono'"></textarea>
 </div>
 
 <!-- 同步内容编辑弹框 -->
@@ -299,7 +299,10 @@
                 cache: false,
                 modal: true,
                 onClose: function () {
-                    $("#add_content").val('');
+                    $("#add_content").css('display','none').val('');
+                },
+                onOpen: function(){
+                    $("#add_content").css('display','block');
                 },
                 toolbar:[{
                     text:'新增',
@@ -315,7 +318,6 @@
                             type:"POST",
                             success:function (res){
                                 if(res.code === 200){
-
                                     $('#add_content_dialog').dialog({
                                         closed: true,
                                     })

@@ -14,4 +14,12 @@ public interface EsService {
      * @return
      */
     public boolean batchInsertSyncResult(List<ResultModel> resultModelList) throws IOException;
+
+    /**
+     * 修改同步结果为成功
+     *
+     * @param msgId  消息id
+     * @param remark 备注信息
+     */
+    void updateSyncResultSuccess(String msgId, String remark);
 }

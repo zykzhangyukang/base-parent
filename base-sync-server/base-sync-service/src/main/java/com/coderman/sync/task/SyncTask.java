@@ -7,6 +7,7 @@ import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
+import com.coderman.sync.es.EsService;
 import com.coderman.sync.plan.meta.MsgMeta;
 import com.coderman.sync.plan.meta.MsgTableMeta;
 import com.coderman.sync.plan.meta.PlanMeta;
@@ -241,7 +242,7 @@ public class SyncTask {
                         " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 
                 preparedStatement -> {
-                    preparedStatement.setString(1, UUIDUtils.getPrimaryValue());
+                    preparedStatement.setString(1, resultModel.getUuid());
                     preparedStatement.setString(2, resultModel.getPlanUuid());
                     preparedStatement.setString(3, resultModel.getPlanCode());
                     preparedStatement.setString(4, resultModel.getPlanName());
@@ -267,15 +268,18 @@ public class SyncTask {
         // 重试成功需要把之前失败的消息标记为成功
         if (PlanConstant.RESULT_STATUS_SUCCESS.equals(this.resultModel.getStatus()) && null != this.resultModel.getRepeatCount() && this.resultModel.getRepeatCount() > 0) {
 
+            String remark = "系统将其标记成功";
 
             jdbcTemplate.update("update pub_sync_result set status=?,remark=? where msg_id=? and status=?", preparedStatement -> {
 
                 preparedStatement.setString(1, PlanConstant.RESULT_STATUS_SUCCESS);
-                preparedStatement.setString(2, "系统将其标记成功");
+                preparedStatement.setString(2, remark);
                 preparedStatement.setString(3, this.resultModel.getMsgId());
                 preparedStatement.setString(4, PlanConstant.RESULT_STATUS_FAIL);
             });
 
+            // 标记ES状态
+            SpringContextUtil.getBean(EsService.class).updateSyncResultSuccess(this.resultModel.getMsgId(), remark);
         }
 
     }

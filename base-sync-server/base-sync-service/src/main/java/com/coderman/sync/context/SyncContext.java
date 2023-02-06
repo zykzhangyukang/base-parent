@@ -139,7 +139,7 @@ public class SyncContext {
      * @param resultModel 同步记录
      */
     public void syncToEs(ResultModel resultModel) {
-        this.resultToEsThread.addTask(resultModel);
+        this.resultToEsThread.add(resultModel);
     }
 
     /**

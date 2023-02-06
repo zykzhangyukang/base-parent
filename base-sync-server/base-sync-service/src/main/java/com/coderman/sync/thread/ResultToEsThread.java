@@ -32,7 +32,7 @@ public class ResultToEsThread {
     private EsService esService;
 
 
-    public void addTask(ResultModel resultModel) {
+    public void add(ResultModel resultModel) {
         queue.add(resultModel);
     }
 

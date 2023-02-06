@@ -1,20 +1,22 @@
 package com.coderman.sync.es.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.es.EsService;
 import com.coderman.sync.result.ResultModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.GetAliasesResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -22,7 +24,14 @@ import org.elasticsearch.cluster.metadata.AliasMetaData;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -69,15 +78,48 @@ public class EsServiceImpl implements EsService {
 
             result = true;
 
-            // 更新同步状态
             List<String> uuidList = resultModelList.stream().map(ResultModel::getUuid).distinct().collect(Collectors.toList());
 
-            JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
+            if (CollectionUtils.isNotEmpty(uuidList)) {
 
-            jdbcTemplate.update("update pub_sync_result set sync_To_es = true where uuid in (?)", uuidList);
+                // 更新es同步状态
+                JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
+                NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+                Map<String, Object> params = new HashMap<>(uuidList.size());
+                params.put("params", uuidList);
+                namedParameterJdbcTemplate.update("update pub_sync_result set sync_To_es = 1 where uuid in (:params)", params);
+            }
+
         }
 
         return result;
+    }
+
+    @Override
+    @LogError(value = "修改同步结果为成功")
+    public void updateSyncResultSuccess(String msgId, String remark) {
+
+        UpdateByQueryRequest updateByQuery = new UpdateByQueryRequest(this.syncResultIndexName);
+
+        updateByQuery.setRefresh(true);
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery("msgId", msgId))
+                .should(QueryBuilders.termQuery("status", PlanConstant.RESULT_STATUS_FAIL));
+        updateByQuery.setQuery(boolQueryBuilder);
+
+        updateByQuery.setBatchSize(50);
+        updateByQuery.setScript(
+                new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG, "ctx._source.status = 'success';ctx._source.remark = '" + remark + "'", Collections.emptyMap())
+        );
+
+        try {
+
+            this.restHighLevelClient.updateByQuery(updateByQuery, RequestOptions.DEFAULT);
+
+        } catch (IOException e) {
+
+            log.error("修改同步结果为成功失败错误:{}", e.getMessage());
+        }
     }
 
 

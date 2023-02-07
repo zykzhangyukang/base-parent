@@ -9,6 +9,12 @@ spring:
     port: 6379
     password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
+job:
+  adminAddresses: http://127.0.0.1:6850/xxl-job-admin
+  appName: sync-executor
+  logPath: /data/jobhandler
+  logRetentionDays: 4
+  enable: true
 
 sync:
   # es 配置

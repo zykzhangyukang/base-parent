@@ -42,7 +42,6 @@ public class JobConfig {
 
     @Bean(initMethod = "start", destroyMethod = "destroy")
     public XxlJobSpringExecutor xxlJobExecutor() {
-        logger.info(" ============================定时任务执行器初始化============================");
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
         xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
         xxlJobSpringExecutor.setAppName(appName);

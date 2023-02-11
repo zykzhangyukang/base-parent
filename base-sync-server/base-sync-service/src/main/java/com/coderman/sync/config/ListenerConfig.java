@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 
-@Configuration
-@ConfigurationProperties(prefix = "sync.rocketmq")
+//@Configuration
+//@ConfigurationProperties(prefix = "sync.rocketmq")
 @Data
 public class ListenerConfig {
 

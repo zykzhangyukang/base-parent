@@ -1,7 +1,6 @@
 package com.coderman.sync.es.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.coderman.api.exception.BusinessException;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.PlanConstant;
@@ -16,7 +15,6 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.GetAliasesResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -26,7 +24,6 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
@@ -65,6 +62,7 @@ public class EsServiceImpl implements EsService {
         for (ResultModel resultModel : resultModelList) {
             IndexRequest indexRequest = new IndexRequest(this.syncResultIndexName).type("resultModel");
             indexRequest.source(JSON.toJSONString(resultModel), XContentType.JSON);
+            indexRequest.id(resultModel.getUuid());
             bulkRequest.add(indexRequest);
         }
 
@@ -107,7 +105,8 @@ public class EsServiceImpl implements EsService {
                 .should(QueryBuilders.termQuery("status", PlanConstant.RESULT_STATUS_FAIL));
         updateByQuery.setQuery(boolQueryBuilder);
 
-        updateByQuery.setBatchSize(50);
+        updateByQuery.setBatchSize(100);
+        updateByQuery.setSize(50);
         updateByQuery.setScript(
                 new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG, "ctx._source.status = 'success';ctx._source.remark = '" + remark + "'", Collections.emptyMap())
         );

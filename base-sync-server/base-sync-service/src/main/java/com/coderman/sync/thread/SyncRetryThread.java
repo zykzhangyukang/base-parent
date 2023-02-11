@@ -2,8 +2,10 @@ package com.coderman.sync.thread;
 
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.task.base.BaseTask;
+import com.coderman.sync.task.base.MsgTask;
 import com.coderman.sync.task.support.WriteBackTask;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +28,14 @@ public class SyncRetryThread {
 
     private void process(BaseTask baseTask){
 
-        if(baseTask instanceof WriteBackTask){
+        if (baseTask instanceof WriteBackTask) {
 
             ((WriteBackTask) baseTask).process();
+
+        } else if (baseTask instanceof MsgTask) {
+
+            MsgTask msgTask = (MsgTask) baseTask;
+            SyncContext.getContext().syncData(msgTask.getMsg(), StringUtils.EMPTY, msgTask.getSource(), 0);
         }
 
     }
@@ -47,7 +54,6 @@ public class SyncRetryThread {
                 while (true) {
 
                     try {
-
 
                         final BaseTask task = queue.take();
 

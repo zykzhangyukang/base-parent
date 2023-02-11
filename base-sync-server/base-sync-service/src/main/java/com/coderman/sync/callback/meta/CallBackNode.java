@@ -72,12 +72,13 @@ public class CallBackNode {
 
             if (StringUtils.isNotBlank(callbackUrl)) {
 
+                if(this.availableList.size() > 1){
+                    this.availableList.remove(callbackUrl);
+                }
+
                 this.unavailableList.remove(callbackUrl);
-                this.unavailableList.add(0, callbackUrl);
-                this.availableList.remove(callbackUrl);
+                this.unavailableList.add(callbackUrl);
             }
-
         }
-
     }
 }

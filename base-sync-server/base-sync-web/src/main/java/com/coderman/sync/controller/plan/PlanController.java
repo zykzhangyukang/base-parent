@@ -53,7 +53,7 @@ public class PlanController {
     })
     @ApiReturnIgnore
     public JSONObject page(@RequestParam(value = "page",defaultValue = "1") Integer currentPage,
-                           @RequestParam(value = "rows",defaultValue = "15") Integer pageSize, PlanVO queryVO) {
+                           @RequestParam(value = "rows",defaultValue = "20") Integer pageSize, PlanVO queryVO) {
 
         return this.planService.page(currentPage, pageSize, queryVO);
     }

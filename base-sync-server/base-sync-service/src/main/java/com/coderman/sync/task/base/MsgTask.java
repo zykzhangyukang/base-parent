@@ -1,4 +1,13 @@
 package com.coderman.sync.task.base;
 
-public class MsgTask {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class MsgTask extends BaseTask{
+
+    private String msg;
+
+    private String source;
 }

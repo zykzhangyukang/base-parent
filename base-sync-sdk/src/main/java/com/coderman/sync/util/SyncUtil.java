@@ -6,14 +6,13 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.Constant;
+import com.coderman.sync.producer.RocketMQProducer;
 import com.coderman.sync.vo.MsgBody;
 import com.coderman.sync.vo.PlanMsg;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -54,7 +53,7 @@ public class SyncUtil {
 
     private static JdbcTemplate jdbcTemplate;
 
-    private static DefaultMQProducer defaultMQProducer;
+    private static RocketMQProducer rocketMQProducer;
 
     static {
 
@@ -62,7 +61,7 @@ public class SyncUtil {
 
 
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            defaultMQProducer = SpringContextUtil.getBean(DefaultMQProducer.class);
+            rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
 
 
             // 初始化队列
@@ -306,8 +305,8 @@ public class SyncUtil {
 
 
                 // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
-                Message message = new Message("SyncTopic", StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
-                SendResult sendResult = defaultMQProducer.send(message);
+                Message message = new Message(rocketMQProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
+                SendResult sendResult = rocketMQProducer.send(message);
 
                 if (null != sendResult) {
 

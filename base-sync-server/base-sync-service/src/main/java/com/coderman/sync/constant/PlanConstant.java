@@ -33,6 +33,9 @@ public interface PlanConstant {
      */
     @ConstList(group = "msg_source",name = "MQ")
     public static final String MSG_ROCKET_MQ = "rocket_mq";
+    @ConstList(group = "msg_source",name = "定时器补偿")
+    public static final String MSG_SOURCE_JOB = "job";
+
 
     /**
      * 回调状态

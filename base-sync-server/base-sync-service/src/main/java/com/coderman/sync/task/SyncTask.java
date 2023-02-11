@@ -2,10 +2,8 @@ package com.coderman.sync.task;
 
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
-import com.coderman.sync.callback.meta.CallbackTask;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
-import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.es.EsService;
 import com.coderman.sync.plan.meta.MsgMeta;
@@ -21,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 

@@ -5,6 +5,7 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.service.BaseService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,22 +25,29 @@ public class GlobalExceptionHandler extends BaseService {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public ResultVO<Void> handlerException(HttpServletRequest request,Exception e){
+    public ResultVO<Void> handlerException(HttpServletRequest request, Exception e) {
 
 
         ResultVO<Void> resultVO = new ResultVO<>();
 
-        if(e instanceof BusinessException){
+        if (e instanceof BusinessException) {
 
             resultVO.setMsg(e.getMessage());
-        }else {
+
+        } else if (e instanceof HttpRequestMethodNotSupportedException) {
+
+            resultVO.setMsg("请求错误");
+
+            log.warn("非法请求:{},url:{}", e.getMessage(), request.getRequestURI());
+        } else {
 
             resultVO.setMsg("系统繁忙,请稍后重试");
+
+            log.error("Controller统一异常处理, 路径:" + request.getRequestURI(), e);
         }
 
         resultVO.setCode(ResultConstant.RESULT_CODE_500);
 
-        log.error("Controller统一异常处理, 路径:"+request.getRequestURI(),e);
 
         return resultVO;
     }

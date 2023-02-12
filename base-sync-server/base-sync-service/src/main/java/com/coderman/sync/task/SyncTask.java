@@ -262,7 +262,10 @@ public class SyncTask {
         SyncContext.getContext().syncToEs(resultModel);
 
         // 重试成功需要把之前失败的消息标记为成功
-        if (PlanConstant.RESULT_STATUS_SUCCESS.equals(this.resultModel.getStatus()) && null != this.resultModel.getRepeatCount() && this.resultModel.getRepeatCount() > 0) {
+        boolean condition1 = PlanConstant.RESULT_STATUS_SUCCESS.equals(resultModel.getStatus()) && null != resultModel.getRepeatCount() && resultModel.getRepeatCount() > 0;
+        boolean condition2 = PlanConstant.RESULT_STATUS_SUCCESS.equals(resultModel.getStatus()) && StringUtils.equals(getResultModel().getMsgSrc(), PlanConstant.MSG_SOURCE_JOB);
+
+        if (condition1 || condition2) {
 
             String remark = "系统将其标记成功";
 

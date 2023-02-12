@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <title>同步计划</title>
+        <link href="/easyui/themes/icon.css" rel="stylesheet"/>
+        <link href="/easyui/themes/bootstrap/easyui.css" rel="stylesheet"/>
+        <script src="/easyui/jquery.min.js"></script>
+        <script src="/easyui/jquery.easyui.min.js"></script>
+        <script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
+    </head>
+    <style>
+        xmp {
+            font-family: "Ubuntu Mono", serif !important;
+        }
+
+        .datagrid-row-selected {
+            background: #ffffff;
+            color: #303030;
+        }
+
+        .datagrid-row-over {
+            background: #ffffff;
+            color: #303030;
+        }
+
+        .plan_code_column {
+            cursor: pointer;
+            color: #5cadff;
+        }
+
+        textarea {
+            outline: none;
+            resize: none;
+        }
+    </style>
+    <body>
+
+        <!-- 表格 -->
+        <div id="sync_res_tb"></div>
+
+        <input type="hidden" id="hide_uuid" value="">
+
+        <!-- 工具栏 -->
+        <div id="toolbar">
+            <hr color="#eee"/>
+
+            <label>
+                状态:
+                <select id="syncStatus" class="easyui-combobox" name="syncStatus" style="width:100px;">
+                    <option value="" name="">全部</option>
+                    <option value="success" name="success">成功</option>
+                    <option value="fail" name="fail">失败</option>
+                </select>
+            </label>
+
+            <label>
+                <input  class="easyui-textbox" id="plan_code" style="width:200px;">
+            </label>
+
+            <label>
+                <input  class="easyui-textbox" id="keywords" style="width:300px;">
+            </label>
+
+            <label>
+                <div style="user-select: none" id="search_plan_btn" class="easyui-linkbutton"
+                     data-options="iconCls:'icon-search'">搜索
+                </div>
+                <div style="user-select: none" id="rest_plan_btn" class="easyui-linkbutton"
+                     data-options="iconCls:'icon-reload'">重置
+                </div>
+            </label>
+
+            <hr color="#eee"/>
+        </div>
+
+        <div id="sync_content"></div>
+    </body>
+
+    <script>
+
+        $(function () {
+            let table = $('#sync_res_tb');
+
+            $("#search_plan_btn").linkbutton({
+                onClick: function () {
+                    table.datagrid('load',{
+                        planCode: $("#plan_code").val(),
+                        keywords: $("#keywords").val(),
+                        syncStatus: $("#syncStatus").val(),
+                    })
+                }
+            })
+
+            // 重置
+            $("#rest_plan_btn").linkbutton({
+                onClick: function () {
+                    $("#plan_code").textbox('clear');
+                    $("#keywords").textbox('clear');
+                    $("#syncStatus").textbox('clear');
+                    table.datagrid("load", {});
+                }
+            })
+
+            $('#keywords').textbox({
+                label: '关键词:',
+                labelPosition: 'before',
+                labelWidth: 50,
+                prompt: '同步名称,消息内容,同步内容'
+            });
+
+            $('#plan_code').textbox({
+                label: '计划编号:',
+                labelPosition: 'before',
+                labelWidth: 60,
+                prompt: '请输入计划编号查询'
+            });
+
+            table.datagrid({
+                url: '/sync/result/search',
+                method: 'POST',
+                idField: 'uuid',
+                striped: true,
+                fitColumns: true,
+                singleSelect: false,
+                checkOnSelect: false,
+                selectOnCheck: true,
+                rownumbers: true,
+                pagination: true,
+                nowrap: false,
+                pageSize: 20,
+                toolbar: '#toolbar',
+                pageList: [20, 50, 100, 150, 200],
+                beforePageText: '第',
+                afterPageText: '页    共 {pages} 页',
+                displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+                showFooter: true,
+                columns: [[
+                    {field: 'msgId', checkbox: true},
+                    // {field: 'msgId',title: '消息id', width: 100, align: 'center'},
+                    {field: 'planCode', title: '计划编号', width: 250, align: 'center'},
+                    {field: 'planName', title: '计划名称', width: 180, align: 'center'},
+                    {field: 'srcProject', title: '源系统', width: 100, align: 'center'},
+                    {field: 'destProject', title: '目标系统', width: 100, align: 'center'},
+                    {field: 'msgSrc', title: '消息来源', width: 120, align: 'center'},
+                    {field: 'status', title: '同步状态', width: 120, align: 'center',formatter: function (value, row) {
+                            return `${value === 'success' ? '<span style="color: #19be6b; ">成功</span>': '<span style="color: red; ">失败</span>'}`;
+                        }},
+                    {field: 'ge', title: '同步内容', width: 100, align: 'center',formatter: function (value, row) {
+                            return `<span class="show_sync_content" style="color: #5cadff;cursor: pointer;text-decoration: blue"></span>`;
+                        }},
+                    {field: 'ge3', title: '消息内容', width: 100, align: 'center'},
+                    {field: 'remark', title: '备注信息', width: 120, align: 'center'},
+                    {field: 'repeatCount', title: '重试次数', width: 120, align: 'center'},
+                    {field: 'msgCreateTime', title: '消息创建时间', width: 180, align: 'center' },
+                    {field: 'syncTime', title: '同步时间', width: 180, align: 'center'},
+                ]],
+                onLoadError: function(data){
+                    $.messager.alert('提示信息','请求异常','info',function(){
+
+                    });
+                },
+                onLoadSuccess: function () {
+                    $('.show_sync_content').linkbutton({
+                        plain: true,
+                        iconCls: 'icon-search',
+                        onClick: function () {
+
+                            $('#sync_content').dialog({
+                                title: '同步内容',
+                                closed: false,
+                                modal: true,
+                                width: 400,
+                                height: 200,
+                                content: '<span style="white-space: pre;">同步内容</span>'
+                            })
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</html>

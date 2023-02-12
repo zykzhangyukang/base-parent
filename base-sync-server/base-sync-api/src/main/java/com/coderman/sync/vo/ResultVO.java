@@ -14,6 +14,7 @@ public class ResultVO extends BaseModel {
     private String keywords;
     private String planCode;
     private String syncStatus;
+    private String msgSrc;
     private String srcProject;
     private String destProject;
     private String planSrc;

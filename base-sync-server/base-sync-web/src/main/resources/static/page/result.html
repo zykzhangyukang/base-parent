@@ -14,6 +14,7 @@
             font-family: "Ubuntu Mono", serif !important;
         }
 
+
         .datagrid-row-selected {
             background: #ffffff;
             color: #303030;
@@ -55,11 +56,34 @@
             </label>
 
             <label>
-                <input  class="easyui-textbox" id="plan_code" style="width:200px;">
+                重试次数:
+                <select id="repeatCount" class="easyui-combobox" name="repeatCount" style="width:100px;">
+                    <option value="" name="">全部</option>
+                    <option value="1" name="1">>=1次</option>
+                    <option value="2" name="2">>=2次</option>
+                    <option value="3" name="3">>=3次</option>
+                    <option value="4" name="4">>=4次</option>
+                    <option value="5" name="5">>=5次</option>
+                    <option value="6" name="6">>=6次</option>
+                </select>
             </label>
 
             <label>
-                <input  class="easyui-textbox" id="keywords" style="width:300px;">
+                消息来源:
+                <select id="msgSrc" class="easyui-combobox" name="msgSrc" style="width:100px;">
+                    <option value="" name="">全部</option>
+                    <option value="job" name="job">定时器同步</option>
+                    <option value="rocket_mq" name="rocket_mq">rocketmq同步</option>
+                    <option value="handle" name="handle">手动同步</option>
+                </select>
+            </label>
+
+            <label>
+                <input class="easyui-textbox" id="plan_code" style="width:200px;">
+            </label>
+
+            <label>
+                <input class="easyui-textbox" id="keywords" style="width:300px;">
             </label>
 
             <label>
@@ -68,6 +92,9 @@
                 </div>
                 <div style="user-select: none" id="rest_plan_btn" class="easyui-linkbutton"
                      data-options="iconCls:'icon-reload'">重置
+                </div>
+                <div style="user-select: none" id="repeat_sync_btn" class="easyui-linkbutton"
+                     data-options="iconCls:'icon-standard-database-go'">重新同步
                 </div>
             </label>
 
@@ -84,10 +111,12 @@
 
             $("#search_plan_btn").linkbutton({
                 onClick: function () {
-                    table.datagrid('load',{
+                    table.datagrid('load', {
                         planCode: $("#plan_code").val(),
                         keywords: $("#keywords").val(),
                         syncStatus: $("#syncStatus").val(),
+                        msgSrc: $("#msgSrc").val(),
+                        repeatCount: $("#repeatCount").val(),
                     })
                 }
             })
@@ -98,7 +127,35 @@
                     $("#plan_code").textbox('clear');
                     $("#keywords").textbox('clear');
                     $("#syncStatus").textbox('clear');
-                    table.datagrid("load", {});
+                    $("#repeatCount").textbox('clear');
+                    $("#msgSrc").textbox('clear');
+                    table.datagrid("load", {
+                    });
+                    table.datagrid('clearChecked') === 'none';
+                }
+            })
+
+            // 重新同步
+            $("#repeat_sync_btn").linkbutton({
+                onClick: function () {
+
+                    let item = table.datagrid("getSelected");
+                    if(!item || item.status !=='fail'){
+                        return $.messager.alert('错误', '请勾选失败的记录进行操作', 'info');
+                    }
+
+                    $.get("/sync/result/repeat/sync?uuid=" + item.uuid, function (obj) {
+
+                        if(obj.code === 200){
+
+                            table.datagrid("reload");
+                            table.datagrid('clearChecked') === 'none';
+                        }else {
+
+                            $.messager.alert('错误', obj.msg, 'error');
+                        }
+
+                    }, "json");
                 }
             })
 
@@ -122,10 +179,10 @@
                 idField: 'uuid',
                 striped: true,
                 fitColumns: true,
-                singleSelect: false,
-                checkOnSelect: false,
+                singleSelect: true,
+                checkOnSelect: true,
                 selectOnCheck: true,
-                rownumbers: true,
+                rownumbers: false,
                 pagination: true,
                 nowrap: false,
                 pageSize: 20,
@@ -139,44 +196,38 @@
                     {field: 'msgId', checkbox: true},
                     // {field: 'msgId',title: '消息id', width: 100, align: 'center'},
                     {field: 'planCode', title: '计划编号', width: 250, align: 'center'},
-                    {field: 'planName', title: '计划名称', width: 180, align: 'center'},
+                    {field: 'planName', title: '计划名称', width: 150, align: 'center'},
                     {field: 'srcProject', title: '源系统', width: 100, align: 'center'},
                     {field: 'destProject', title: '目标系统', width: 100, align: 'center'},
                     {field: 'msgSrc', title: '消息来源', width: 120, align: 'center'},
-                    {field: 'status', title: '同步状态', width: 120, align: 'center',formatter: function (value, row) {
-                            return `${value === 'success' ? '<span style="color: #19be6b; ">成功</span>': '<span style="color: red; ">失败</span>'}`;
-                        }},
-                    {field: 'ge', title: '同步内容', width: 100, align: 'center',formatter: function (value, row) {
-                            return `<span class="show_sync_content" style="color: #5cadff;cursor: pointer;text-decoration: blue"></span>`;
-                        }},
-                    {field: 'ge3', title: '消息内容', width: 100, align: 'center'},
-                    {field: 'remark', title: '备注信息', width: 120, align: 'center'},
-                    {field: 'repeatCount', title: '重试次数', width: 120, align: 'center'},
-                    {field: 'msgCreateTime', title: '消息创建时间', width: 180, align: 'center' },
-                    {field: 'syncTime', title: '同步时间', width: 180, align: 'center'},
+                    {
+                        field: 'status', title: '同步状态', width: 80, align: 'center', formatter: function (value, row) {
+                            return `${value === 'success' ? '<span style="color: #19be6b; ">成功</span>' : '<span style="color: red; ">失败</span>'}`;
+                        }
+                    },
+                    {
+                        field: 'syncContent',
+                        title: '同步内容',
+                        width: 200,
+                        align: 'center',
+                        formatter: function (value, row) {
+                            return `<div class="show_sync_content" style="font-family:'Ubuntu Mono',serif;font-size: 13px;cursor: pointer; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">${value ? value : ''}</div>`;
+                        }
+                    },
+                    {
+                        field: 'msgContent', title: '消息内容', width: 200, align: 'center', formatter: function (value, row) {
+                            return `<div class="show_msg_content" style="font-family:'Ubuntu Mono',serif;font-size:13px;cursor: pointer; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">${value}</div>`;
+                        }
+                    },
+                    {field: 'remark', title: '备注信息', width: 100, align: 'center'},
+                    {field: 'repeatCount', title: '重试次数', width: 80, align: 'center'},
+                    {field: 'msgCreateTime', title: '消息创建时间', width: 150, align: 'center'},
+                    {field: 'syncTime', title: '同步时间', width: 150, align: 'center'},
                 ]],
-                onLoadError: function(data){
-                    $.messager.alert('提示信息','请求异常','info',function(){
-
-                    });
+                onLoadError: function (data) {
                 },
                 onLoadSuccess: function () {
-                    $('.show_sync_content').linkbutton({
-                        plain: true,
-                        iconCls: 'icon-search',
-                        onClick: function () {
 
-                            $('#sync_content').dialog({
-                                title: '同步内容',
-                                closed: false,
-                                modal: true,
-                                width: 400,
-                                height: 200,
-                                content: '<span style="white-space: pre;">同步内容</span>'
-                            })
-
-                        }
-                    });
                 }
             });
         });

@@ -9,6 +9,7 @@ import com.coderman.sync.es.EsService;
 import com.coderman.sync.result.ResultModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -101,30 +102,31 @@ public class EsServiceImpl implements EsService {
 
     @Override
     @LogError(value = "修改同步结果为成功")
-    public void updateSyncResultSuccess(String msgId, String remark) {
+    public void updateSyncResultSuccess(ResultModel resultModel, String remark) throws IOException {
 
         UpdateByQueryRequest updateByQuery = new UpdateByQueryRequest(this.syncResultIndexName);
 
         updateByQuery.setRefresh(true);
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery("msgId", msgId))
+                .must(QueryBuilders.termQuery("msgId", resultModel.getMsgId()))
                 .should(QueryBuilders.termQuery("status", PlanConstant.RESULT_STATUS_FAIL));
         updateByQuery.setQuery(boolQueryBuilder);
 
         updateByQuery.setBatchSize(100);
         updateByQuery.setSize(50);
         updateByQuery.setScript(
-                new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG, "ctx._source.status = 'success';ctx._source.remark = '" + remark + "'", Collections.emptyMap())
+                new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,
+                        "ctx._source.planUuid = '" + resultModel.getPlanUuid() + "';" +
+                                "ctx._source.planCode = '" + resultModel.getPlanCode() + "';" +
+                                "ctx._source.planName = '" + resultModel.getPlanName() + "';" +
+                                "ctx._source.srcProject = '" + resultModel.getSrcProject() + "';" +
+                                "ctx._source.destProject = '" + resultModel.getDestProject() + "';" +
+                                "ctx._source.syncContent = '" + resultModel.getSyncContent() + "';" +
+                                "ctx._source.status = 'success';" +
+                                "ctx._source.remark = '" + remark + "'", Collections.emptyMap())
         );
 
-        try {
-
-            this.restHighLevelClient.updateByQuery(updateByQuery, RequestOptions.DEFAULT);
-
-        } catch (IOException e) {
-
-            log.error("修改同步结果为成功失败错误:{}", e.getMessage());
-        }
+        this.restHighLevelClient.updateByQuery(updateByQuery, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -140,15 +142,15 @@ public class EsServiceImpl implements EsService {
 
         SearchHits hits = response.getHits();
 
-        List<ResultModel>  list =  new ArrayList<>(30);
+        List<ResultModel> list = new ArrayList<>(30);
 
         for (SearchHit hit : hits) {
 
-            list.add(JSON.parseObject(hit.getSourceAsString(),ResultModel.class));
+            list.add(JSON.parseObject(hit.getSourceAsString(), ResultModel.class));
         }
 
-        jsonObject.put("rows",list);
-        jsonObject.put("total",hits.getTotalHits());
+        jsonObject.put("rows", list);
+        jsonObject.put("total", hits.getTotalHits());
 
         return jsonObject;
     }

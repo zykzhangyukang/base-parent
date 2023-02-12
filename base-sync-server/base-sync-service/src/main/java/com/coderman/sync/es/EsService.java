@@ -20,10 +20,10 @@ public interface EsService {
     /**
      * 修改同步结果为成功
      *
-     * @param msgId  消息id
+     * @param resultModel  消息同步结果
      * @param remark 备注信息
      */
-    void updateSyncResultSuccess(String msgId, String remark);
+    void updateSyncResultSuccess(ResultModel resultModel, String remark) throws IOException;
 
 
     /**

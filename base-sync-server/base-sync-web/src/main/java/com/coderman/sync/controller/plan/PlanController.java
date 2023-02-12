@@ -52,10 +52,12 @@ public class PlanController {
                     "uuid", "planCode", "status"}),
     })
     @ApiReturnIgnore
-    public JSONObject page(@RequestParam(value = "page",defaultValue = "1") Integer currentPage,
-                           @RequestParam(value = "rows",defaultValue = "20") Integer pageSize, PlanVO queryVO) {
+    public JSONObject page(@RequestParam(value = "page", defaultValue = "1") Integer currentPage,
+                           @RequestParam(value = "rows", defaultValue = "20") Integer pageSize, PlanVO queryVO,
+                           @RequestParam(value = "sort",required = false) String sort,
+                           @RequestParam(value = "order",required = false) String order) {
 
-        return this.planService.page(currentPage, pageSize, queryVO);
+        return this.planService.page(currentPage, pageSize,sort,order, queryVO);
     }
 
 

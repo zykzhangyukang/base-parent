@@ -22,8 +22,8 @@ sync:
     cluster-name: sync_es_cluster
     hosts: 116.205.181.9:9200
     scheme: http
-    connect-time-out: 2000
-    socket-time-out: 30000
+    connect-time-out: 5000
+    socket-time-out: 60000
     connection-request-time-out: 500
     max-connect-num: 100
     max-connect-num-per-route: 100

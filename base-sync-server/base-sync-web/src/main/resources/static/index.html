@@ -13,7 +13,7 @@
             .header {
                 font-family: Verdana, Geneva, sans-serif;
                 background-color: #2b85e4;
-                height: 55px;
+                line-height: 55px;
                 overflow: hidden;
             }
 
@@ -22,8 +22,7 @@
                 text-shadow: 1px 1px 2px #fff;
                 color: #ffffff;
                 font-size: 16px;
-                height: 30px;
-                line-height: 30px;
+                line-height: 55px;
                 padding-left: 10px;
             }
 
@@ -31,15 +30,18 @@
                 text-align: center;
                 font-size: 11px;
                 color: #303030;
+                overflow: hidden;
                 line-height: 40px;
             }
-
+            #tabs{
+                user-select: none;
+            }
         </style>
     </head>
 
     <body class="easyui-layout">
         <!-- 顶部导航 -->
-        <div class="header" data-options="region:'north',border:false,split:false" style="height:40px; overflow:hidden">
+        <div class="header" data-options="region:'north',border:false,split:false" style="height:55px; overflow:hidden">
             <div class="title">消息服务系统</div>
         </div>
         <!-- 左边侧菜单 -->
@@ -48,13 +50,13 @@
         </div>
         <!-- 底部 -->
         <div class="footer" data-options="region:'south',border:true" style="height:40px;">
-            企业级可靠消息服务系统
+            Powered by coderman sync 1.0.0
         </div>
         <!-- 控制台区域 -->
         <div class="center" data-options="region:'center',border:true">
             <div id="tabs" class="easyui-tabs" data-options="fit:true" style="display: inline-block;">
                 <div title="首页" data-options="closable:false,iconCls:'icon-standard-application-home'">
-                    <iframe src="/page/plan.html"
+                    <iframe
                             style="width:100%;height:100%;border:none;display: block;user-select: none;position: relative"></iframe>
                 </div>
             </div>

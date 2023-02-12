@@ -13,10 +13,12 @@ public interface PlanService {
      *
      * @param currentPage 当前页
      * @param pageSize    分页大小
+     * @param sort        排序列
+     * @param order       排序方式
      * @param queryVO     查询参数
      * @return
      */
-    JSONObject page(Integer currentPage, Integer pageSize, PlanVO queryVO);
+    JSONObject page(Integer currentPage, Integer pageSize, String sort, String order, PlanVO queryVO);
 
 
     /**

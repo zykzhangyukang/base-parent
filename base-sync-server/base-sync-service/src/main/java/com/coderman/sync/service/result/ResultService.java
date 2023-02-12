@@ -16,4 +16,13 @@ public interface ResultService {
      * @return
      */
     JSONObject search(Integer currentPage, Integer pageSize, ResultVO queryVO) throws IOException;
+
+
+    /**
+     * 重新同步
+     *
+     * @param uuid uuid
+     * @return
+     */
+    com.coderman.api.vo.ResultVO<Void> repeatSync(String uuid);
 }

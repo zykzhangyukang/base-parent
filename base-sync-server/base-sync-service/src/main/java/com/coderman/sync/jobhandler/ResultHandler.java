@@ -39,7 +39,7 @@ public class ResultHandler extends IJobHandler {
         Date startTime = DateUtils.addMinutes(now, -20);
 
         final String sql = "select uuid,plan_uuid,plan_code,plan_name,msg_src" +
-                "        ,mq_id,msg_id,msg_content,src_project,dest_project,sync_content,msg_create_time,sync_time" +
+                ",mq_id,msg_id,msg_content,src_project,dest_project,sync_content,msg_create_time,sync_time" +
                 ",status,error_msg,repeat_count,remark,sync_to_es from pub_sync_result where sync_to_es = ? and msg_create_time > ? and msg_create_time < ?";
 
         List<ResultModel> resultModels = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultModel.class), 0, startTime, endTime);

@@ -37,7 +37,7 @@ public class SyncHandler extends IJobHandler {
         String sql = "select mq_message_id from pub_mq_message where send_status in ('sending','wait') and create_time < ?";
 
         // 1. 查询5分钟前处于发送中或者待发送的记录
-        List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, DateUtils.addMonths(new Date(), -5));
+        List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, DateUtils.addMinutes(new Date(), -5));
 
         StringBuilder sb = new StringBuilder();
 
@@ -50,17 +50,17 @@ public class SyncHandler extends IJobHandler {
             sb.append("预查询->").append(idList.size());
 
             // 2. 5分钟前处于发送中或者待发送的记录标记为失败
-            sql = "update pub_mq_message set send_status = 'fail' where send_status in ('sending','wait') and mq_message_id in";
+            sql = "update pub_mq_message set send_status = 'fail' where send_status in ('sending','wait') and mq_message_id in ";
 
             List<List<Object>> updateList = Lists.partition(idList, 50);
 
-            List<String> updateSqlList = updateList.stream().map(tmp -> StringUtils.join(",")).collect(Collectors.toList());
+            List<String> updateSqlList = updateList.stream().map(tmp -> StringUtils.join(tmp,",")).collect(Collectors.toList());
 
             int updateCount = 0;
 
             for (String tempSql : updateSqlList) {
 
-                tempSql = sql + "select (" + tempSql.replaceAll(",", "union select ") + ")";
+                tempSql = sql + "( select " + tempSql.replaceAll(",", "union select ") + ")";
                 tempSql += ";";
 
                 int rowCount = jdbcTemplate.update(tempSql);
@@ -73,7 +73,7 @@ public class SyncHandler extends IJobHandler {
         }
 
         // 3. 查询需处理的消息内容
-        sql = "select msg_content from pub_mq_message where deal_count < ? and create_time < ? and create_time > ? and send_status = 'fail' and deal_status in ('wait','fail')";
+        sql = "select msg_content from pub_mq_message where deal_count < ? and create_time > ? and create_time < ? and send_status = 'fail' and deal_status in ('wait','fail')";
 
         int retry = 5;
         Date startTime = DateUtils.addMinutes(new Date(), -20);

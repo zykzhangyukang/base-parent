@@ -1,6 +1,7 @@
 package com.coderman.sync.es.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.PlanConstant;
@@ -15,6 +16,8 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.GetAliasesResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -27,6 +30,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -119,6 +125,32 @@ public class EsServiceImpl implements EsService {
 
             log.error("修改同步结果为成功失败错误:{}", e.getMessage());
         }
+    }
+
+    @Override
+    @LogError(value = "同步记录搜索")
+    public JSONObject searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException {
+
+        JSONObject jsonObject = new JSONObject();
+        SearchRequest searchRequest = new SearchRequest(alias);
+
+        searchRequest.source(searchSourceBuilder);
+        searchRequest.types("resultModel");
+        SearchResponse response = this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+        SearchHits hits = response.getHits();
+
+        List<ResultModel>  list =  new ArrayList<>(30);
+
+        for (SearchHit hit : hits) {
+
+            list.add(JSON.parseObject(hit.getSourceAsString(),ResultModel.class));
+        }
+
+        jsonObject.put("rows",list);
+        jsonObject.put("total",hits.getTotalHits());
+
+        return jsonObject;
     }
 
 

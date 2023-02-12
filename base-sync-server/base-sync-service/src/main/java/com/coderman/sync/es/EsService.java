@@ -1,6 +1,8 @@
 package com.coderman.sync.es;
 
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.sync.result.ResultModel;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,4 +24,13 @@ public interface EsService {
      * @param remark 备注信息
      */
     void updateSyncResultSuccess(String msgId, String remark);
+
+
+    /**
+     * 同步记录搜索
+     *
+     * @param searchSourceBuilder 查询条件
+     * @return
+     */
+    JSONObject searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException;
 }

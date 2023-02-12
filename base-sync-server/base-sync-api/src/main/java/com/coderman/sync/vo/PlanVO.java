@@ -7,4 +7,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class PlanVO extends PlanModel {
+
+    private String description;
 }

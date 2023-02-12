@@ -23,7 +23,10 @@
             background: #ffffff;
             color: #303030;
         }
-
+        .plan_code_column{
+            cursor: pointer;
+            color: #5cadff;
+        }
         textarea {
             outline: none;
             resize: none;
@@ -55,13 +58,15 @@
     <!-- 工具栏 -->
     <div id="toolbar">
 
-        <a class="easyui-linkbutton" iconCls="icon-standard-add" plain="false" id="add_plan_btn">新增</a>
-        <a class="easyui-linkbutton" iconCls="icon-reload" plain="false" id="refresh_plan_btn">刷新</a>
+
+        <a class="easyui-linkbutton" iconCls="icon-standard-add" plain="true" id="add_plan_btn">新增</a>
+        <a class="easyui-linkbutton" iconCls="icon-reload" plain="true" id="refresh_plan_btn">刷新</a>
         <hr color="#eee"/>
 
         <label>
             状态:
             <select id="plan_status" class="easyui-combobox" name="plan_status" style="width:100px;">
+                <option value="" name="">全部</option>
                 <option value="normal" name="normal">启用</option>
                 <option value="forbid" name="forbid">禁用</option>
             </select>
@@ -91,8 +96,8 @@
                 url: '/sync/plan/page',
                 method: 'POST',
                 idField: 'uuid',
-                striped: false,
-                fit: true,
+                striped: true,
+                fitColumns: true,
                 singleSelect: false,
                 checkOnSelect: false,
                 selectOnCheck: true,
@@ -108,18 +113,20 @@
                 showFooter: true,
                 columns: [[
                     {field: 'uuid', checkbox: true},
-                    {field: 'planCode', title: '同步计划编号', width: 200, align: 'center'},
+                    {field: 'planCode', title: '同步计划编号', width: 250, align: 'center',formatter: function (value, row) {
+                            return `<a class="plan_code_column easyui-tooltip" title="${row.description}">${value}</a>`;
+                        }},
                     {field: 'srcDb', title: '源数据库', width: 180, align: 'center'},
                     {field: 'destDb', title: '目标数据库', width: 180, align: 'center'},
                     {field: 'srcProject', title: '源系统', width: 180, align: 'center'},
                     {field: 'destProject', title: '目标系统', width: 180, align: 'center'},
                     {
-                        field: 'status', title: '启用状态', width: 150, align: 'center', formatter: function (value) {
+                        field: 'status', title: '启用状态', width: 100, align: 'center', formatter: function (value) {
                             return value === 'normal' ? "<font color='#19be6b'>启用</font>" : "<font color='red'>禁用</font>";
                         }
                     },
-                    {field: 'createTime', title: '创建时间', width: 180, align: 'center'},
-                    {field: 'updateTime', title: '更新时间', width: 180, align: 'center'},
+                    {field: 'createTime', title: '创建时间', width: 180, align: 'center',sortable:true ,order: 'desc'},
+                    {field: 'updateTime', title: '更新时间', width: 180, align: 'center',sortable:true},
                     {
                         field: 'opBtn', title: '操作', width: 250, align: 'center', formatter: function (value, row) {
                             return "<a class=\"edit_plan_btn\">编辑</a>&nbsp;&nbsp;<a class=\"status_plan_btn\">状态</a>&nbsp;&nbsp;<a class=\"remove_plan_btn\">删除</a>";
@@ -127,7 +134,6 @@
                     },
                 ]],
                 onLoadSuccess: function () {
-
                     // 启用禁用同步计划
                     $(".status_plan_btn").linkbutton({
                         plain: false,
@@ -151,6 +157,10 @@
                             });
 
                         }
+                    });
+
+                    $(".plan_code_column").tooltip({
+                        position: 'right',
                     });
 
                     // 编辑同步计划
@@ -219,7 +229,7 @@
                 onClick: function () {
                    $("#plan_code").textbox('clear');
                    $("#plan_status").textbox('clear');
-                    table.datagrid("reload", {});
+                    table.datagrid("load", {});
                 }
             })
 

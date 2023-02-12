@@ -1,5 +1,6 @@
 package com.coderman.sync.producer;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "sync.rocketmq")
 @SuppressWarnings("all")
-public class RocketMQConfig {
+@Data
+public class RocketProducerConfig {
 
     private String producerGroup;
     private String producerOrderGroup;
@@ -21,7 +23,7 @@ public class RocketMQConfig {
     private int sendMsgTimeoutMillis;
     private int retryTimes;
 
-    @Bean(value = "rocketMQProducer",initMethod = "init",destroyMethod = "destory")
+    @Bean(value = "rocketMQProducer",initMethod = "init",destroyMethod = "destroy")
     public RocketMQProducer rocketMQProducer(){
 
         RocketMQProducer rocketMQProducer = new RocketMQProducer();
@@ -34,7 +36,7 @@ public class RocketMQConfig {
         return rocketMQProducer;
     }
 
-    @Bean(value = "rocketOrderMQProducer",initMethod = "init",destroyMethod = "destory")
+    @Bean(value = "rocketOrderMQProducer",initMethod = "init",destroyMethod = "destroy")
     public RocketMQOrderProducer rocketMQOrderProducer(){
 
         RocketMQOrderProducer rocketMQProducer = new RocketMQOrderProducer();

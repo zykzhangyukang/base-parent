@@ -10,6 +10,7 @@ import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.parser.MetaParser;
 import com.coderman.sync.service.plan.PlanService;
 import com.coderman.sync.vo.PlanVO;
+import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -256,10 +257,10 @@ public class PlanServiceImpl implements PlanService {
      * @return
      */
     @Override
-    public JSONObject page(Integer currentPage, Integer pageSize, PlanVO queryVO) {
+    public JSONObject page(Integer currentPage, Integer pageSize, String sort, String order, PlanVO queryVO) {
 
         StringBuilder countSql = new StringBuilder("select count(1) ");
-        StringBuilder realSql = new StringBuilder("select uuid,plan_code,src_db,dest_db,src_project,dest_project,status,create_time,update_time,plan_content");
+        StringBuilder realSql = new StringBuilder("select uuid,plan_code,src_db,dest_db,src_project,dest_project,plan_content,status,create_time,update_time,plan_content");
         StringBuilder sql = new StringBuilder(" from pub_sync_plan where 1=1");
 
         if (currentPage == null) {
@@ -311,11 +312,50 @@ public class PlanServiceImpl implements PlanService {
         // 总条数
         Integer count = jdbcTemplate.queryForObject(countSql.toString(), Integer.class, params.toArray());
 
-        realSql.append(sql).append(" order by create_time desc limit ?,? ");
+        realSql.append(sql);
+
+        // 驼峰转下划线
+        String dbField = StringUtils.EMPTY;
+
+        if(StringUtils.isNotBlank(sort)){
+
+            dbField = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, sort);
+        }
+
+        if (StringUtils.equals(dbField, "create_time")) {
+
+            realSql.append(" order by create_time ").append(order);
+
+        }else if (StringUtils.equals(dbField, "update_time")) {
+
+            realSql.append(" order by update_time ").append(order);
+
+        }else {
+            realSql.append(" order by create_time ").append("desc");
+        }
+
+        realSql.append(" limit ?,? ");
+
         params.add((currentPage - 1) * pageSize);
         params.add(pageSize);
 
         List<PlanVO> list = this.jdbcTemplate.query(realSql.toString(), new BeanPropertyRowMapper<>(PlanVO.class), params.toArray());
+
+        try {
+            if (CollectionUtils.isNotEmpty(list)) {
+
+                for (PlanVO planVO : list) {
+
+                    if (StringUtils.isNotBlank(planVO.getPlanContent())) {
+
+                        String desc = MetaParser.parse(planVO.getPlanContent()).getName();
+                        planVO.setDescription(desc);
+                    }
+                }
+            }
+        }catch (Exception ignored){
+
+        }
 
         // 查询
         JSONObject jsonObject = new JSONObject();

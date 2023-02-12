@@ -43,5 +43,5 @@ public interface CommonConstant {
     /**
      * 分页每页显示
      */
-    Integer SYS_PAGE_SIZE = 20;
+    Integer SYS_PAGE_SIZE = 30;
 }

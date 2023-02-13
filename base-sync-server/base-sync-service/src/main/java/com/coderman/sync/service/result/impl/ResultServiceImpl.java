@@ -5,11 +5,12 @@ import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.service.anntation.LogError;
 import com.coderman.sync.constant.PlanConstant;
-import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.es.EsService;
 import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.service.result.ResultService;
+import com.coderman.sync.task.SyncTask;
+import com.coderman.sync.task.support.WriteBackTask;
 import com.coderman.sync.vo.ResultVO;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 @Service
@@ -58,12 +60,18 @@ public class ResultServiceImpl implements ResultService {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        if (queryVO.getStartTime() != null && queryVO.getEndTime() != null) {
-            queryBuilder.must(QueryBuilders.rangeQuery("msgCreateTime").gte(queryVO.getStartTime()).lt(queryVO.getEndTime()));
-        } else if (queryVO.getStartTime() != null) {
-            queryBuilder.must(QueryBuilders.rangeQuery("msgCreateTime").gte(queryVO.getStartTime()));
-        } else {
-            queryBuilder.must(QueryBuilders.rangeQuery("msgCreateTime").lt(queryVO.getEndTime()));
+        Date startTime = queryVO.getStartTime();
+        Date endTime = queryVO.getEndTime();
+
+        if (startTime != null && endTime != null) {
+
+            queryBuilder.must(QueryBuilders.rangeQuery("msgCreateTime").gte(startTime.getTime()).lt(endTime.getTime()));
+        } else if (startTime != null) {
+
+            queryBuilder.must(QueryBuilders.rangeQuery("msgCreateTime").gte(startTime.getTime()));
+        } else if (endTime != null) {
+
+            queryBuilder.must(QueryBuilders.rangeQuery("msgCreateTime").lt(endTime.getTime()));
         }
 
         String keywords = queryVO.getKeywords();
@@ -146,6 +154,37 @@ public class ResultServiceImpl implements ResultService {
         String msgContent = resultModel.getMsgContent();
 
         SyncContext.getContext().syncData(msgContent, resultModel.getMqId(), PlanConstant.MSG_SOURCE_HANDLE, resultModel.getRepeatCount() + 1);
+
+        return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "标记成功")
+    public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException {
+
+        if (StringUtils.isBlank(uuid)) {
+
+            return ResultUtil.getWarn("uuid不能为空!");
+        }
+
+        ResultModel resultModel = this.jdbcTemplate.queryForObject("select status,msg_id,mq_id,msg_content,repeat_count " +
+                        "from pub_sync_result where uuid=? and status=?",
+                new BeanPropertyRowMapper<>(ResultModel.class), uuid, PlanConstant.RESULT_STATUS_FAIL);
+
+        if (resultModel == null) {
+
+            return ResultUtil.getWarn("同步记录不存在!");
+        }
+
+        this.esService.updateSyncResultSuccess(resultModel, "手动标记成功");
+
+        if (StringUtils.isNotBlank(resultModel.getMsgContent())) {
+
+            SyncTask syncTask = SyncTask.build(resultModel.getMsgContent(), StringUtils.EMPTY, PlanConstant.MSG_SOURCE_HANDLE, 0);
+
+            WriteBackTask writeBackTask = WriteBackTask.build(syncTask);
+            writeBackTask.process();
+        }
 
         return ResultUtil.getSuccess();
     }

@@ -54,3 +54,13 @@ CREATE TABLE `pub_callback` (
   `remark` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`callback_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+
+
+use datasource1;
+-- end --
+select count(1) c from db1_user;
+-- end --
+
+use datasource2;
+-- end --
+select count(1) c from db2_user;

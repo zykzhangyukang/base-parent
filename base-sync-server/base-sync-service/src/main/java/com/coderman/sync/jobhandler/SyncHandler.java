@@ -60,7 +60,7 @@ public class SyncHandler extends IJobHandler {
 
             for (String tempSql : updateSqlList) {
 
-                tempSql = sql + "( select " + tempSql.replaceAll(",", "union select ") + ")";
+                tempSql = sql + "( select " + tempSql.replaceAll(",", " union select ") + ")";
                 tempSql += ";";
 
                 int rowCount = jdbcTemplate.update(tempSql);

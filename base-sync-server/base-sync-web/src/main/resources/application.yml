@@ -8,6 +8,12 @@ spring:
     host: 116.205.181.9
     port: 6379
     password: DES@2120FA78BC6EB99B019C119BD8067DB0
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
 
 job:
   adminAddresses: http://127.0.0.1:6850/xxl-job-admin

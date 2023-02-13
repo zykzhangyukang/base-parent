@@ -25,4 +25,13 @@ public interface ResultService {
      * @return
      */
     com.coderman.api.vo.ResultVO<Void> repeatSync(String uuid);
+
+
+    /**
+     * 标记成功
+     *
+     * @param uuid uuid
+     * @return
+     */
+    com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException;
 }

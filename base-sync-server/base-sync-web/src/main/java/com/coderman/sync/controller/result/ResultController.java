@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/${domain}/result")
@@ -38,6 +39,19 @@ public class ResultController {
 
         return this.resultService.repeatSync(uuid);
     }
+
+    @GetMapping(value = "/sign/success")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+    })
+    @ApiReturnIgnore
+    public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException {
+
+        return this.resultService.signSuccess(uuid);
+    }
+
+
+
 
 
 }

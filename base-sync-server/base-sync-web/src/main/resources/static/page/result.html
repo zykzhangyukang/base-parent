@@ -54,7 +54,6 @@
                     <option value="fail" name="fail">失败</option>
                 </select>
             </label>
-
             <label>
                 重试次数:
                 <select id="repeatCount" class="easyui-combobox" name="repeatCount" style="width:100px;">
@@ -83,8 +82,15 @@
             </label>
 
             <label>
-                <input class="easyui-textbox" id="keywords" style="width:300px;">
+                <input class="easyui-textbox" id="keywords" style="width:250px;">
             </label>
+
+            <label>
+                创建时间:
+                <input id="msgCreateTime" type="text" class="easyui-datetimebox" style="width: 150px">-
+                <input id="msgEndTime" type="text" class="easyui-datetimebox" style="width: 150px">
+            </label>
+
 
             <label>
                 <div style="user-select: none" id="search_plan_btn" class="easyui-linkbutton"
@@ -96,7 +102,11 @@
                 <div style="user-select: none" id="repeat_sync_btn" class="easyui-linkbutton"
                      data-options="iconCls:'icon-standard-database-go'">重新同步
                 </div>
+                <div style="user-select: none" id="sign_success_btn" class="easyui-linkbutton"
+                     data-options="iconCls:'icon-standard-accept'">标记成功
+                </div>
             </label>
+
 
             <hr color="#eee"/>
         </div>
@@ -106,7 +116,17 @@
 
     <script>
 
+
+
         $(function () {
+
+            // 时间筛选初始化
+            let start = dateFormat(new Date(new Date().setHours(0, 0, 0, 0)),2);
+            let end  = dateFormat(new Date(new Date().setHours(23,59,59,999)),2);
+            $('#msgCreateTime').datetimebox('setValue', start);
+            $('#msgEndTime').datetimebox('setValue', end);
+
+
             let table = $('#sync_res_tb');
 
             $("#search_plan_btn").linkbutton({
@@ -116,10 +136,14 @@
                         keywords: $("#keywords").val(),
                         syncStatus: $("#syncStatus").val(),
                         msgSrc: $("#msgSrc").val(),
+                        startTime: $('#msgCreateTime').datetimebox('getValue'),
+                        endTime: $('#msgEndTime').datetimebox('getValue'),
                         repeatCount: $("#repeatCount").val(),
                     })
                 }
             })
+
+
 
             // 重置
             $("#rest_plan_btn").linkbutton({
@@ -129,7 +153,11 @@
                     $("#syncStatus").textbox('clear');
                     $("#repeatCount").textbox('clear');
                     $("#msgSrc").textbox('clear');
+                    $('#msgCreateTime').datetimebox('setValue', start);
+                    $('#msgEndTime').datetimebox('setValue', end);
                     table.datagrid("load", {
+                        startTime: start,
+                        endTime: end,
                     });
                     table.datagrid('clearChecked') === 'none';
                 }
@@ -141,7 +169,7 @@
 
                     let item = table.datagrid("getSelected");
                     if(!item || item.status !=='fail'){
-                        return $.messager.alert('错误', '请勾选失败的记录进行操作', 'info');
+                        return $.messager.alert('错误', '请勾选失败的记录进行操作', 'warning');
                     }
 
                     $.get("/sync/result/repeat/sync?uuid=" + item.uuid, function (obj) {
@@ -158,6 +186,31 @@
                     }, "json");
                 }
             })
+
+            // 标记成功
+            $("#sign_success_btn").linkbutton({
+                onClick: function () {
+
+                    let item = table.datagrid("getSelected");
+                    if(!item || item.status !=='fail'){
+                        return $.messager.alert('错误', '请勾选失败的记录进行操作', 'warning');
+                    }
+
+                    $.get("/sync/result/sign/success?uuid=" + item.uuid, function (obj) {
+
+                        if(obj.code === 200){
+
+                            table.datagrid("reload");
+                            table.datagrid('clearChecked') === 'none';
+                        }else {
+
+                            $.messager.alert('错误', obj.msg, 'error');
+                        }
+
+                    }, "json");
+                }
+            })
+
 
             $('#keywords').textbox({
                 label: '关键词:',
@@ -177,6 +230,10 @@
                 url: '/sync/result/search',
                 method: 'POST',
                 idField: 'uuid',
+                queryParams:{
+                    startTime: start,
+                    endTime: end,
+                },
                 striped: true,
                 fitColumns: true,
                 singleSelect: true,
@@ -230,6 +287,31 @@
 
                 }
             });
+
+
+            // 格式时间字符串
+            function dateFormat(date, type) {
+                if (date === '' || !date) {
+                    return ''
+                }
+                let dateObject = new Date(date);
+                let y = dateObject.getFullYear()
+                let m = dateObject.getMonth() + 1
+                m = m < 10 ? ('0' + m) : m
+                let d = dateObject.getDate()
+                d = d < 10 ? ('0' + d) : d
+                let h = dateObject.getHours()
+                h = h < 10 ? ('0' + h) : h
+                let minute = dateObject.getMinutes()
+                minute = minute < 10 ? ('0' + minute) : minute
+                let second = dateObject.getSeconds()
+                second = second < 10 ? ('0' + second) : second
+                if (type === 1) { // 返回年月日
+                    return y + '-' + m + '-' + d
+                } else if (type === 2) { // 返回年月日 时分秒
+                    return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second
+                }
+            }
         });
     </script>
 </html>

@@ -112,17 +112,24 @@ public class EsServiceImpl implements EsService {
                 .should(QueryBuilders.termQuery("status", PlanConstant.RESULT_STATUS_FAIL));
         updateByQuery.setQuery(boolQueryBuilder);
 
+
+        /**
+         *   new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,
+         *                         "ctx._source.planUuid = '" + resultModel.getPlanUuid() + "';" +
+         *                                 "ctx._source.planCode = '" + resultModel.getPlanCode() + "';" +
+         *                                 "ctx._source.planName = '" + resultModel.getPlanName() + "';" +
+         *                                 "ctx._source.srcProject = '" + resultModel.getSrcProject() + "';" +
+         *                                 "ctx._source.destProject = '" + resultModel.getDestProject() + "';" +
+         *                                 "ctx._source.syncContent = '" + resultModel.getSyncContent() + "';" +
+         *                                 "ctx._source.status = 'success';" +
+         *                                 "ctx._source.remark = '" + remark + "'", Collections.emptyMap())
+         */
+
         updateByQuery.setBatchSize(100);
-        updateByQuery.setSize(50);
+        updateByQuery.setSize(100);
         updateByQuery.setScript(
                 new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,
-                        "ctx._source.planUuid = '" + resultModel.getPlanUuid() + "';" +
-                                "ctx._source.planCode = '" + resultModel.getPlanCode() + "';" +
-                                "ctx._source.planName = '" + resultModel.getPlanName() + "';" +
-                                "ctx._source.srcProject = '" + resultModel.getSrcProject() + "';" +
-                                "ctx._source.destProject = '" + resultModel.getDestProject() + "';" +
-                                "ctx._source.syncContent = '" + resultModel.getSyncContent() + "';" +
-                                "ctx._source.status = 'success';" +
+                        "ctx._source.status = 'success';" +
                                 "ctx._source.remark = '" + remark + "'", Collections.emptyMap())
         );
 

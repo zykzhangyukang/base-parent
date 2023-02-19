@@ -71,3 +71,9 @@ jdbc:
   datasource2$url: jdbc:mysql://localhost:3306/datasource2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   datasource2$username: root
   datasource2$password: 2120FA78BC6EB99B019C119BD8067DB0
+
+
+logging:
+  level:
+    root: info
+    com.coderman.sync: info

@@ -34,7 +34,8 @@ CREATE TABLE `pub_sync_result` (
   `repeat_count` int(11) DEFAULT NULL,
   `remark` varchar(16) DEFAULT NULL,
   `sync_to_es` bit(1) DEFAULT NULL,
-  PRIMARY KEY (`uuid`)
+  PRIMARY KEY (`uuid`),
+  KEY `ix_msg_id` (`msg_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 同步回调 --

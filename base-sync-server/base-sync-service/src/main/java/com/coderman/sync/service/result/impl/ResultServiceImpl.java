@@ -168,12 +168,17 @@ public class ResultServiceImpl implements ResultService {
         }
 
         ResultModel resultModel = this.jdbcTemplate.queryForObject("select status,msg_id,mq_id,msg_content,repeat_count " +
-                        "from pub_sync_result where uuid=? and status=?",
-                new BeanPropertyRowMapper<>(ResultModel.class), uuid, PlanConstant.RESULT_STATUS_FAIL);
+                        "from pub_sync_result where uuid=?",
+                new BeanPropertyRowMapper<>(ResultModel.class), uuid);
 
         if (resultModel == null) {
 
             return ResultUtil.getWarn("同步记录不存在!");
+        }
+
+        if (!StringUtils.equals(resultModel.getStatus(), PlanConstant.RESULT_STATUS_FAIL)) {
+
+            return ResultUtil.getWarn("请选择失败的记录进行标记!");
         }
 
         this.esService.updateSyncResultSuccess(resultModel, "手动标记成功");

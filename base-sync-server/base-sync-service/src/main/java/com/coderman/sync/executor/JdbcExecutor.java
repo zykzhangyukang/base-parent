@@ -61,7 +61,7 @@ public class JdbcExecutor extends AbstractExecutor {
                 } catch (Exception e) {
 
                     log.error("执行sql语句错误:{}", e.getMessage(), e);
-                    throw new RuntimeException(String.format("查询数据错误:,计划编号:%s", sqlMeta.getTableCode()));
+                    throw new RuntimeException(String.format("查询数据错误:%s,计划编号:%s", e.getMessage(),sqlMeta.getTableCode()));
                 }
 
             } else {

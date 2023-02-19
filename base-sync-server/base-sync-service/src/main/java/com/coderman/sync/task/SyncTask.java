@@ -90,7 +90,7 @@ public class SyncTask {
         String sql = "select count(1) as c from pub_sync_result where msg_id=? and msg_create_time < ? and status=? and msg_src = ?";
 
         int count = Optional.ofNullable(SpringContextUtil.getBean(JdbcTemplate.class)
-                .queryForObject(sql, Integer.class, resultModel.getMsgId(), DateUtils.addDays(new Date(), -7),
+                .queryForObject(sql, Integer.class, resultModel.getMsgId(), new Date(),
                         PlanConstant.RESULT_STATUS_SUCCESS, msgSrc)).orElse(0);
 
         if (count > 0) {
@@ -272,19 +272,12 @@ public class SyncTask {
 
             String remark = "系统标记成功";
 
-            jdbcTemplate.update("update pub_sync_result set plan_uuid=?,plan_code=?,plan_name=?,src_project=?,dest_project=?,sync_content=?" +
-                    ",status=?,remark=? where msg_id=? and status=?", preparedStatement -> {
+            jdbcTemplate.update("update pub_sync_result set status=?,remark=? where msg_id=? and status=?", preparedStatement -> {
 
-                preparedStatement.setString(1, this.resultModel.getPlanUuid());
-                preparedStatement.setString(2, this.resultModel.getPlanCode());
-                preparedStatement.setString(3, this.resultModel.getPlanName());
-                preparedStatement.setString(4, this.resultModel.getSrcProject());
-                preparedStatement.setString(5, this.resultModel.getDestProject());
-                preparedStatement.setString(6, this.resultModel.getSyncContent());
-                preparedStatement.setString(7, PlanConstant.RESULT_STATUS_SUCCESS);
-                preparedStatement.setString(8, remark);
-                preparedStatement.setString(9, this.resultModel.getMsgId());
-                preparedStatement.setString(10, PlanConstant.RESULT_STATUS_FAIL);
+                preparedStatement.setString(1, PlanConstant.RESULT_STATUS_SUCCESS);
+                preparedStatement.setString(2, remark);
+                preparedStatement.setString(3, this.resultModel.getMsgId());
+                preparedStatement.setString(4, PlanConstant.RESULT_STATUS_FAIL);
             });
 
             // 标记ES状态

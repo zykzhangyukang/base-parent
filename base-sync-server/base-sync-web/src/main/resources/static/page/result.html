@@ -8,6 +8,7 @@
         <script src="/easyui/jquery.min.js"></script>
         <script src="/easyui/jquery.easyui.min.js"></script>
         <script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
+        <script src="/js/layer.js"></script>
     </head>
     <style>
         xmp {
@@ -15,15 +16,15 @@
         }
 
 
-        .datagrid-row-selected {
-            background: #ffffff;
-            color: #303030;
-        }
+        /*.datagrid-row-selected {*/
+        /*    background: #ffffff;*/
+        /*    color: #303030;*/
+        /*}*/
 
-        .datagrid-row-over {
-            background: #ffffff;
-            color: #303030;
-        }
+        /*.datagrid-row-over {*/
+        /*    background: #ffffff;*/
+        /*    color: #303030;*/
+        /*}*/
 
         .plan_code_column {
             cursor: pointer;
@@ -116,13 +117,24 @@
 
     <script>
 
+        function getBeforeDate(n) {
+            let d = new Date();
+            let year;
+            let mon;
+            let day;
+            d.setDate(d.getDate() - n);
+            year = d.getFullYear();
+            mon = d.getMonth() + 1;
+            day = d.getDate();
+            return year + "-" + (mon < 10 ? ('0' + mon) : mon) + "-" + (day < 10 ? ('0' + day) : day);
+        }
 
 
         $(function () {
 
             // 时间筛选初始化
-            let start = dateFormat(new Date(new Date().setHours(0, 0, 0, 0)),2);
-            let end  = dateFormat(new Date(new Date().setHours(23,59,59,999)),2);
+            let start = getBeforeDate(30) + " 00:00:00";
+            let end = getBeforeDate(0) + " 23:59:59";
             $('#msgCreateTime').datetimebox('setValue', start);
             $('#msgEndTime').datetimebox('setValue', end);
 
@@ -144,7 +156,6 @@
             })
 
 
-
             // 重置
             $("#rest_plan_btn").linkbutton({
                 onClick: function () {
@@ -159,7 +170,7 @@
                         startTime: start,
                         endTime: end,
                     });
-                    table.datagrid('clearChecked') === 'none';
+                    table.datagrid('clearChecked');
                 }
             })
 
@@ -168,46 +179,72 @@
                 onClick: function () {
 
                     let item = table.datagrid("getSelected");
-                    if(!item || item.status !=='fail'){
-                        return $.messager.alert('错误', '请勾选失败的记录进行操作', 'warning');
+                    if (!item || item.status !== 'fail') {
+
+                        return layer.alert('请选择同步失败的记录!', {icon: 0, closeBtn: 0}, function (index) {
+
+                            table.datagrid("clearChecked")
+                            layer.close(index);
+                        });
                     }
 
-                    $.get("/sync/result/repeat/sync?uuid=" + item.uuid, function (obj) {
+                    layer.confirm('风险操作,请确认是否继续操作？', {
+                        btn: ['确定同步', '取消操作']
+                    }, function () {
+                        $.get("/sync/result/repeat/sync?uuid=" + item.uuid, function (obj) {
 
-                        if(obj.code === 200){
+                            if (obj.code === 200) {
 
-                            table.datagrid("reload");
-                            table.datagrid('clearChecked') === 'none';
-                        }else {
+                                layer.alert("重新同步成功",{icon:1},function (index) {
 
-                            $.messager.alert('错误', obj.msg, 'error');
-                        }
+                                    table.datagrid("reload");
+                                    table.datagrid('clearChecked');
+                                    layer.close(index);
+                                })
+                            } else {
 
-                    }, "json");
+                                $.messager.alert('错误', obj.msg, 'error');
+                            }
+
+                        }, "json");
+
+                    }, function () {
+                        layer.msg('已取消操作', {icon: 1});
+                    });
+
                 }
             })
 
             // 标记成功
             $("#sign_success_btn").linkbutton({
+
                 onClick: function () {
 
                     let item = table.datagrid("getSelected");
-                    if(!item || item.status !=='fail'){
-                        return $.messager.alert('错误', '请勾选失败的记录进行操作', 'warning');
+                    if (!item || item.status !== 'fail') {
+
+                        return layer.alert('请选择同步失败的记录标记!', {icon: 0, closeBtn: 0}, function (index) {
+
+                            table.datagrid("clearChecked")
+                            layer.close(index);
+                        });
                     }
 
-                    $.get("/sync/result/sign/success?uuid=" + item.uuid, function (obj) {
+                    layer.confirm('风险操作,请确认是否继续操作？', {
+                        btn: ['确定标记', '取消操作']
+                    }, function () {
 
-                        if(obj.code === 200){
-
-                            table.datagrid("reload");
-                            table.datagrid('clearChecked') === 'none';
-                        }else {
-
-                            $.messager.alert('错误', obj.msg, 'error');
-                        }
-
-                    }, "json");
+                        $.get("/sync/result/sign/success?uuid=" + item.uuid, function (obj) {
+                            if (obj.code === 200) {
+                                table.datagrid("reload");
+                                table.datagrid('clearChecked');
+                            } else {
+                                $.messager.alert('错误', obj.msg, 'error');
+                            }
+                        }, "json");
+                    }, function () {
+                        layer.msg('已取消操作', {icon: 1});
+                    });
                 }
             })
 
@@ -230,7 +267,7 @@
                 url: '/sync/result/search',
                 method: 'POST',
                 idField: 'uuid',
-                queryParams:{
+                queryParams: {
                     startTime: start,
                     endTime: end,
                 },
@@ -272,7 +309,11 @@
                         }
                     },
                     {
-                        field: 'msgContent', title: '消息内容', width: 200, align: 'center', formatter: function (value, row) {
+                        field: 'msgContent',
+                        title: '消息内容',
+                        width: 200,
+                        align: 'center',
+                        formatter: function (value, row) {
                             return `<div class="show_msg_content" style="font-family:'Ubuntu Mono',serif;font-size:13px;cursor: pointer; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">${value}</div>`;
                         }
                     },
@@ -288,30 +329,6 @@
                 }
             });
 
-
-            // 格式时间字符串
-            function dateFormat(date, type) {
-                if (date === '' || !date) {
-                    return ''
-                }
-                let dateObject = new Date(date);
-                let y = dateObject.getFullYear()
-                let m = dateObject.getMonth() + 1
-                m = m < 10 ? ('0' + m) : m
-                let d = dateObject.getDate()
-                d = d < 10 ? ('0' + d) : d
-                let h = dateObject.getHours()
-                h = h < 10 ? ('0' + h) : h
-                let minute = dateObject.getMinutes()
-                minute = minute < 10 ? ('0' + minute) : minute
-                let second = dateObject.getSeconds()
-                second = second < 10 ? ('0' + second) : second
-                if (type === 1) { // 返回年月日
-                    return y + '-' + m + '-' + d
-                } else if (type === 2) { // 返回年月日 时分秒
-                    return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second
-                }
-            }
         });
     </script>
 </html>

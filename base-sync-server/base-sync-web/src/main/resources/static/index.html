@@ -1,157 +1,94 @@
-<!DOCTYPE html>
-<html lang="zh">
+<html>
     <head>
-        <title>可靠消息服务系统</title>
-        <meta name="viewport" content="width=device-width" charset="UTF-8"/>
-        <link href="/easyui/themes/icon.css" rel="stylesheet"/>
-        <link href="/easyui/themes/bootstrap/easyui.css" rel="stylesheet"/>
-        <script src="/easyui/jquery.min.js"></script>
-        <script src="/easyui/jquery.easyui.min.js"></script>
-        <script src="/easyui/locale/easyui-lang-zh_CN.js"></script>
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <style type="text/css">
-            .header {
-                font-family: Verdana, Geneva, sans-serif;
-                background-color: #2b85e4;
-                line-height: 55px;
-                overflow: hidden;
-            }
-
-            .header .title {
-                letter-spacing: 2px;
-                text-shadow: 1px 1px 2px #fff;
-                color: #ffffff;
-                font-size: 16px;
-                line-height: 55px;
-                padding-left: 10px;
-            }
-
-            .footer {
-                text-align: center;
-                font-size: 11px;
-                color: #303030;
-                overflow: hidden;
-                line-height: 40px;
-            }
-            #tabs{
-                user-select: none;
-            }
-        </style>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <title>同步系统</title>
+        <link href="./css/index.css" rel="stylesheet">
     </head>
+    <body class="layui-layout-body">
 
-    <body class="easyui-layout">
-        <!-- 顶部导航 -->
-        <div class="header" data-options="region:'north',border:false,split:false" style="height:55px; overflow:hidden">
-            <div class="title">可靠消息服务</div>
-        </div>
-        <!-- 左边侧菜单 -->
-        <div id="menus" class="menus" data-options="region:'west',border:true" style="width: 160px;overflow-x: hidden;"
-             title="菜单">
-        </div>
-        <!-- 底部 -->
-        <div class="footer" data-options="region:'south',border:true" style="height:40px;">
-            Powered by coderman sync 1.0.0
-        </div>
-        <!-- 控制台区域 -->
-        <div class="center" data-options="region:'center',border:true">
-            <div id="tabs" class="easyui-tabs" data-options="fit:true" style="display: inline-block;">
-                <div title="首页" data-options="closable:false,iconCls:'icon-standard-application-home'">
-                    <iframe
-                            style="width:100%;height:100%;border:none;display: block;user-select: none;position: relative"></iframe>
+        <div class="layui-layout layui-layout-admin">
+
+            <div class="layui-header">
+                <div class="layui-logo layui-hide-xs layui-bg-black">可靠消息服务系统</div>
+            </div>
+
+            <div class="layui-side layui-bg-black">
+                <div class="layui-side-scroll">
+
+                    <ul class="layui-nav layui-nav-tree">
+
+                        <li class="layui-nav-item layui-nav-itemed">
+                            <a class="" href="javascript:;">同步系统</a>
+
+                            <dl class="layui-nav-child">
+                                <dd>
+                                    <a href="#" data-url="plan" data-title="同步计划列表" data-id="11" id="default-tab"
+                                       class="site-demo-active"
+                                       data-type="tabAdd">
+                                        <i class="layui-icon layui-icon-face-smile"></i> 同步计划列表
+                                    </a>
+                                </dd>
+                                <dd>
+                                    <a href="#" data-url="result" data-title="同步记录列表" data-id="22"
+                                       class="site-demo-active"
+                                       data-type="tabAdd">
+                                        <i class="layui-icon layui-icon-template-1"></i> 同步记录列表
+                                    </a>
+                                </dd>
+                                <dd>
+                                    <a href="#" data-url="message" data-title="本次消息列表" data-id="33"
+                                       class="site-demo-active"
+                                       data-type="tabAdd">
+                                        <i class="layui-icon layui-icon-chart-screen"></i> 本地消息列表
+                                    </a>
+                                </dd>
+                                <dd>
+                                    <a href="#" data-url="callback" data-title="回调消息列表" data-id="44"
+                                       class="site-demo-active"
+                                       data-type="tabAdd">
+                                        <i class="layui-icon layui-icon-set-fill"></i> 回调消息列表
+                                    </a>
+                                </dd>
+                            </dl>
+                        </li>
+
+                    </ul>
+
                 </div>
             </div>
+
+
+            <div class="layui-body sync-console">
+                <!-- 内容主体区域 -->
+                <div class="layui-tab layui-tab-card" lay-filter="demo" lay-allowClose="true">
+                    <!--tab页标题-->
+                    <ul class="layui-tab-title">
+                    </ul>
+
+                    <!--tab页标题上右键，出现下面的 关闭当前和关闭所有的选项-->
+                    <ul class="rightMenu" style="display: none;position: absolute;">
+                        <li data-type="closeThis" class="layui-bg-cyan">关闭当前</li>
+
+                        <li data-type="closeAll" class="layui-bg-cyan">关闭所有</li>
+                    </ul>
+
+                    <!--tab页主体内容区域-->
+                    <div class="layui-tab-content">
+
+                    </div>
+
+                </div>
+            </div>
+
         </div>
+
+        <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet">
+        <script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+        <script src="./js/index.js"></script>
+
+
     </body>
-    <script type="text/javascript">
-
-        $(function () {
-            let tabs = $("#tabs");
-            let menus = $("#menus");
-
-            // 菜单
-            menus.sidemenu({
-                data: [{
-                    text: '同步系统',
-                    iconCls: 'icon-standard-application-home',
-                    state: 'open',
-                    children: [{
-                        text: '同步计划列表',
-                        iconCls: 'icon-standard-script-code',
-                        url: '/page/plan.html'
-                    }, {
-                        text: '同步记录列表',
-                        iconCls: 'icon-standard-page-white-text',
-                        url: '/page/result.html'
-                    }, {
-                        text: '回调记录列表',
-                        iconCls: 'icon-standard-arrow-rotate-clockwise',
-                        url: '/page/callback.html'
-                    }, {
-                        text: '同步系统配置',
-                        iconCls: 'icon-standard-cog-add',
-                        url: '/page/config.html'
-                    }
-                    ]
-                },
-                ],
-                onSelect: function (item) {
-                    if (!tabs.tabs('exists', item.text)) {
-                        tabs.tabs('add', {
-                            title: item.text,
-                            content: `<iframe  src="${item.url}" style="border: none;width:100%;height:100%;display: block;user-select: none"></iframe>`,
-                            closable: true,
-                            icon: item.iconCls,
-                            id: item.id
-                        });
-                    } else {
-                        tabs.tabs('select', item.text);
-                    }
-                },
-                border: false
-            });
-
-            // 标签
-            tabs.tabs({
-                onSelect: function (title, index) {
-                    let tab = tabs.tabs('getTab', index);
-                    if (menus.hasClass('menus')) {
-                        let opts = menus.sidemenu("options");
-                        changeMenuSelect(menus, opts, tab[0].id);
-                    }
-                },
-            })
-        });
-
-        function changeMenuSelect(menus, opts, selectId) {
-            let menutrees = menus.find(".sidemenu-tree");
-            menutrees.each(function () {
-                let menuItem = $(this);
-                changeMenuStyle(menuItem, opts, selectId);
-            });
-
-            let tooltips = menus.find(".tooltip-f");
-            tooltips.each(function () {
-                let menuItem = $(this);
-                let tip = menuItem.tooltip("tip");
-                if (tip) {
-                    tip.find(".sidemenu-tree").each(function () {
-                        changeMenuStyle($(this), opts, selectId);
-                    });
-                    menuItem.tooltip("reposition");
-                }
-            });
-        }
-
-        function changeMenuStyle(menuItem, opts, selectId) {
-            menuItem.find("div.tree-node-selected").removeClass("tree-node-selected");
-            let node = menuItem.tree("find", selectId);
-            if (node) {
-                $(node.target).addClass("tree-node-selected");
-                opts.selectedItemId = node.id;
-                menuItem.trigger("mouseleave.sidemenu");
-            }
-
-            changeMenuSelect(menuItem);
-        }
-    </script>
 </html>
+
+

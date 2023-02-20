@@ -1,6 +1,7 @@
 package com.coderman.sync.controller.plan;
 
 import com.alibaba.fastjson.JSONObject;
+import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnIgnore;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/${domain}/plan")
@@ -42,22 +44,22 @@ public class PlanController {
     }
 
 
-    @PostMapping(value = "/page")
+    @GetMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "currentPage", paramType = SwaggerConstant.DATA_INT, dataType = SwaggerConstant.DATA_INT, value = "当前页", required = true),
-            @ApiImplicitParam(name = "pageSize", paramType = SwaggerConstant.DATA_INT, dataType = SwaggerConstant.DATA_INT, value = "分页大小", required = true),
+            @ApiImplicitParam(name = "page", paramType = SwaggerConstant.DATA_INT, dataType = SwaggerConstant.DATA_INT, value = "当前页", required = true),
+            @ApiImplicitParam(name = "limit", paramType = SwaggerConstant.DATA_INT, dataType = SwaggerConstant.DATA_INT, value = "分页大小", required = true),
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "PlanVO", value = {"srcProject", "destDb", "destProject", "planContent", "updateTime", "createTime", "srcDb",
                     "uuid", "planCode", "status"}),
     })
     @ApiReturnIgnore
-    public JSONObject page(@RequestParam(value = "page", defaultValue = "1") Integer currentPage,
-                           @RequestParam(value = "rows", defaultValue = "20") Integer pageSize, PlanVO queryVO,
-                           @RequestParam(value = "sort",required = false) String sort,
-                           @RequestParam(value = "order",required = false) String order) {
+    public ResultVO<PageVO<List<PlanVO>>> page(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                                               @RequestParam(value = "limit", defaultValue = "20") Integer limit, PlanVO queryVO,
+                                               @RequestParam(value = "sort",required = false) String sort,
+                                               @RequestParam(value = "order",required = false) String order) {
 
-        return this.planService.page(currentPage, pageSize,sort,order, queryVO);
+        return this.planService.page(page, limit,sort,order, queryVO);
     }
 
 

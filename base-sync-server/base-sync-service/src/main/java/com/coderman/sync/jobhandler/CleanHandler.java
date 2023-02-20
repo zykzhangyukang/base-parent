@@ -32,35 +32,66 @@ public class CleanHandler extends IJobHandler {
 
         Date ltTime = DateUtils.addMinutes(new Date(), -5);
 
-        final String dbName = "datasource1";
+        final String dbNames = "datasource1,datasource2";
 
-        // 获取db类型
-        String dbType = SyncContext.getContext().getDbType(dbName);
+        for (String dbName : dbNames.split(",")) {
 
-        // 批量参数sql
-        String batchDelSql = StringUtils.EMPTY;
 
-        // 封装参数
-        List<Object> paramList = new ArrayList<>();
+            /***************************** 删除本地消息表冗余数据 ********************************/
 
-        // 封装参数
-        if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
+            // 获取db类型
+            String dbType = SyncContext.getContext().getDbType(dbName);
 
-            batchDelSql = "delete from pub_mq_message where deal_status='success' and create_time <? limit ?;";
-            paramList.add(ltTime);
-            paramList.add(10000);
+            // 批量参数sql
+            String batchDelSql = StringUtils.EMPTY;
 
-        } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+            List<Object> paramList = new ArrayList<>();
 
-            batchDelSql = "delete from pub_mq_message where mq_message_id in (select top " + 10000 + " mq_message_id where deal_status = 'success' and create_time <?)";
-            paramList.add(ltTime);
+            // 封装参数
+            if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
+
+                batchDelSql = "delete from pub_mq_message where deal_status='success' and create_time <? limit ?;";
+                paramList.add(ltTime);
+                paramList.add(10000);
+
+            } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+
+                batchDelSql = "delete from pub_mq_message where mq_message_id in (select top " + 10000 + " mq_message_id from pub_mq_message where deal_status = 'success' and create_time <?)";
+                paramList.add(ltTime);
+            }
+
+            this.deleteLoop(dbName, batchDelSql, paramList);
+
+
+            /******************************** 删除回调消息表冗余数据 ********************************/
+
+            paramList.clear();
+            if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
+
+                batchDelSql = "delete from pub_callback where status='success' and create_time < ? limit ?;";
+                paramList.add(ltTime);
+                paramList.add(10000);
+
+            } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+
+                batchDelSql = "delete from pub_callback where callback_id in (select top " + 10000 + " callback_id from pub_callback where status = 'success' and create_time <?)";
+                paramList.add(ltTime);
+            }
+
+            this.deleteLoop(dbName, batchDelSql, paramList);
         }
-
-        this.deleteLoop(dbName, batchDelSql, paramList);
 
         return ReturnT.SUCCESS;
     }
 
+    /**
+     * 循环删除
+     *
+     * @param dbName      数据库名称
+     * @param batchDelSql sql
+     * @param paramList   参数列表
+     * @throws Throwable
+     */
     private void deleteLoop(String dbName, String batchDelSql, List<Object> paramList) throws Throwable {
 
         int batchNum = 1;
@@ -89,7 +120,7 @@ public class CleanHandler extends IJobHandler {
                 deleteRows = 0;
             }
 
-            XxlJobLogger.log("清除冗余数据消息|记录,第" + batchNum + "批, 数据库->" + dbName + " 条数->" + deleteRows);
+            XxlJobLogger.log("清除冗余数据消息记录,第" + batchNum + "批, 数据库->" + dbName + " 条数->" + deleteRows);
 
             log.info("清除冗余数据消息记录:{},dbName:{}", deleteRows, dbName);
 

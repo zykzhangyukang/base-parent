@@ -42,6 +42,16 @@ public class TaskUtil {
                     case DB_NOT_CONNECT:
                         taskResult.setErrorMsg("配置错误,无法获取数据库链接," + ex.getMessage());
                         break;
+                    case DB_MONGO_ERROR:
+                        taskResult.setErrorMsg("mongo操作异常:" + ex.getMessage());
+                        break;
+                    case SQL_PARAM_NUM_NOT_MATCH:
+                        taskResult.setErrorMsg("SQL参数数据不匹配:" + ex.getMessage());
+                        break;
+                    case DB_MONGO_DUPLICATE:
+                        taskResult.setRetry(false);
+                        taskResult.setErrorMsg("主键重复," + ex.getMessage());
+                        break;
                     default:
                         taskResult.setErrorMsg("未知异常," + ex.getMessage());
                 }

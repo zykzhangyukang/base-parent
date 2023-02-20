@@ -1,7 +1,9 @@
 package com.coderman.sync.service.plan.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.UUIDUtils;
@@ -257,7 +259,7 @@ public class PlanServiceImpl implements PlanService {
      * @return
      */
     @Override
-    public JSONObject page(Integer currentPage, Integer pageSize, String sort, String order, PlanVO queryVO) {
+    public ResultVO<PageVO<List<PlanVO>>> page(Integer currentPage, Integer pageSize, String sort, String order, PlanVO queryVO) {
 
         StringBuilder countSql = new StringBuilder("select count(1) ");
         StringBuilder realSql = new StringBuilder("select uuid,plan_code,src_db,dest_db,src_project,dest_project,plan_content,status,create_time,update_time,plan_content");
@@ -317,7 +319,7 @@ public class PlanServiceImpl implements PlanService {
         // 驼峰转下划线
         String dbField = StringUtils.EMPTY;
 
-        if(StringUtils.isNotBlank(sort)){
+        if (StringUtils.isNotBlank(sort)) {
 
             dbField = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, sort);
         }
@@ -326,11 +328,11 @@ public class PlanServiceImpl implements PlanService {
 
             realSql.append(" order by create_time ").append(order);
 
-        }else if (StringUtils.equals(dbField, "update_time")) {
+        } else if (StringUtils.equals(dbField, "update_time")) {
 
             realSql.append(" order by update_time ").append(order);
 
-        }else {
+        } else {
             realSql.append(" order by create_time ").append("desc");
         }
 
@@ -353,15 +355,12 @@ public class PlanServiceImpl implements PlanService {
                     }
                 }
             }
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
 
-        // 查询
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("total", count);
-        jsonObject.put("rows", list);
-        return jsonObject;
+        Assert.notNull(count, "count is null");
+        return ResultUtil.getSuccessPage(PlanVO.class, new PageVO<>(count, list, currentPage, pageSize));
     }
 
     @Override

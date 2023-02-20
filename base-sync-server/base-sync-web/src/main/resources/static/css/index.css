@@ -1,0 +1,19 @@
+.layui-tab-content{
+    height: calc(100vh - 150px);
+    overflow: auto;
+    background-color: #f8f8f9;
+}
+.layui-tab-card{
+    margin: 0!important;
+    padding: 0!important;
+}
+.layui-this{
+    color: #2d8cf0!important;
+}
+.sync-console{
+    padding: 5px;
+}
+.layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a, .layui-nav-tree .layui-this, .layui-nav-tree .layui-this>a, .layui-nav-tree .layui-this>a:hover {
+    background-color:#2d8cf0!important;
+    color: #fff;
+}

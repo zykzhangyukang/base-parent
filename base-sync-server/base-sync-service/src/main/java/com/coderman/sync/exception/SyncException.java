@@ -1,10 +1,12 @@
 package com.coderman.sync.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 同步系统异常
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class SyncException extends RuntimeException{
 

@@ -16,7 +16,6 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.transaction.TransactionTimedOutException;
 
-import java.lang.annotation.ElementType;
 import java.util.*;
 
 @Slf4j
@@ -48,7 +47,7 @@ public class TaskUtil {
                     case SQL_PARAM_NUM_NOT_MATCH:
                         taskResult.setErrorMsg("SQL参数数据不匹配:" + ex.getMessage());
                         break;
-                    case DB_MONGO_DUPLICATE:
+                    case DB_KEY_DUPLICATE:
                         taskResult.setRetry(false);
                         taskResult.setErrorMsg("主键重复," + ex.getMessage());
                         break;

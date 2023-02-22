@@ -12,7 +12,7 @@ layui.use(['element', 'layer'], function () {
                 title: name,
                 // TODO
                 // 这里的选项卡页面路径：  src="' + url + '.html"  ，可能需要根据自己项目实际的后缀名修改
-                content: '<iframe data-frameid="' + id + '" scrolling="auto" frameborder="0" src="/pages/' + url + '.html" style="width:100%;height:99%;"></iframe>',
+                content: '<iframe data-frameid="' + id + '" scrolling="auto" frameborder="0" src="/pages/' + url + '.html" style="width:100%;height:100%;display: inline-block"></iframe>',
                 id: id // 规定好的id
             })
             CustomRightClick(id); // 自定义函数，给tab绑定右击事件

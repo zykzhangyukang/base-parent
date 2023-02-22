@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class MongoExecutor extends AbstractExecutor{
+public class MongoExecutor extends AbstractExecutor {
 
     @Override
     @SuppressWarnings("all")
@@ -23,7 +23,7 @@ public class MongoExecutor extends AbstractExecutor{
 
         MongoTemplate mongoTemplate = super.getMongoTemplate();
 
-        if(null == mongoTemplate){
+        if (null == mongoTemplate) {
 
             throw new SyncException(ErrorCodeEnum.DB_NOT_CONNECT);
         }
@@ -31,30 +31,30 @@ public class MongoExecutor extends AbstractExecutor{
         for (SqlMeta sqlMeta : super.getSqlList()) {
 
 
-            log.debug("执行SQL语句->"+sqlMeta.getSql());
+            log.debug("执行SQL语句->" + sqlMeta.getSql());
 
             CommandResult commandResult = mongoTemplate.executeCommand(sqlMeta.getSql());
-            if(!commandResult.ok()){
+            if (!commandResult.ok()) {
 
-                throw new SyncException(ErrorCodeEnum.DB_MONGO_ERROR,"mongo执行异常,"+commandResult.getErrorMessage());
+                throw new SyncException(ErrorCodeEnum.DB_MONGO_ERROR, "mongo执行异常," + commandResult.getErrorMessage());
             }
 
-            if(commandResult.containsField("writeErrors")){
+            if (commandResult.containsField("writeErrors")) {
 
                 String errmsg = ((BasicDBObject) ((BasicDBList) commandResult.get("writeErrors")).get(0)).getString("errmsg");
-                if(errmsg.contains("E11000 duplicate key error")){
+                if (errmsg.contains("E11000 duplicate key error")) {
 
-                    throw new SyncException(ErrorCodeEnum.DB_MONGO_DUPLICATE,"键值重复,"+errmsg);
-                }else {
+                    throw new SyncException(ErrorCodeEnum.DB_KEY_DUPLICATE, "键值重复," + errmsg);
+                } else {
 
-                    throw new SyncException(ErrorCodeEnum.DB_MONGO_ERROR,"mongo执行异常,"+errmsg);
+                    throw new SyncException(ErrorCodeEnum.DB_MONGO_ERROR, "mongo执行异常," + errmsg);
                 }
             }
 
-            if(SyncConstant.OPERATE_TYPE_SELECT.equalsIgnoreCase(sqlMeta.getSqlType())){
+            if (SyncConstant.OPERATE_TYPE_SELECT.equalsIgnoreCase(sqlMeta.getSqlType())) {
 
                 BasicDBList dbList = (BasicDBList) ((BasicDBObject) commandResult.get("cursor")).get("firstBatch");
-                List<Map<String,Object>> result = new ArrayList<>();
+                List<Map<String, Object>> result = new ArrayList<>();
 
                 for (Object resultObj : dbList) {
 
@@ -63,7 +63,7 @@ public class MongoExecutor extends AbstractExecutor{
                 }
 
                 sqlMeta.setResultList(result);
-            }else {
+            } else {
 
                 sqlMeta.setAffectNum(commandResult.getInt("n"));
             }
@@ -73,7 +73,6 @@ public class MongoExecutor extends AbstractExecutor{
 
         return null;
     }
-
 
 
 }

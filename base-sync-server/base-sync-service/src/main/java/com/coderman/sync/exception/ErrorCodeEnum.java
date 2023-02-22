@@ -20,9 +20,9 @@ public enum  ErrorCodeEnum {
 
 
     /**
-     * mongo执行异常
+     * 主键重复执行异常
      */
-    DB_MONGO_DUPLICATE(12),
+    DB_KEY_DUPLICATE(12),
 
     /**
      * SQL参数多余

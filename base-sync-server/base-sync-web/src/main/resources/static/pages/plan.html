@@ -1,6 +1,40 @@
-<link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet">
-<script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+<link href="/layui/css/layui.css" rel="stylesheet">
+<script src="/layui/layui.js"></script>
 <script src="../js/plan.js"></script>
+
+<style>
+    /*滚动轴样式*/
+    @media screen and (min-width: 768px) {
+        /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 9px;
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: #c1c1c1;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #a8a8a8;
+        }
+
+        .mini-bar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .mini-bar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+        }
+    }
+</style>
 
 <div class="layui-card">
     <div class="layui-card-body">
@@ -9,19 +43,28 @@
         <div class="layui-form-item">
             <div class="layui-inline">
                 <div class="layui-input-inline" style="width: 300px;">
-                    <input type="text" placeholder="请输入计划编号模糊查询" name="" autocomplete="off" class="layui-input">
+                    <input id="planCode" type="text" placeholder="请输入计划编号模糊查询" name="" autocomplete="off"
+                           class="layui-input">
                 </div>
             </div>
             <div class="layui-inline">
-                <button type="button" class="layui-btn layui-btn-normal   "><i class="layui-icon layui-icon-search"></i>查询</button>
-                <button type="button" class="layui-btn layui-btn-primary   "><i class="layui-icon layui-icon-refresh"></i>重置</button>
+                <button id="searchBtn" type="button" class="layui-btn layui-btn-normal   "><i
+                        class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button id="resetBtn" type="button" class="layui-btn layui-btn-warm   "><i
+                        class="layui-icon layui-icon-refresh"></i>重置
+                </button>
+                <button id="addBtn" type="button" class="layui-btn"><i
+                        class="layui-icon layui-icon-addition"></i>新增
+                </button>
             </div>
         </div>
 
 
-        <table id="sync-plan-table"></table>
+        <table id="sync-plan-table" lay-filter="table"></table>
 
         <script type="text/html" id="toolbar">
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="view">查看</a>
             <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
         </script>

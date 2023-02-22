@@ -9,6 +9,7 @@ import com.coderman.sync.sql.meta.SqlMeta;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -61,7 +62,7 @@ public class JdbcExecutor extends AbstractExecutor {
                 } catch (Exception e) {
 
                     log.error("执行sql语句错误:{}", e.getMessage(), e);
-                    throw new RuntimeException(String.format("查询数据错误:%s,计划编号:%s", e.getMessage(),sqlMeta.getTableCode()));
+                    throw new RuntimeException(String.format("查询数据错误:%s,计划编号:%s", e.getMessage(), sqlMeta.getTableCode()));
                 }
 
             } else {
@@ -108,6 +109,11 @@ public class JdbcExecutor extends AbstractExecutor {
                             affects = jdbcTemplate.batchUpdate(meta.getSql(), meta.getParamList(), meta.getArgTypes());
 
                         } catch (Exception e) {
+
+                            if (e instanceof DuplicateKeyException) {
+
+                                throw new SyncException(ErrorCodeEnum.DB_KEY_DUPLICATE, "键值重复," + e.getMessage());
+                            }
 
                             log.error("执行同步sql错误 tableCode:{},error:{}", meta.getTableCode(), e.getCause().getLocalizedMessage());
                             throw e;

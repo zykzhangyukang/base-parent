@@ -55,7 +55,7 @@ public class PlanController {
     })
     @ApiReturnIgnore
     public ResultVO<PageVO<List<PlanVO>>> page(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                               @RequestParam(value = "limit", defaultValue = "20") Integer limit, PlanVO queryVO,
+                                               @RequestParam(value = "limit", defaultValue = "30") Integer limit, PlanVO queryVO,
                                                @RequestParam(value = "sort",required = false) String sort,
                                                @RequestParam(value = "order",required = false) String order) {
 

@@ -41,8 +41,8 @@ public interface ResultService {
     /**
      * 比对同步结果
      *
-     * @param uuid
+     * @param msgContent 消息内容
      * @return
      */
-    com.coderman.api.vo.ResultVO<List<CompareVO>> selectTableData(String uuid, boolean convert) throws Throwable;
+    com.coderman.api.vo.ResultVO<List<CompareVO>> selectTableData(String msgContent, boolean convert) throws Throwable;
 }

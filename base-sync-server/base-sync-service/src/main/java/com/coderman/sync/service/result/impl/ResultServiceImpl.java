@@ -203,19 +203,10 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public com.coderman.api.vo.ResultVO<List<CompareVO>> selectTableData(String uuid, boolean convert) throws Throwable {
-
-        final String sql = "select status,msg_id,mq_id,msg_content,repeat_count from pub_sync_result where uuid=?";
-
-        ResultModel resultModel = this.jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(ResultModel.class), uuid);
-
-        if (resultModel == null) {
-
-            return ResultUtil.getWarn("同步记录不存在!");
-        }
+    public com.coderman.api.vo.ResultVO<List<CompareVO>> selectTableData(String msgContent, boolean convert) throws Throwable {
 
         // 构建消息对象
-        MsgMeta msgMeta = MsgMeta.build(resultModel.getMsgContent());
+        MsgMeta msgMeta = MsgMeta.build(msgContent);
 
         PlanMeta planMeta = SyncContext.getContext().getPlanMeta(msgMeta.getPlanCode());
 

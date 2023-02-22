@@ -16,6 +16,7 @@ import com.coderman.sync.task.support.WriteBackTask;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -190,6 +191,12 @@ public class SyncTask {
 
                 // 插入同步记录
                 this.insertRecord();
+
+                // 主键重复,需要走数据校验
+                if(!taskResult.isRetry() && StringUtils.isNotBlank(taskResult.getErrorMsg()) && taskResult.getErrorMsg().contains("主键重复")){
+
+                    SyncContext.getContext().addTaskToDelayQueue(syncDataTask);
+                }
 
                 return taskResult.isRetry() ? SyncConstant.SYNC_RETRY : SyncConstant.SYNC_END;
             }

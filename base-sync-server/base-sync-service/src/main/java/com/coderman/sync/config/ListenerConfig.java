@@ -1,6 +1,7 @@
 package com.coderman.sync.config;
 
 import com.coderman.sync.listener.RocketMqListener;
+import com.coderman.sync.listener.RocketMqOrderListener;
 import lombok.Data;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -18,13 +19,20 @@ public class ListenerConfig {
     @Resource
     private RocketMqListener rocketMqListener;
 
+    @Resource
+    private RocketMqOrderListener rocketMqOrderListener;
+
     private String namesrvAddr;
 
     private String instanceName;
 
     private String consumerGroup;
 
+    private String consumerOrderGroup;
+
     private String topic;
+
+    private String orderTopic;
 
     private Integer consumeThreadMin;
 
@@ -44,4 +52,19 @@ public class ListenerConfig {
         mqPushConsumer.setConsumeThreadMax(consumeThreadMax);
         return mqPushConsumer;
     }
+
+    @Bean(value = "orderlyMQPushConsumer", initMethod = "start", destroyMethod = "shutdown")
+    public DefaultMQPushConsumer orderlyMQPushConsumer() throws MQClientException {
+
+        DefaultMQPushConsumer mqPushConsumer = new DefaultMQPushConsumer();
+        mqPushConsumer.setInstanceName(instanceName);
+        mqPushConsumer.setNamesrvAddr(namesrvAddr);
+        mqPushConsumer.setConsumerGroup(consumerOrderGroup);
+        mqPushConsumer.subscribe(orderTopic, "*");
+        mqPushConsumer.setMessageListener(rocketMqListener);
+        mqPushConsumer.setConsumeThreadMin(consumeThreadMin);
+        mqPushConsumer.setConsumeThreadMax(consumeThreadMax);
+        return mqPushConsumer;
+    }
+
 }

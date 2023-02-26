@@ -116,7 +116,7 @@ public class PlanServiceImpl implements PlanService {
 
         if (!StringUtils.equals(planVO.getStatus(), PlanConstant.STATUS_FORBID)) {
 
-            return ResultUtil.getWarn("只能删除禁用状态的同步计划");
+            return ResultUtil.getWarn("启用状态不允许删除!");
         }
 
         List<Object> params = new ArrayList<>();

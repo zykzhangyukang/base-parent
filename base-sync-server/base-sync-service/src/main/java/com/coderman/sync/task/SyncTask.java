@@ -91,7 +91,7 @@ public class SyncTask {
         String sql = "select count(1) as c from pub_sync_result where msg_id=? and msg_create_time < ? and status=? and msg_src = ?";
 
         int count = Optional.ofNullable(SpringContextUtil.getBean(JdbcTemplate.class)
-                .queryForObject(sql, Integer.class, resultModel.getMsgId(), new Date(),
+                .queryForObject(sql, Integer.class, resultModel.getMsgId(), DateUtils.addDays(new Date(), -7),
                         PlanConstant.RESULT_STATUS_SUCCESS, msgSrc)).orElse(0);
 
         if (count > 0) {
@@ -193,7 +193,7 @@ public class SyncTask {
                 this.insertRecord();
 
                 // 主键重复,需要走数据校验
-                if(!taskResult.isRetry() && StringUtils.isNotBlank(taskResult.getErrorMsg()) && taskResult.getErrorMsg().contains("主键重复")){
+                if (!taskResult.isRetry() && StringUtils.isNotBlank(taskResult.getErrorMsg()) && taskResult.getErrorMsg().contains("主键重复")) {
 
                     SyncContext.getContext().addTaskToDelayQueue(syncDataTask);
                 }

@@ -162,7 +162,7 @@ public class SyncRetryThread {
                 SyncContext.getContext().addTaskToDelayQueue(writeBackTask);
             } else {
 
-                this.esService.updateSyncResultSuccess(resultModel, "主键重复,修正同步结果成功");
+                this.esService.updateSyncResultSuccess(resultModel, "主键重复修正");
             }
 
         } catch (Exception e) {

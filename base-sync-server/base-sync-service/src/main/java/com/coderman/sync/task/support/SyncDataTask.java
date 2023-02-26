@@ -20,6 +20,8 @@ import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.TaskResult;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -30,6 +32,8 @@ import java.util.*;
 /**
  * 同步数据任务
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class SyncDataTask extends AbstractTask {
 
 

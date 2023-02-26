@@ -1,6 +1,7 @@
 package com.coderman.sync.context;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
@@ -243,13 +244,13 @@ public class SyncContext {
 
     public void addTaskToDelayQueue(BaseTask task) {
 
-        logger.debug("addTaskToDelayQueue-start:{}", JSON.toJSONString(task));
+        logger.info("addTaskToDelayQueue-start:{}", JSON.toJSONString(task, SerializerFeature.IgnoreNonFieldGetter));
 
 
         task.setDelayTime(60);
         this.syncRetryThread.addTask(task);
 
-        logger.debug("addTaskToDelayQueue-end");
+        logger.info("addTaskToDelayQueue-end");
     }
 
     public SyncTask buildSyncTask(String msg, String mqMsgId, String msgSrc, int retryTimes) {

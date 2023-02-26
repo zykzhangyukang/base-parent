@@ -2,6 +2,7 @@ package com.coderman.sync.service.result.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.CommonConstant;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.service.anntation.LogError;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,7 +62,7 @@ public class ResultServiceImpl implements ResultService {
 
         if (pageSize * currentPage > 10000) {
 
-            return ResultUtil.getSuccessPage(ResultModel.class,new PageVO<>(0, null,currentPage,pageSize));
+            return ResultUtil.getWarnPage(ResultModel.class, "最多查询10000条记录,请缩小范围查询");
         }
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
@@ -88,6 +90,8 @@ public class ResultServiceImpl implements ResultService {
             shouldQuery.should(QueryBuilders.matchPhraseQuery("planName", keywords));
             shouldQuery.should(QueryBuilders.matchPhraseQuery("msgContent", keywords));
             shouldQuery.should(QueryBuilders.matchPhraseQuery("syncContent", keywords));
+            shouldQuery.should(QueryBuilders.matchPhraseQuery("remark", keywords));
+            shouldQuery.should(QueryBuilders.matchPhraseQuery("errorMsg", keywords));
 
             queryBuilder.must(shouldQuery);
 
@@ -228,22 +232,22 @@ public class ResultServiceImpl implements ResultService {
 
 
         // 封装结果集
-        List<CompareVO> resultList =  new ArrayList<>();
+        List<CompareVO> resultList = new ArrayList<>();
 
         for (String key : srcResultMap.keySet()) {
 
 
             CompareVO compareVO = srcResultMap.get(key);
-            if(destResultMap.containsKey(key)){
+            if (destResultMap.containsKey(key)) {
 
                 compareVO.setDestResultList(destResultMap.get(key).getDestResultList());
-            }else {
+            } else {
 
                 int size = srcResultMap.get(key).getSrcResultList().size();
 
                 Object[] tmpStr = new Object[size];
 
-                Arrays.fill(tmpStr,"");
+                Arrays.fill(tmpStr, "");
                 compareVO.setDestResultList(Arrays.asList(tmpStr));
             }
 
@@ -252,7 +256,7 @@ public class ResultServiceImpl implements ResultService {
 
         for (String key : destResultMap.keySet()) {
 
-            if(srcResultMap.containsKey(key)){
+            if (srcResultMap.containsKey(key)) {
 
                 continue;
             }
@@ -262,7 +266,7 @@ public class ResultServiceImpl implements ResultService {
             resultList.add(compareVO);
         }
 
-        return ResultUtil.getSuccessList(CompareVO.class,resultList);
+        return ResultUtil.getSuccessList(CompareVO.class, resultList);
     }
 
     private Map<String, CompareVO> transformData(PlanMeta planMeta, List<SqlMeta> dataResultList, boolean convert, String flag) {

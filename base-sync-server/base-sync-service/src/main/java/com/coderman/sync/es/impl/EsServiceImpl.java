@@ -2,6 +2,8 @@ package com.coderman.sync.es.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.PageVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.PlanConstant;
@@ -138,9 +140,8 @@ public class EsServiceImpl implements EsService {
 
     @Override
     @LogError(value = "同步记录搜索")
-    public JSONObject searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException {
+    public com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException {
 
-        JSONObject jsonObject = new JSONObject();
         SearchRequest searchRequest = new SearchRequest(alias);
 
         searchRequest.source(searchSourceBuilder);
@@ -156,10 +157,8 @@ public class EsServiceImpl implements EsService {
             list.add(JSON.parseObject(hit.getSourceAsString(), ResultModel.class));
         }
 
-        jsonObject.put("rows", list);
-        jsonObject.put("total", hits.getTotalHits());
-
-        return jsonObject;
+        PageVO<List<ResultModel>> pageVO = new PageVO<>(hits.getTotalHits(), list);
+        return ResultUtil.getSuccessPage(ResultModel.class, pageVO);
     }
 
 

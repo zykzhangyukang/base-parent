@@ -20,6 +20,12 @@ public class MsgBuilder {
         this.dataMap = new LinkedHashMap<>();
     }
 
+    private MsgBuilder(String planCode,ProjectEnum srcProject,ProjectEnum destProject,String orderlyMsgKey){
+
+        this.planMsg = new PlanMsg(planCode,srcProject.getKey(),destProject.getKey(),orderlyMsgKey);
+        this.dataMap = new LinkedHashMap<>();
+    }
+
 
     /**
      * 创建同步计划
@@ -32,6 +38,18 @@ public class MsgBuilder {
     public static MsgBuilder create(String planCode,ProjectEnum srcProject,ProjectEnum destProject){
 
         return new MsgBuilder(planCode,srcProject,destProject);
+    }
+
+    /**
+     * 顺序同步计划
+     * @param planCode
+     * @param destProject
+     * @param businessKey
+     * @return
+     */
+    public static MsgBuilder createOrderlyMsg(String planCode,ProjectEnum srcProject,ProjectEnum destProject,String businessKey){
+
+        return new MsgBuilder(planCode,destProject,destProject,businessKey);
     }
 
 

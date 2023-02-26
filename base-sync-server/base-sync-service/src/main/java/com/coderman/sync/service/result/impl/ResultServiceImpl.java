@@ -3,6 +3,7 @@ package com.coderman.sync.service.result.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.PageVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
@@ -46,7 +47,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @LogError(value = "同步记录搜索")
-    public JSONObject search(Integer currentPage, Integer pageSize, ResultVO queryVO) throws IOException {
+    public com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> search(Integer currentPage, Integer pageSize, ResultVO queryVO) throws IOException {
 
         if (Objects.isNull(currentPage)) {
             currentPage = 1;
@@ -59,11 +60,7 @@ public class ResultServiceImpl implements ResultService {
 
         if (pageSize * currentPage > 10000) {
 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("msg", "最多查询1w行,请缩小范围查询!");
-            jsonObject.put("rows", new ArrayList<>());
-            jsonObject.put("total", 0);
-            return jsonObject;
+            return ResultUtil.getSuccessPage(ResultModel.class,new PageVO<>(0, null,currentPage,pageSize));
         }
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();

@@ -1,6 +1,8 @@
 package com.coderman.sync.service.result;
 
 import com.alibaba.fastjson.JSONObject;
+import com.coderman.api.vo.PageVO;
+import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.vo.CompareVO;
 import com.coderman.sync.vo.ResultVO;
 
@@ -17,7 +19,7 @@ public interface ResultService {
      * @param queryVO     参数条件
      * @return
      */
-    JSONObject search(Integer currentPage, Integer pageSize, ResultVO queryVO) throws IOException;
+    com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> search(Integer currentPage, Integer pageSize, ResultVO queryVO) throws IOException;
 
 
     /**

@@ -251,4 +251,28 @@ public class SyncContext {
 
         logger.debug("addTaskToDelayQueue-end");
     }
+
+    public SyncTask buildSyncTask(String msg, String mqMsgId, String msgSrc, int retryTimes) {
+
+        SyncTask syncTask = null;
+
+        // 标记开始同步任务
+        this.startSync();
+
+        try {
+
+            // 构建同步任务
+            syncTask = SyncTask.build(msg, mqMsgId, msgSrc, retryTimes);
+
+        } catch (Exception e) {
+
+            logger.error("同步数据出错:", e);
+
+        } finally {
+
+            this.endSync();
+        }
+
+        return syncTask;
+    }
 }

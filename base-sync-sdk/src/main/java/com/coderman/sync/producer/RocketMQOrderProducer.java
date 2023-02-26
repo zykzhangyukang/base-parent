@@ -36,9 +36,11 @@ public class RocketMQOrderProducer extends BaseService {
     public SendResult send(Message message, String key) throws Exception {
 
         return this.defaultMQProducer.send(message, (mqs, msg, arg) -> {
-            int hashCode = Math.abs(arg.hashCode());
-            long index = hashCode % mqs.size();
-            return mqs.get((int) index);
+            int select = Math.abs(arg.hashCode());
+            if(select <0){
+                select = 0;
+            }
+            return mqs.get(select % mqs.size());
         }, key);
 
     }

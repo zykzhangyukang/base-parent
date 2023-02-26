@@ -1,6 +1,7 @@
 package com.coderman.sync.es;
 
 import com.alibaba.fastjson.JSONObject;
+import com.coderman.api.vo.PageVO;
 import com.coderman.sync.result.ResultModel;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -32,5 +33,5 @@ public interface EsService {
      * @param searchSourceBuilder 查询条件
      * @return
      */
-    JSONObject searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException;
+    com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException;
 }

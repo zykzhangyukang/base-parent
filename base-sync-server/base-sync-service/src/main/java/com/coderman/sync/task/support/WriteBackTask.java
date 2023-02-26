@@ -15,6 +15,7 @@ import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.TaskResult;
 import com.coderman.sync.util.SqlUtil;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
 public class WriteBackTask extends AbstractTask{

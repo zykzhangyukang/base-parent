@@ -1,9 +1,12 @@
 package com.coderman.sync.task.base;
 
+import lombok.Data;
+
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Data
 public class BaseTask implements Delayed {
 
     private long delayTime;

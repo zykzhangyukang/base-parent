@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0b6c4a"],{"1f21":function(e,n,a){"use strict";a.r(n);var c=function(){var e=this,n=e.$createElement,a=e._self._c||n;return a("h1",[e._v("回调消息")])},t=[],u={name:"Callback.vue"},l=u,r=a("2877"),s=Object(r["a"])(l,c,t,!1,null,"865ba838",null);n["default"]=s.exports}}]);
+//# sourceMappingURL=chunk-2d0b6c4a.8a4ab47f.js.map

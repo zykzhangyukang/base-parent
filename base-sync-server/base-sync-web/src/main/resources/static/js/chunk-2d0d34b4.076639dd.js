@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0d34b4"],{"5bc4":function(e,n,t){"use strict";t.r(n);var c=function(){var e=this,n=e.$createElement,t=e._self._c||n;return t("h1",[e._v("同步记录")])},u=[],s={name:"Result.vue"},a=s,l=t("2877"),r=Object(l["a"])(a,c,u,!1,null,"19c4eb02",null);n["default"]=r.exports}}]);
+//# sourceMappingURL=chunk-2d0d34b4.076639dd.js.map

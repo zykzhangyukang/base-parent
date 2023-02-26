@@ -184,6 +184,12 @@ public class ResultUtil {
         return getPage(clazz, ResultConstant.RESULT_CODE_402, null, page);
     }
 
+    public static <T> ResultVO<PageVO<List<T>>> getWarnPage(Class<T> clazz,String msg) {
+
+
+        return getPage(clazz, ResultConstant.RESULT_CODE_405, msg, null);
+    }
+
     public static <T> ResultVO<PageVO<List<T>>> getWarnPage(Class<T> clazz, PageVO<List<T>> page) {
 
         return getPage(clazz, ResultConstant.RESULT_CODE_405, null, page);

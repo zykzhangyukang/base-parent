@@ -6,7 +6,6 @@ import com.coderman.sync.callback.meta.CallbackTask;
 import com.coderman.sync.config.CallbackConfig;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
-import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.executor.AbstractExecutor;
 import com.coderman.sync.sql.SelectBuilder;

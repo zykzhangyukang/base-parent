@@ -6,6 +6,7 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.Constant;
+import com.coderman.sync.producer.RocketMQOrderProducer;
 import com.coderman.sync.producer.RocketMQProducer;
 import com.coderman.sync.vo.MsgBody;
 import com.coderman.sync.vo.PlanMsg;
@@ -48,12 +49,16 @@ public class SyncUtil {
     private final static String INIT_SQL = "select mq_message_id,uuid,msg_content from pub_mq_message where send_status = '" + Constant.MSG_SEND_STATUS_WAIT + "';";
     private final static String INSERT_SQL = "insert into pub_mq_message(uuid,msg_content,src_project,dest_project,create_time,send_status,deal_status,deal_count) values(?,?,?,?,?,?,?,?);";
     private final static String UPDATE_SENDING_BY_PK_SQL = "update pub_mq_message set deal_count = 0,send_status='" + Constant.MSG_SEND_STATUS_SENDING + "'where send_status='" + Constant.MSG_SEND_STATUS_WAIT + "'and mq_message_id=?;";
+    private final static String UPDATE_SENDING_SQL = "update pub_mq_message set deal_count = 0,send_status='" + Constant.MSG_SEND_STATUS_SENDING + "'where send_status='" + Constant.MSG_SEND_STATUS_WAIT + "'and uuid=?;";
     private final static String UPDATE_FINAL_BY_PK_SQL = "update pub_mq_message set send_status = ?,mid=?,send_time = ? where send_status='" + Constant.MSG_SEND_STATUS_SENDING + "' and mq_message_id = ?";
+    private final static String UPDATE_FINAL_SQL = "update pub_mq_message set send_status = ?,mid=?,send_time = ? where send_status='" + Constant.MSG_SEND_STATUS_SENDING + "' and uuid = ?";
 
 
     private static JdbcTemplate jdbcTemplate;
 
     private static RocketMQProducer rocketMQProducer;
+
+    private static RocketMQOrderProducer rocketMQOrderProducer;
 
     static {
 
@@ -62,6 +67,7 @@ public class SyncUtil {
 
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
             rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
+            rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
 
 
             // 初始化队列
@@ -271,9 +277,12 @@ public class SyncUtil {
 
         }
 
+        String orderlyMsgKey = jsonObject.getString("orderlyMsgKey");
+
         PlanMsg planMsg = msgBuilder.build();
         planMsg.setSrcProject(StringUtils.EMPTY);
         planMsg.setDescProject(StringUtils.EMPTY);
+        planMsg.setOrderlyMsgKey(orderlyMsgKey);
         return planMsg;
     }
 
@@ -281,7 +290,7 @@ public class SyncUtil {
     /**
      * 发送到mq
      *
-     * @param msgBody
+     * @param msgBody 消息体内容
      */
     private static void sendMsgBySql(MsgBody msgBody) {
 
@@ -290,35 +299,50 @@ public class SyncUtil {
 
         try {
 
-            int resultNum;
+            int resultNum = -1;
 
+            // 先把消息的发送状态改为发送中
             if (msgBody.getMqMessageId() != null) {
 
-
-                // 先把消息的发送状态改为发送中
                 resultNum = jdbcTemplate.update(UPDATE_SENDING_BY_PK_SQL, msgBody.getMqMessageId());
 
+            } else {
 
-                if (resultNum == 0) {
-                    return;
-                }
+                resultNum = jdbcTemplate.update(UPDATE_SENDING_SQL, msgBody.getMsgId());
+            }
 
+            if (resultNum == 0) {
 
-                // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
+                return;
+            }
+
+            SendResult sendResult = null;
+
+            String orderlyMsgKey = create(msgBody.getMsg()).getOrderlyMsgKey();
+
+            // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
+            if (rocketMQOrderProducer != null && orderlyMsgKey != null) {
+
+                Message message = new Message(rocketMQOrderProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
+                sendResult = rocketMQOrderProducer.send(message, orderlyMsgKey);
+
+            } else {
+
                 Message message = new Message(rocketMQProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
-                SendResult sendResult = rocketMQProducer.send(message);
+                sendResult = rocketMQProducer.send(message);
+            }
 
-                if (null != sendResult) {
 
-                    mid = sendResult.getMsgId();
-                }
+            if (null != sendResult) {
 
+                mid = sendResult.getMsgId();
             }
 
 
         } catch (Exception e) {
 
             resultStr = Constant.MSG_SEND_STATUS_FAIL;
+
             logger.error("向同步系统发送mq消息失败," + msgBody.getMsg(), e);
 
         } finally {
@@ -327,6 +351,9 @@ public class SyncUtil {
             if (msgBody.getMqMessageId() != null) {
 
                 jdbcTemplate.update(UPDATE_FINAL_BY_PK_SQL, resultStr, mid, formatTime(new Date()), msgBody.getMqMessageId());
+            } else {
+
+                jdbcTemplate.update(UPDATE_FINAL_SQL, resultStr, mid, formatTime(new Date()), msgBody.getMsgId());
             }
 
         }

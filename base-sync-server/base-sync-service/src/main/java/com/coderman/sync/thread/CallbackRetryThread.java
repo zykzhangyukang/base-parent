@@ -1,7 +1,7 @@
 package com.coderman.sync.thread;
 
+import com.coderman.sync.callback.CallbackContext;
 import com.coderman.sync.callback.meta.CallbackTask;
-import com.coderman.sync.context.CallbackContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

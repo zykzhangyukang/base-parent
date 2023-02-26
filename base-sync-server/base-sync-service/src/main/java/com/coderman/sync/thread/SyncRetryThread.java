@@ -3,9 +3,13 @@ package com.coderman.sync.thread;
 import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.PlanConstant;
+import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
+import com.coderman.sync.es.EsService;
 import com.coderman.sync.result.ResultModel;
 import com.coderman.sync.service.result.ResultService;
+import com.coderman.sync.task.SyncTask;
+import com.coderman.sync.task.TaskResult;
 import com.coderman.sync.task.base.BaseTask;
 import com.coderman.sync.task.base.MsgTask;
 import com.coderman.sync.task.support.SyncDataTask;
@@ -20,12 +24,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static net.sf.jsqlparser.parser.feature.Feature.update;
 
 @Component
 @Lazy(false)
@@ -39,6 +42,9 @@ public class SyncRetryThread {
     private ResultService resultService;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+    @Resource
+    private EsService esService;
 
 
     private void process(BaseTask baseTask) {
@@ -140,7 +146,29 @@ public class SyncRetryThread {
 
     }
 
+
     private void changeSyncResult(ResultModel resultModel) {
+
+        try {
+
+            SyncTask syncTask = SyncContext.getContext().buildSyncTask(resultModel.getMsgContent(), StringUtils.EMPTY, PlanConstant.MSG_SOURCE_HANDLE, 0);
+
+            WriteBackTask writeBackTask = WriteBackTask.build(syncTask);
+
+            TaskResult taskResult = writeBackTask.process();
+
+            if (SyncConstant.TASK_CODE_FAIL.equalsIgnoreCase(taskResult.getCode())) {
+
+                SyncContext.getContext().addTaskToDelayQueue(writeBackTask);
+            } else {
+
+                this.esService.updateSyncResultSuccess(resultModel, "主键重复,修正同步结果成功");
+            }
+
+        } catch (Exception e) {
+
+            log.error("修改同步结果失败", e);
+        }
 
     }
 

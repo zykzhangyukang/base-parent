@@ -15,6 +15,9 @@ public class PlanMsg {
     @ApiModelProperty(value = "源系统")
     private String srcProject;
 
+    @ApiModelProperty(value = "有序消息key")
+    private String orderlyMsgKey;
+
     @ApiModelProperty(value = "目标系统")
     private String descProject;
 
@@ -24,12 +27,22 @@ public class PlanMsg {
     public PlanMsg() {
     }
 
+    public PlanMsg(String planCode, String srcProject, String descProject, String orderlyMsgKey) {
+        this.planCode = planCode;
+        this.srcProject = srcProject;
+        this.descProject = descProject;
+        this.orderlyMsgKey = orderlyMsgKey;
+        this.msgItemList = new ArrayList<>();
+    }
+
+
     public PlanMsg(String planCode, String srcProject, String descProject) {
         this.planCode = planCode;
         this.srcProject = srcProject;
         this.descProject = descProject;
         this.msgItemList = new ArrayList<>();
     }
+
 
     public PlanMsg(String planCode, String srcProject, String descProject, List<MsgItem> msgItemList) {
         this.planCode = planCode;
@@ -68,5 +81,14 @@ public class PlanMsg {
 
     public void setMsgItemList(List<MsgItem> msgItemList) {
         this.msgItemList = msgItemList;
+    }
+
+
+    public String getOrderlyMsgKey() {
+        return orderlyMsgKey;
+    }
+
+    public void setOrderlyMsgKey(String orderlyMsgKey) {
+        this.orderlyMsgKey = orderlyMsgKey;
     }
 }

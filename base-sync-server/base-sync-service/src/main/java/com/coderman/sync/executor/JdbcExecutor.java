@@ -61,8 +61,9 @@ public class JdbcExecutor extends AbstractExecutor {
 
                 } catch (Exception e) {
 
-                    log.error("执行sql语句错误:{}", e.getMessage(), e);
-                    throw new RuntimeException(String.format("查询数据错误:%s,计划编号:%s", e.getMessage(), sqlMeta.getTableCode()));
+                    log.error("", e);
+                    throw new RuntimeException(String.format("sql:%s,destDb:%s,error:%s", sqlMeta.getSql(),
+                            CollectionUtils.isEmpty(sqlMeta.getCallbackTaskList()) ? null : (sqlMeta.getCallbackTaskList().get(0).getProject() + ":" + sqlMeta.getCallbackTaskList().get(0).getDb()), e), e);
                 }
 
             } else {
@@ -115,8 +116,8 @@ public class JdbcExecutor extends AbstractExecutor {
                                 throw new SyncException(ErrorCodeEnum.DB_KEY_DUPLICATE, "键值重复," + e.getMessage());
                             }
 
-                            log.error("执行同步sql错误 tableCode:{},error:{}", meta.getTableCode(), e.getCause().getLocalizedMessage());
-                            throw e;
+                            throw new RuntimeException(String.format("tableCode:%s,msg:%s,目标库:%s,error:%s", meta.getTableCode(), CollectionUtils.isEmpty(meta.getCallbackTaskList()) ?
+                                    meta.getUniqueKey() : meta.getCallbackTaskList().get(0).getMsg(), CollectionUtils.isEmpty(meta.getCallbackTaskList()) ? null : (meta.getCallbackTaskList().get(0).getProject() + ":" + meta.getCallbackTaskList().get(0).getDb()), e), e);
                         }
 
                         int count = 0;

@@ -1,8 +1,7 @@
-package com.coderman.sync.context;
+package com.coderman.sync.callback;
 
 import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
-import com.coderman.sync.callback.CallBackExecutor;
 import com.coderman.sync.callback.meta.CallbackTask;
 import com.coderman.sync.thread.CallbackRetryThread;
 import lombok.extern.slf4j.Slf4j;

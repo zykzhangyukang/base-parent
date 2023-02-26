@@ -1,10 +1,10 @@
 package com.coderman.sync.task.support;
 
 import com.coderman.service.util.UUIDUtils;
+import com.coderman.sync.callback.CallbackContext;
 import com.coderman.sync.callback.meta.CallbackTask;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
-import com.coderman.sync.context.CallbackContext;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.executor.AbstractExecutor;

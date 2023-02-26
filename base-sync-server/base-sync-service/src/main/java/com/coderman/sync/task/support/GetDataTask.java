@@ -11,10 +11,14 @@ import com.coderman.sync.sql.SelectBuilder;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class GetDataTask extends AbstractTask {
 
 

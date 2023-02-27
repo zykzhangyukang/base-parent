@@ -124,11 +124,12 @@ public class SyncRetryThread {
 
                 JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
 
-                jdbcTemplate.update("update pub_sync_result set status=?,remark=? where msg_id=?", preparedStatement -> {
+                jdbcTemplate.update("update pub_sync_result set status=?,remark=?,sync_to_es=? where msg_id=?", preparedStatement -> {
 
                     preparedStatement.setString(1, PlanConstant.RESULT_STATUS_SUCCESS);
                     preparedStatement.setString(2, remark);
-                    preparedStatement.setString(3, resultModel.getMsgId());
+                    preparedStatement.setBoolean(3, false);  // 这里要重新同步es
+                    preparedStatement.setString(4, resultModel.getMsgId());
                 });
 
                 this.changeSyncResult(resultModel);

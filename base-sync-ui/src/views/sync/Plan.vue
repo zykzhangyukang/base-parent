@@ -33,9 +33,10 @@
                 v-loading="loading"
                 :data="dataList"
                 style="width: 100%">
-            <el-table-column
-                    type="selection"
-                    width="55">
+            <el-table-column label="选择" width="50">
+                <template slot-scope="{ row }">
+                    <el-radio :label="row.uuid" v-model="uuid"><span></span></el-radio>
+                </template>
             </el-table-column>
             <el-table-column
                     prop="planCode"
@@ -43,9 +44,9 @@
                     width="300px"
                    >
                 <template slot-scope="scope">
-                    <el-link class="planCode" :underline="false" type="primary"
+                    <span class="planCode" :underline="false" type="primary"
                              @click="lookContent(scope.row.uuid)">{{scope.row.planCode}}
-                    </el-link>
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -106,7 +107,6 @@
         <!-- 分页 -->
         <el-pagination
                 class="pagination"
-                background
                 @current-change="currentChange"
                 :current-page.sync="currentPage"
                 :page-size="pageSize"
@@ -162,6 +162,7 @@
 
         <!-- 查看 -->
         <el-dialog
+                title="同步计划"
                 :visible.sync="showVisible"
         >
             <pre v-if="showVisible" v-highlightjs><code class="javascript showContent" v-text="showContent"></code></pre>
@@ -175,6 +176,7 @@
         name: "Plan.vue",
         data() {
             return {
+                uuid: '',
                 loading: true,
                 searchForm: {
                     status: '',
@@ -208,13 +210,14 @@
             },
             updateStatus(){
 
-                const _selectData = this.$refs['planTable'].selection;
-                if(!_selectData || _selectData.length !==1){
+                if(!this.uuid){
 
                     return this.$message.warning("请选择一条记录进行操作");
                 }
 
-                let tips  = _selectData[0].status === 'normal' ? '禁用' : '启用';
+                let row = this.dataList.find(e=>e.uuid === this.uuid);
+
+                let tips  = row.status === 'normal' ? '禁用' : '启用';
 
                 this.$confirm('此操作将更新状态, 是否'+tips+'?', '提示', {
                     confirmButtonText: tips,
@@ -222,8 +225,7 @@
                     type: 'warning'
                 }).then(() => {
 
-
-                    this.$sendAjax.doGet('/sync/plan/status?uuid='+_selectData[0].uuid).then(({data:res})=>{
+                    this.$sendAjax.doGet('/sync/plan/status?uuid='+this.uuid).then(({data:res})=>{
 
                         this.addVisible = false;
                         this.$message({
@@ -238,11 +240,8 @@
                         this.loading=false;
                     })
 
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消'+tips
-                    });
+                }).catch((e) => {
+                    console.log(e)
                 });
 
             },
@@ -267,7 +266,7 @@
                     this.$sendAjax.doGet('/sync/plan/delete?uuid='+uuid).then(({data:res})=>{
 
                         this.addVisible = false;
-                        this.$message({
+                        this.$message.success({
                             showClose: true,
                             message: '删除同步计划成功'
                         });
@@ -288,6 +287,7 @@
 
             },
             getData() {
+                this.uuid = '';
                 this.loading = true;
                 const params = {};
                 Object.keys(this.searchForm).forEach(key => {
@@ -388,7 +388,8 @@
 <style scoped>
     .planCode {
         font-family: Consolas, serif;
-        font-size: 12px;
+        color: #409eff;
+        cursor: pointer;
     }
 
     .pagination {

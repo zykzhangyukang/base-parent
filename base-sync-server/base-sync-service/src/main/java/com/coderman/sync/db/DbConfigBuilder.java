@@ -1,48 +1,58 @@
 package com.coderman.sync.db;
 
-import com.coderman.service.util.DesUtil;
-import lombok.ConfigurationKeys;
+import com.coderman.sync.config.MultiDatasourceConfig;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class DbConfigBuilder {
 
-
-    public static List<AbstractDbConfig> build(Map<String, String> configMap) {
-
-        List<AbstractDbConfig> configList = new ArrayList<>();
+    private static MultiDatasourceConfig config;
 
 
-        for (Map.Entry<String, String> config : configMap.entrySet()) {
+    public static List<AbstractDbConfig> build(MultiDatasourceConfig multiDatasourceConfig) {
 
-            if (config.getKey().endsWith("$url")) {
+        config = multiDatasourceConfig;
+
+        List<MultiDatasourceConfig.SyncDbConfig> dbList = multiDatasourceConfig.getDbList();
+
+        if(CollectionUtils.isEmpty(dbList)){
+
+            return Collections.emptyList();
+        }
+
+        List<AbstractDbConfig> configList = new ArrayList<>(dbList.size());
 
 
-                String key = config.getKey().substring(0, config.getKey().indexOf("$"));
+        for (MultiDatasourceConfig.SyncDbConfig datasource : dbList) {
 
-                if (config.getValue().startsWith("jdbc:mysql")) {
+            String url = datasource.getUrl();
 
-                    configList.add(getMySQLConfig(configMap, config, key));
-                } else if (config.getValue().startsWith("jdbc:jtds:sqlserver:")) {
+            if (StringUtils.startsWith(url, "jdbc:mysql")) {
 
-                    configList.add(getMSSQLDbConfig(key, config.getValue(), configMap, MSSQLConfig.DRIVER_JTDS));
-                } else if (config.getValue().startsWith("jdbc:sqlserver:")) {
+                configList.add(getMySQLConfig(datasource));
 
-                    configList.add(getMSSQLDbConfig(key, config.getValue(), configMap, MSSQLConfig.DRIVER_MICROSOFT));
-                } else if (config.getValue().startsWith("jdbc:oracle")) {
+            } else if (StringUtils.startsWith(url, "jdbc:jtds:sqlserver:")) {
 
-                    configList.add(getOracleDbConfig(key, config.getValue(), configMap, OracleConfig.DRIVER_ORACLE));
-                }
+                configList.add(getMSSQLDbConfig(datasource,MSSQLConfig.DRIVER_JTDS));
 
-            } else if (config.getKey().endsWith(".mongo.replica")) {
+            } else if (StringUtils.startsWith(url, "jdbc:sqlserver:")) {
 
-                MongoConfig mongoConfig = getMongoConfig(configMap, config);
-                if (mongoConfig != null) {
 
-                    configList.add(mongoConfig);
-                }
+                configList.add(getMSSQLDbConfig(datasource,MSSQLConfig.DRIVER_MICROSOFT));
+
+
+            } else if (StringUtils.startsWith(url, "oracle")) {
+
+                configList.add(getOracleDbConfig(datasource));
+
+            } else if (StringUtils.equalsIgnoreCase(url, ",mongo")) {
+
+                configList.add(getMongoConfig(datasource));
 
             }
 
@@ -51,116 +61,180 @@ public class DbConfigBuilder {
         return configList;
     }
 
-    private static MongoConfig getMongoConfig(Map<String, String> configMap, Map.Entry<String, String> config) {
+    private static MongoConfig getMongoConfig(MultiDatasourceConfig.SyncDbConfig syncDbConfig ) {
 
         // mongo 配置
-        String key = config.getKey().substring(0, config.getKey().indexOf("."));
+        String key = syncDbConfig.getDbname();
+        String url = syncDbConfig.getUrl();
+        String username = syncDbConfig.getUsername();
+        String password = syncDbConfig.getPassword();
+        String db = syncDbConfig.getDb();
+        Integer connectionsPerHost = syncDbConfig.getConnectionsPerHost();
+        Integer maxWaitTime = syncDbConfig.getMaxWaitTime();
+        Integer connectTimeout = syncDbConfig.getConnectTimeout();
+        Integer serverSelectionTimeout = syncDbConfig.getServerSelectionTimeout();
+        String socketKeepAlive = syncDbConfig.getSocketKeepAlive();
+        Integer socketTimeout = syncDbConfig.getSocketTimeout();
+        Integer threadsAllowedToBlockForConnectionMultiplier = syncDbConfig.getThreadsAllowedToBlockForConnectionMultiplier();
+
 
         // 跳过sync的配置
-        if ("sync".equalsIgnoreCase(key)) {
+        if(StringUtils.equalsIgnoreCase("sync",key)){
             return null;
         }
 
         MongoConfig mongoConfig = new MongoConfig();
         mongoConfig.setBeanId(key);
-        mongoConfig.setUrl(config.getValue());
-        mongoConfig.setUserName(configMap.containsKey(key + ".mongo.username") ? configMap.get(key + ".mongo.username") : configMap.get("mongo.username"));
-        mongoConfig.setPassword(DesUtil.decrypt(configMap.containsKey(key + ".mongo.password") ? configMap.get(key + ".mongo.password") : configMap.get("mongo.password")));
-        mongoConfig.setDb(configMap.get(key + ".mongo.db"));
-        mongoConfig.setConnectionsPerHost(Integer.parseInt(configMap.containsKey(key + ".mongo.connectionsPerHost") ? configMap.get(key + ".mongo.connectionsPerHost") : configMap.get("mongo.connectionsPerHost")));
-        mongoConfig.setConnectTimeout(Integer.parseInt(configMap.containsKey(key + ".mongo.connectTimeout") ? configMap.get(key + ".mongo.connectTimeout") : configMap.get("mongo.connectTimeout")));
-        mongoConfig.setMaxWaitTime(Integer.parseInt(configMap.containsKey(key + ".mongo.maxWaitTime") ? configMap.get(key + ".mongo.maxWaitTime") : configMap.get("mongo.maxWaitTime")));
-        mongoConfig.setServerSelectionTimeout(Integer.parseInt(configMap.containsKey(key + ".mongo.serverSelectionTimeout") ? configMap.get(key + ".mongo.serverSelectionTimeout") : configMap.get("mongo.serverSelectionTimeout")));
-        mongoConfig.setSocketKeepAlive(configMap.containsKey(key + ".mongo.socketKeepAlive") ? configMap.get(key + ".mongo.socketKeepAlive") : configMap.get("mongo.socketKeepAlive"));
-        mongoConfig.setSocketTimeout(Integer.parseInt(configMap.containsKey(key + ".mongo.socketTimeout") ? configMap.get(key + ".mongo.socketTimeout") : configMap.get("mongo.socketTimeout")));
-        mongoConfig.setThreadsAllowedToBlockForConnectionMultiplier(Integer.parseInt(configMap.containsKey(key + ".mongo.threadsAllowedToBlockForConnectionMultiplier") ? configMap.get(key + ".mongo.threadsAllowedToBlockForConnectionMultiplier") : configMap.get("mongo.threadsAllowedToBlockForConnectionMultiplier")));
+        mongoConfig.setUrl(url);
+        mongoConfig.setUserName(username);
+        mongoConfig.setPassword(password);
+        mongoConfig.setDb(db);
+        mongoConfig.setConnectionsPerHost(connectionsPerHost);
+        mongoConfig.setConnectTimeout(connectTimeout);
+        mongoConfig.setMaxWaitTime(maxWaitTime);
+        mongoConfig.setServerSelectionTimeout(serverSelectionTimeout);
+        mongoConfig.setSocketKeepAlive(socketKeepAlive);
+        mongoConfig.setSocketTimeout(socketTimeout);
+        mongoConfig.setThreadsAllowedToBlockForConnectionMultiplier(threadsAllowedToBlockForConnectionMultiplier);
 
         return mongoConfig;
     }
 
 
-    @SuppressWarnings("all")
-    private static AbstractDbConfig getOracleDbConfig(String key, String configValue, Map<String, String> configMap, String driverOracle) {
+    private static AbstractDbConfig getOracleDbConfig(MultiDatasourceConfig.SyncDbConfig syncDbConfig) {
 
         OracleConfig oracleConfig = new OracleConfig();
 
-        oracleConfig.setBeanId(key);
-        oracleConfig.setDriverClassName(driverOracle);
-
-        oracleConfig.setMaxActive(configMap.containsKey(key + "$maxActive") ? configMap.get(key + "$maxActive") : configMap.get("common$maxActive"));
-        oracleConfig.setMaxIdle(configMap.containsKey(key + "$maxIdle") ? configMap.get(key + "$maxIdle") : configMap.get("common$maxIdle"));
-        oracleConfig.setMaxWait(configMap.containsKey(key + "$maxWait") ? configMap.get(key + "$maxWait") : configMap.get("common$maxWait"));
-        oracleConfig.setMinIdle(configMap.containsKey(key + "$minIdle") ? configMap.get(key + "$minIdle") : configMap.get("common$minIdle"));
-        oracleConfig.setTransTimeout(configMap.containsKey(key + "$timeout") ? configMap.get(key + "$timeout") : configMap.get("common$timeout"));
-
-        oracleConfig.setUrl(configValue);
-        oracleConfig.setUserName(configMap.containsKey(key + "$username") ? configMap.get(key + "$username") : configMap.get("mysql$username"));
-        oracleConfig.setPassword(DesUtil.decrypt(configMap.containsKey(key + "$password") ? configMap.get(key + "$password") : configMap.get("mysql$password")));
+        oracleConfig.setBeanId(syncDbConfig.getDbname());
+        oracleConfig.setDriverClassName(OracleConfig.DRIVER_ORACLE);
 
 
-        oracleConfig.setMinEvictableIdleTimeMillis(configMap.containsKey(key + "$minEvictableIdleTimeMillis") ? configMap.get(key + "$minEvictableIdleTimeMillis") : configMap.get("mysql$minEvictableIdleTimeMillis"));
-        oracleConfig.setTimeBetweenEvictionRunsMillis(configMap.containsKey(key + ".timeBetweenEvictionRunsMillis") ? configMap.get(key + "$timeBetweenEvictionRunsMillis") : configMap.get("mysql$timeBetweenEvictionRunsMillis"));
-        oracleConfig.setTestOnBorrow(configMap.containsKey(key + "$testOnBorrow") ? configMap.get(key + "$testOnBorrow") : configMap.get("mysql$testOnBorrow"));
-        oracleConfig.setTestOnReturn(configMap.containsKey(key + "$testOnReturn") ? configMap.get(key + "$testOnReturn") : configMap.get("mysql$testOnReturn"));
-        oracleConfig.setTestWhileIdle(configMap.containsKey(key + "$testWhileIdle") ? configMap.get(key + "$testWhileIdle") : configMap.get("mysql$testWhileIdle"));
+        // 读取配置
+        String maxIdle = Optional.ofNullable(syncDbConfig.getMaxIdle()).orElse(config.getCommonMaxIdle());
+        String maxActive = Optional.ofNullable(syncDbConfig.getMaxActive()).orElse(config.getCommonMaxActive());
+        String minIdle = Optional.ofNullable(syncDbConfig.getMinIdle()).orElse(config.getCommonMinIdle());
+        String maxWait = Optional.ofNullable(syncDbConfig.getMaxWait()).orElse(config.getCommonMaxWait());
+        String username = Optional.ofNullable(syncDbConfig.getUsername()).orElse(config.getMysqlUsername());
+        String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
+        String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
+
+
+        oracleConfig.setMaxIdle(maxIdle);
+        oracleConfig.setMaxActive(maxActive);
+        oracleConfig.setMaxWait(maxWait);
+        oracleConfig.setMinIdle(minIdle);
+        oracleConfig.setTransTimeout(timeout);
+
+        oracleConfig.setUrl(syncDbConfig.getUrl());
+        oracleConfig.setUserName(username);
+        oracleConfig.setPassword(password);
+
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
+        String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
+        String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
+
+
+        oracleConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        oracleConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        oracleConfig.setTestOnBorrow(testOnBorrow);
+        oracleConfig.setTestOnReturn(testOnReturn);
+        oracleConfig.setTestWhileIdle(testWhileIdle);
 
         return oracleConfig;
     }
 
-    @SuppressWarnings("all")
-    private static AbstractDbConfig getMSSQLDbConfig(String key, String configValue, Map<String, String> configMap, String driverClassName) {
+    private static AbstractDbConfig getMSSQLDbConfig(MultiDatasourceConfig.SyncDbConfig syncDbConfig,  String driverClassName) {
 
         MSSQLConfig mssqlConfig = new MSSQLConfig();
 
-        mssqlConfig.setBeanId(key);
         mssqlConfig.setDriverClassName(driverClassName);
+        mssqlConfig.setBeanId(syncDbConfig.getDbname());
 
-        mssqlConfig.setMaxActive(configMap.containsKey(key + "$maxActive") ? configMap.get(key + "$maxActive") : configMap.get("common$maxActive"));
-        mssqlConfig.setMaxIdle(configMap.containsKey(key + "$maxIdle") ? configMap.get(key + "$maxIdle") : configMap.get("common$maxIdle"));
-        mssqlConfig.setMaxWait(configMap.containsKey(key + "$maxWait") ? configMap.get(key + "$maxWait") : configMap.get("common$maxWait"));
-        mssqlConfig.setMinIdle(configMap.containsKey(key + "$minIdle") ? configMap.get(key + "$minIdle") : configMap.get("common$minIdle"));
-        mssqlConfig.setTransTimeout(configMap.containsKey(key + "$timeout") ? configMap.get(key + "$timeout") : configMap.get("common$timeout"));
+        // 读取配置
+        String maxActive = Optional.ofNullable(syncDbConfig.getMaxActive()).orElse(config.getCommonMaxActive());
+        String maxIdle = Optional.ofNullable(syncDbConfig.getMaxIdle()).orElse(config.getCommonMaxIdle());
+        String maxWait = Optional.ofNullable(syncDbConfig.getMaxWait()).orElse(config.getCommonMaxWait());
+        String username = Optional.ofNullable(syncDbConfig.getUsername()).orElse(config.getMysqlUsername());
+        String minIdle = Optional.ofNullable(syncDbConfig.getMinIdle()).orElse(config.getCommonMinIdle());
+        String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
+        String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
 
-        mssqlConfig.setUrl(configValue);
-        mssqlConfig.setUserName(configMap.containsKey(key + "$username") ? configMap.get(key + "$username") : configMap.get("mysql$username"));
-        mssqlConfig.setPassword(DesUtil.decrypt(configMap.containsKey(key + "$password") ? configMap.get(key + "$password") : configMap.get("mysql$password")));
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
+        String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
+        String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
 
-        mssqlConfig.setLogAbandoned(configMap.containsKey(key + "logAbandoned") ? configMap.get(key + "logAbandoned") : configMap.get("logAbandoned"));
-        mssqlConfig.setRemoveAbandoned(configMap.containsKey(key + "removeAbandoned") ? configMap.get(key + "removeAbandoned") : configMap.get("removeAbandoned"));
-        mssqlConfig.setRemoveAbandonedTimeout(configMap.containsKey(key + "removeAbandonedTimeout") ? configMap.get(key + "removeAbandonedTimeout") : configMap.get("removeAbandonedTimeout"));
 
-        mssqlConfig.setMinEvictableIdleTimeMillis(configMap.containsKey(key + "$minEvictableIdleTimeMillis") ? configMap.get(key + "$minEvictableIdleTimeMillis") : configMap.get("mysql$minEvictableIdleTimeMillis"));
-        mssqlConfig.setTimeBetweenEvictionRunsMillis(configMap.containsKey(key + ".timeBetweenEvictionRunsMillis") ? configMap.get(key + "$timeBetweenEvictionRunsMillis") : configMap.get("mysql$timeBetweenEvictionRunsMillis"));
-        mssqlConfig.setTestOnBorrow(configMap.containsKey(key + "$testOnBorrow") ? configMap.get(key + "$testOnBorrow") : configMap.get("mysql$testOnBorrow"));
-        mssqlConfig.setTestOnReturn(configMap.containsKey(key + "$testOnReturn") ? configMap.get(key + "$testOnReturn") : configMap.get("mysql$testOnReturn"));
-        mssqlConfig.setTestWhileIdle(configMap.containsKey(key + "$testWhileIdle") ? configMap.get(key + "$testWhileIdle") : configMap.get("mysql$testWhileIdle"));
+        mssqlConfig.setMaxActive(maxActive);
+        mssqlConfig.setMaxIdle(maxIdle);
+        mssqlConfig.setMinIdle(minIdle);
+        mssqlConfig.setMaxWait(maxWait);
+        mssqlConfig.setTransTimeout(timeout);
+
+        mssqlConfig.setUrl(syncDbConfig.getUrl());
+        mssqlConfig.setUserName(username);
+        mssqlConfig.setPassword(password);
+
+        mssqlConfig.setLogAbandoned(syncDbConfig.getLogAbandoned());
+        mssqlConfig.setRemoveAbandoned(syncDbConfig.getRemoveAbandoned());
+        mssqlConfig.setRemoveAbandonedTimeout(syncDbConfig.getRemoveAbandonedTimeout());
+
+        mssqlConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        mssqlConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        mssqlConfig.setTestOnBorrow(testOnBorrow);
+        mssqlConfig.setTestOnReturn(testOnReturn);
+        mssqlConfig.setTestWhileIdle(testWhileIdle);
 
         return mssqlConfig;
 
     }
 
-    @SuppressWarnings("all")
-    private static AbstractDbConfig getMySQLConfig(Map<String, String> configMap, Map.Entry<String, String> config, String key) {
+    private static AbstractDbConfig getMySQLConfig(MultiDatasourceConfig.SyncDbConfig syncDbConfig) {
 
         MySQLConfig mySQLConfig = new MySQLConfig();
 
+        String key = syncDbConfig.getDbname();
+
+        // 注册bean key
         mySQLConfig.setBeanId(key);
-        mySQLConfig.setMaxActive(configMap.containsKey(key + "$maxActive") ? configMap.get(key + "$maxActive") : configMap.get("common$maxActive"));
-        mySQLConfig.setMaxIdle(configMap.containsKey(key + "$maxIdle") ? configMap.get(key + "$maxIdle") : configMap.get("common$maxIdle"));
-        mySQLConfig.setMaxWait(configMap.containsKey(key + "$maxWait") ? configMap.get(key + "$maxWait") : configMap.get("common$maxWait"));
-        mySQLConfig.setMinIdle(configMap.containsKey(key + "$minIdle") ? configMap.get(key + "$minIdle") : configMap.get("common$minIdle"));
-        mySQLConfig.setTransTimeout(configMap.containsKey(key + "$timeout") ? configMap.get(key + "$timeout") : configMap.get("common$timeout"));
 
-        mySQLConfig.setUrl(config.getValue());
-        mySQLConfig.setUserName(configMap.containsKey(key + "$username") ? configMap.get(key + "$username") : configMap.get("mysql$username"));
-        mySQLConfig.setPassword(DesUtil.decrypt(configMap.containsKey(key + "$password") ? configMap.get(key + "$password") : configMap.get("mysql$password")));
+        // 读取配置
+        String maxActive = Optional.ofNullable(syncDbConfig.getMaxActive()).orElse(config.getCommonMaxActive());
+        String maxIdle = Optional.ofNullable(syncDbConfig.getMaxIdle()).orElse(config.getCommonMaxIdle());
+        String maxWait = Optional.ofNullable(syncDbConfig.getMaxWait()).orElse(config.getCommonMaxWait());
+        String minIdle = Optional.ofNullable(syncDbConfig.getMinIdle()).orElse(config.getCommonMinIdle());
+        String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
+        String username = Optional.ofNullable(syncDbConfig.getUsername()).orElse(config.getMysqlUsername());
+        String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
+        String initialSize = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
 
-        mySQLConfig.setInitialSize(configMap.containsKey(key + "$initialSize") ? configMap.get(key + "$initialSize") : configMap.get("mysql$initialSize"));
-        mySQLConfig.setMinEvictableIdleTimeMillis(configMap.containsKey(key + "$minEvictableIdleTimeMillis") ? configMap.get(key + "$minEvictableIdleTimeMillis") : configMap.get("mysql$minEvictableIdleTimeMillis"));
-        mySQLConfig.setTimeBetweenEvictionRunsMillis(configMap.containsKey(key + ".timeBetweenEvictionRunsMillis") ? configMap.get(key + "$timeBetweenEvictionRunsMillis") : configMap.get("mysql$timeBetweenEvictionRunsMillis"));
-        mySQLConfig.setTestOnBorrow(configMap.containsKey(key + "$testOnBorrow") ? configMap.get(key + "$testOnBorrow") : configMap.get("mysql$testOnBorrow"));
-        mySQLConfig.setTestOnReturn(configMap.containsKey(key + "$testOnReturn") ? configMap.get(key + "$testOnReturn") : configMap.get("mysql$testOnReturn"));
-        mySQLConfig.setTestWhileIdle(configMap.containsKey(key + "$testWhileIdle") ? configMap.get(key + "$testWhileIdle") : configMap.get("mysql$testWhileIdle"));
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+
+        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
+        String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
+        String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
+
+
+        mySQLConfig.setMaxActive(maxActive);
+        mySQLConfig.setMaxIdle(maxIdle);
+        mySQLConfig.setMaxWait(maxWait);
+        mySQLConfig.setMinIdle(minIdle);
+        mySQLConfig.setTransTimeout(timeout);
+
+        mySQLConfig.setUrl(syncDbConfig.getUrl());
+        mySQLConfig.setUserName(username);
+        mySQLConfig.setPassword(password);
+
+        mySQLConfig.setInitialSize(initialSize);
+        mySQLConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        mySQLConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        mySQLConfig.setTestOnBorrow(testOnBorrow);
+        mySQLConfig.setTestOnReturn(testOnReturn);
+        mySQLConfig.setTestWhileIdle(testWhileIdle);
 
         return mySQLConfig;
     }

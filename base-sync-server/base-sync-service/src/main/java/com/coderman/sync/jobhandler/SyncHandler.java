@@ -1,6 +1,7 @@
 package com.coderman.sync.jobhandler;
 
 import com.coderman.service.util.SpringContextUtil;
+import com.coderman.sync.config.MultiDatasourceConfig;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.task.base.MsgTask;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,85 +29,93 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SyncHandler extends IJobHandler {
 
+    @Resource
+    private MultiDatasourceConfig multiDatasourceConfig;
+
     @Override
     public ReturnT<String> execute(String param) {
 
-        String dbName = "datasource1";
 
-        JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(dbName + "_template");
+        List<String> databases = multiDatasourceConfig.listDatabases();
 
-        String sql = "select mq_message_id from pub_mq_message where send_status in ('sending','wait') and create_time < ?";
+        for (String dbName : databases) {
 
-        // 1. 查询5分钟前处于发送中或者待发送的记录
-        List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, DateUtils.addMinutes(new Date(), -5));
+            JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(dbName + "_template");
 
-        StringBuilder sb = new StringBuilder();
+            String sql = "select mq_message_id from pub_mq_message where send_status in ('sending','wait') and create_time < ?";
 
-        sb.append("处理MQ消息发送失败记录.").append(dbName);
+            // 1. 查询5分钟前处于发送中或者待发送的记录
+            List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, DateUtils.addMinutes(new Date(), -5));
 
-        if (CollectionUtils.isNotEmpty(resultList)) {
+            StringBuilder sb = new StringBuilder();
 
-            List<Object> idList = resultList.stream().map(e -> e.get("mq_message_id")).collect(Collectors.toList());
+            sb.append("处理MQ消息发送失败记录.").append(dbName);
 
-            sb.append("预查询->").append(idList.size());
+            if (CollectionUtils.isNotEmpty(resultList)) {
 
-            // 2. 5分钟前处于发送中或者待发送的记录标记为失败
-            sql = "update pub_mq_message set send_status = 'fail' where send_status in ('sending','wait') and mq_message_id in ";
+                List<Object> idList = resultList.stream().map(e -> e.get("mq_message_id")).collect(Collectors.toList());
 
-            List<List<Object>> updateList = Lists.partition(idList, 50);
+                sb.append("预查询->").append(idList.size());
 
-            List<String> updateSqlList = updateList.stream().map(tmp -> StringUtils.join(tmp,",")).collect(Collectors.toList());
+                // 2. 5分钟前处于发送中或者待发送的记录标记为失败
+                sql = "update pub_mq_message set send_status = 'fail' where send_status in ('sending','wait') and mq_message_id in ";
 
-            int updateCount = 0;
+                List<List<Object>> updateList = Lists.partition(idList, 50);
 
-            for (String tempSql : updateSqlList) {
+                List<String> updateSqlList = updateList.stream().map(tmp -> StringUtils.join(tmp, ",")).collect(Collectors.toList());
 
-                tempSql = sql + "( select " + tempSql.replaceAll(",", " union select ") + ")";
-                tempSql += ";";
+                int updateCount = 0;
 
-                int rowCount = jdbcTemplate.update(tempSql);
+                for (String tempSql : updateSqlList) {
 
-                updateCount += rowCount;
-            }
+                    tempSql = sql + "( select " + tempSql.replaceAll(",", " union select ") + ")";
+                    tempSql += ";";
 
-            sb.append("实际更新->").append(updateCount);
+                    int rowCount = jdbcTemplate.update(tempSql);
 
-        }
-
-        // 3. 查询需处理的消息内容
-        sql = "select msg_content from pub_mq_message where deal_count < ? and create_time > ? and create_time < ? and send_status = 'fail' and deal_status in ('wait','fail')";
-
-        int retry = 5;
-        Date startTime = DateUtils.addMinutes(new Date(), -20);
-        Date endTime = DateUtils.addMinutes(new Date(), -5);
-
-        List<Map<String, Object>> resList = jdbcTemplate.queryForList(sql, retry, startTime, endTime);
-
-        sb.append("需处理->").append(resList.size());
-
-        if (CollectionUtils.isNotEmpty(resList)) {
-
-            for (Map<String, Object> resultMap : resList) {
-
-                MsgTask msgTask = new MsgTask();
-
-                if (resultMap.containsKey("msg_content")) {
-
-                    msgTask.setMsg(resultMap.get("msg_content").toString());
-
-                } else {
-
-                    msgTask.setMsg(SqlUtil.getFieldName("msg_content"));
+                    updateCount += rowCount;
                 }
 
-                msgTask.setSource(PlanConstant.MSG_SOURCE_JOB);
-                SyncContext.getContext().addTaskToDelayQueue(msgTask);
+                sb.append("实际更新->").append(updateCount);
 
             }
 
-        }
+            // 3. 查询需处理的消息内容
+            sql = "select msg_content from pub_mq_message where deal_count < ? and create_time > ? and create_time < ? and send_status = 'fail' and deal_status in ('wait','fail')";
 
-        XxlJobLogger.log(sb.toString());
+            int retry = 5;
+            Date startTime = DateUtils.addMinutes(new Date(), -20);
+            Date endTime = DateUtils.addMinutes(new Date(), -5);
+
+            List<Map<String, Object>> resList = jdbcTemplate.queryForList(sql, retry, startTime, endTime);
+
+            sb.append("需处理->").append(resList.size());
+
+            if (CollectionUtils.isNotEmpty(resList)) {
+
+                for (Map<String, Object> resultMap : resList) {
+
+                    MsgTask msgTask = new MsgTask();
+
+                    if (resultMap.containsKey("msg_content")) {
+
+                        msgTask.setMsg(resultMap.get("msg_content").toString());
+
+                    } else {
+
+                        msgTask.setMsg(SqlUtil.getFieldName("msg_content"));
+                    }
+
+                    msgTask.setSource(PlanConstant.MSG_SOURCE_JOB);
+                    SyncContext.getContext().addTaskToDelayQueue(msgTask);
+
+                }
+
+            }
+
+            XxlJobLogger.log(sb.toString());
+            log.info(sb.toString());
+        }
 
         return ReturnT.SUCCESS;
     }

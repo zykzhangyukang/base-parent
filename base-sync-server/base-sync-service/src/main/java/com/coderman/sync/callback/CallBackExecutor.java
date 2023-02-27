@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -534,9 +535,12 @@ public class CallBackExecutor {
                     if (jsonObject != null && jsonObject.containsKey("code") && HttpStatus.SC_OK == jsonObject.getInteger("code")) {
 
                         result = true;
+
+                    }else {
+
+                        log.error("业务系统回调失败:{}", resultStr);
                     }
                 }
-
             }
 
         } catch (Exception e) {
@@ -573,5 +577,10 @@ public class CallBackExecutor {
         }
 
         return result;
+    }
+
+    @PreDestroy
+    private void destroy() {
+        this.threadPoolExecutor.shutdown();
     }
 }

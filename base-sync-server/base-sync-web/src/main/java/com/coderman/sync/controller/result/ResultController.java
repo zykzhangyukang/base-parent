@@ -9,10 +9,7 @@ import com.coderman.sync.vo.CompareVO;
 import com.coderman.sync.vo.ResultVO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -57,14 +54,14 @@ public class ResultController {
     }
 
 
-    @GetMapping(value = "/valid/data")
+    @PostMapping(value = "/valid/data")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+            @ApiImplicitParam(name = "msgContent", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "msgContent", required = true),
     })
     @ApiReturnIgnore
-    public com.coderman.api.vo.ResultVO<List<CompareVO>> validResultData(String uuid) throws Throwable {
+    public com.coderman.api.vo.ResultVO<List<CompareVO>> validResultData(String msgContent) throws Throwable {
 
-        return this.resultService.selectTableData(uuid, true);
+        return this.resultService.selectTableData(msgContent, true);
     }
 
 

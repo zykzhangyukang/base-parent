@@ -247,7 +247,8 @@ public class SyncContext {
         logger.info("addTaskToDelayQueue-start:{}", JSON.toJSONString(task, SerializerFeature.IgnoreNonFieldGetter));
 
 
-        task.setDelayTime(60);
+        task.setDelayTime(30);
+
         this.syncRetryThread.addTask(task);
 
         logger.info("addTaskToDelayQueue-end");

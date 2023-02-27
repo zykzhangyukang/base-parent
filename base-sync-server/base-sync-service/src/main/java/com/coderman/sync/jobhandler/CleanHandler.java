@@ -1,5 +1,6 @@
 package com.coderman.sync.jobhandler;
 
+import com.coderman.sync.config.MultiDatasourceConfig;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.executor.AbstractExecutor;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,8 @@ import java.util.List;
 @Slf4j
 public class CleanHandler extends IJobHandler {
 
+    @Resource
+    private MultiDatasourceConfig datasourceConfig;
 
     @SneakyThrows
     @Override
@@ -32,54 +36,66 @@ public class CleanHandler extends IJobHandler {
 
         Date ltTime = DateUtils.addMinutes(new Date(), -5);
 
-        final String dbNames = "datasource1,datasource2";
+        List<String> databases = datasourceConfig.listDatabases();
 
-        for (String dbName : dbNames.split(",")) {
+        for (String dbname : databases) {
+
+            try {
 
 
-            /***************************** 删除本地消息表冗余数据 ********************************/
+                /***************************** 删除本地消息表冗余数据 ********************************/
 
-            // 获取db类型
-            String dbType = SyncContext.getContext().getDbType(dbName);
+                // 获取db类型
+                String dbType = SyncContext.getContext().getDbType(dbname);
 
-            // 批量参数sql
-            String batchDelSql = StringUtils.EMPTY;
+                // 批量参数sql
+                String batchDelSql = StringUtils.EMPTY;
 
-            List<Object> paramList = new ArrayList<>();
+                List<Object> paramList = new ArrayList<>();
 
-            // 封装参数
-            if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
+                // 封装参数
+                if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
 
-                batchDelSql = "delete from pub_mq_message where deal_status='success' and create_time <? limit ?;";
-                paramList.add(ltTime);
-                paramList.add(10000);
+                    batchDelSql = "delete from pub_mq_message where deal_status='success' and create_time <? limit ?;";
+                    paramList.add(ltTime);
+                    paramList.add(10000);
 
-            } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+                } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
 
-                batchDelSql = "delete from pub_mq_message where mq_message_id in (select top " + 10000 + " mq_message_id from pub_mq_message where deal_status = 'success' and create_time <?)";
-                paramList.add(ltTime);
+                    batchDelSql = "delete from pub_mq_message where mq_message_id in (select top " + 10000 + " mq_message_id from pub_mq_message where deal_status = 'success' and create_time <?)";
+                    paramList.add(ltTime);
+                }
+
+                this.deleteLoop(dbname, batchDelSql, paramList);
+
+
+                /******************************** 删除回调消息表冗余数据 ********************************/
+
+                paramList.clear();
+                if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
+
+                    batchDelSql = "delete from pub_callback where status='success' and create_time < ? limit ?;";
+                    paramList.add(ltTime);
+                    paramList.add(10000);
+
+                } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+
+                    batchDelSql = "delete from pub_callback where callback_id in (select top " + 10000 + " callback_id from pub_callback where status = 'success' and create_time <?)";
+                    paramList.add(ltTime);
+                }
+
+                this.deleteLoop(dbname, batchDelSql, paramList);
+
+
+            } catch (Exception e) {
+
+                XxlJobLogger.log("清除冗余数据失败:" + dbname +",msg:"+e.getMessage());
+
+                log.error("清除冗余数据失败:{}",e.getMessage(),e);
             }
 
-            this.deleteLoop(dbName, batchDelSql, paramList);
-
-
-            /******************************** 删除回调消息表冗余数据 ********************************/
-
-            paramList.clear();
-            if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
-
-                batchDelSql = "delete from pub_callback where status='success' and create_time < ? limit ?;";
-                paramList.add(ltTime);
-                paramList.add(10000);
-
-            } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
-
-                batchDelSql = "delete from pub_callback where callback_id in (select top " + 10000 + " callback_id from pub_callback where status = 'success' and create_time <?)";
-                paramList.add(ltTime);
-            }
-
-            this.deleteLoop(dbName, batchDelSql, paramList);
         }
+
 
         return ReturnT.SUCCESS;
     }

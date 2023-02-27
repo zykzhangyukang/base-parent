@@ -48,32 +48,31 @@ sync:
     dest-list:
       - project: demo
         url: http://127.0.0.1:8084
+  # 同步系统jdbc配置
+  jdbc:
+    commonMaxIdle: 20
+    commonMaxWait: 1000
+    commonMinIdle: 10
+    commonMaxActive: 800
+    commonTimeout: 20
+    mysqlUsername: root
+    mysqlPassword: 123456
+    mysqlInitialSize: 10
+    mysqlMinEvictableIdleTimeMillis: 40000
+    mysqlTimeBetweenEvictionRunsMillis: 10000
+    mysqlTestOnBorrow: false
+    mysqlTestOnReturn: false
+    mysqlTestWhileIdle: true
+    dbList:
+      - dbname: datasource1
+        url: jdbc:mysql://localhost:3306/datasource1?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
-
-
-jdbc:
-  common$maxIdle: 20
-  common$maxWait: 1000
-  common$minIdle: 10
-  common$maxActive: 800
-  common$timeout: 20
-  mysql$username: root
-  mysql$password: 123456
-  mysql$initialSize: 10
-  mysql$minEvictableIdleTimeMillis: 40000
-  mysql$timeBetweenEvictionRunsMillis: 10000
-  mysql$testOnBorrow: false
-  mysql$testOnReturn: false
-  mysql$testWhileIdle: true
-  # 业务系统1
-  datasource1$url: jdbc:mysql://localhost:3306/datasource1?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-  datasource1$username: root
-  datasource1$password: 2120FA78BC6EB99B019C119BD8067DB0
-  # 业务系统2
-  datasource2$url: jdbc:mysql://localhost:3306/datasource2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-  datasource2$username: root
-  datasource2$password: 2120FA78BC6EB99B019C119BD8067DB0
-
+      - dbname: datasource2
+        url: jdbc:mysql://localhost:3306/datasource2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
 logging:
   level:

@@ -1,19 +1,21 @@
 package com.coderman.sync.init;
 
-import com.coderman.service.config.PropertyConfig;
+import com.coderman.sync.config.MultiDatasourceConfig;
 import com.coderman.sync.db.*;
 import com.coderman.sync.util.SyncBeanUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 @Lazy(value = false)
 @Component
 public class DataSourceInitializer {
 
+    @Resource
+    private MultiDatasourceConfig config;
 
     /**
      * 初始化数据源
@@ -21,9 +23,7 @@ public class DataSourceInitializer {
     public void init(){
 
 
-        Map<String,String> paramMap = PropertyConfig.getDictMap("jdbc");
-
-        List<AbstractDbConfig> dbConfigList = DbConfigBuilder.build(paramMap);
+        List<AbstractDbConfig> dbConfigList = DbConfigBuilder.build(config);
 
         if(CollectionUtils.isNotEmpty(dbConfigList)){
 

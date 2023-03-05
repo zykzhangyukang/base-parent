@@ -103,6 +103,8 @@ public class WriteBackTask extends AbstractTask{
 
         executor.sql(sqlMeta);
 
+        sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
+
         super.setExecutor(executor);
     }
 }

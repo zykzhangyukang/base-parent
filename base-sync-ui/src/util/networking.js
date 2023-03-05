@@ -3,8 +3,8 @@ import Vue from 'vue'
 
 export default {
 
-    // basicUrl: 'http://127.0.0.1',
-    basicUrl: '',
+    basicUrl: 'http://127.0.0.1',
+    // basicUrl: '',
 
     httpMethod: {
         GET: 'get',

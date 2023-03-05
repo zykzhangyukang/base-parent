@@ -19,6 +19,7 @@ import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.support.WriteBackTask;
+import com.coderman.sync.util.SqlUtil;
 import com.coderman.sync.vo.CompareVO;
 import com.coderman.sync.vo.ResultVO;
 import org.apache.commons.collections4.CollectionUtils;
@@ -408,6 +409,8 @@ public class ResultServiceImpl implements ResultService {
             sqlMeta.setParamList(SyncConvert.toArrayList(paramList));
 
             srcExecutor.sql(sqlMeta);
+
+            sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,srcExecutor));
         }
 
         return srcExecutor;

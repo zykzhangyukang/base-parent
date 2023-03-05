@@ -31,7 +31,7 @@ public class MongoExecutor extends AbstractExecutor {
         for (SqlMeta sqlMeta : super.getSqlList()) {
 
 
-            log.debug("执行SQL语句->" + sqlMeta.getSql());
+            log.info("执行SQL语句->" + sqlMeta.getSql());
 
             CommandResult commandResult = mongoTemplate.executeCommand(sqlMeta.getSql());
             if (!commandResult.ok()) {

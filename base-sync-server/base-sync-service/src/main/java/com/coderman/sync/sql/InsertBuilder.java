@@ -91,7 +91,7 @@ public class InsertBuilder {
 
 
             builder.append("{");
-            builder.append("\"insert\": \"").append(SqlUtil.getCollectionName(this.table));
+            builder.append("\"insert\": \"").append(SqlUtil.getCollectionName(this.table)).append("\",");
             builder.append("\"documents\": [");
 
             List<String> tmpList = new ArrayList<>();
@@ -99,7 +99,7 @@ public class InsertBuilder {
             for (int i = 0; i < this.groupCount; i++) {
 
 
-                String tempStr = "[";
+                String tempStr = "{";
 
                 List<String> insertStrList = new ArrayList<>();
 

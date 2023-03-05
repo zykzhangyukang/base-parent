@@ -16,6 +16,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -202,10 +203,10 @@ public class SyncBeanUtil {
 
         MongoCredential credential = MongoCredential.createCredential(config.getUserName(), config.getDb(), config.getPassword().toCharArray());
 
-        MongoClient client = new MongoClient(serverList, Collections.singletonList(credential), options);
+        MongoClient client = new MongoClient(serverList, options);
 
         beanFactory.registerSingleton(config.getBeanId() + "_mongoClient", client);
-        beanFactory.registerSingleton(config.getBeanId() + "_mongoDbFactory", client);
+        beanFactory.registerSingleton(config.getBeanId() + "_mongoDbFactory", new SimpleMongoDbFactory(client,config.getDb()));
 
         BeanDefinitionBuilder dsBuilder = BeanDefinitionBuilder.genericBeanDefinition(MongoTemplate.class);
         dsBuilder.addConstructorArgReference(config.getBeanId() + "_mongoDbFactory");

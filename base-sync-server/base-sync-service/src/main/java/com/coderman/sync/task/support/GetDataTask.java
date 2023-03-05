@@ -11,6 +11,7 @@ import com.coderman.sync.sql.SelectBuilder;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
+import com.coderman.sync.util.SqlUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
@@ -98,6 +99,8 @@ public class GetDataTask extends AbstractTask {
             sqlMeta.setTableCode(tableMeta.getCode());
 
             executor.sql(sqlMeta);
+
+            sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
         }
 
         if (CollectionUtils.isNotEmpty(executor.getSqlList()) && this.onlyDelete) {

@@ -2,11 +2,14 @@ package com.coderman.sync.config;
 
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @ConfigurationProperties(prefix = "sync.jdbc")
@@ -32,6 +35,7 @@ public class MultiDatasourceConfig {
     public static final class SyncDbConfig {
         private String dbname;
         private String url;
+        private String type;
         private String username;
         private String password;
 
@@ -67,6 +71,12 @@ public class MultiDatasourceConfig {
         private Integer socketTimeout;
         private Integer threadsAllowedToBlockForConnectionMultiplier;
 
+        // callback
+        private Boolean callback;
+
+        // mq_message
+        public Boolean message;
+
     }
 
     private List<SyncDbConfig> dbList;
@@ -77,17 +87,21 @@ public class MultiDatasourceConfig {
      *
      * @return
      */
-    public List<String> listDatabases(){
+    public List<String> listDatabases(String type) {
 
         List<String> list = null;
 
-        if(CollectionUtils.isNotEmpty(dbList)){
+        if (CollectionUtils.isNotEmpty(dbList)) {
 
             list = new ArrayList<>(dbList.size());
 
-            for (SyncDbConfig syncDbConfig : dbList) {
+            if (StringUtils.equalsIgnoreCase("callback", type)) {
 
-                list.add(syncDbConfig.getDbname());
+                return dbList.stream().filter(e -> BooleanUtils.isTrue(e.getCallback())).map(SyncDbConfig::getDbname).collect(Collectors.toList());
+
+            } else if (StringUtils.equalsIgnoreCase("message", type)) {
+
+                return dbList.stream().filter(e -> BooleanUtils.isTrue(e.getMessage())).map(SyncDbConfig::getDbname).collect(Collectors.toList());
             }
         }
 

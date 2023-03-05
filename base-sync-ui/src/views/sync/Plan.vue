@@ -79,8 +79,8 @@
                     width="80"
                     label="启用状态">
                 <template slot-scope="scope">
-                    <el-tag v-if="scope.row.status==='normal'" type="success" size="small">启用</el-tag>
-                    <el-tag v-else type="danger" size="small">禁用</el-tag>
+                    <span v-if="scope.row.status==='normal'"  style="color: green">启用</span>
+                    <span v-else type="danger" size="small" style="color: #f40">禁用</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -365,8 +365,8 @@
 
             },
             addCancel() {
-                this.$refs["editForm"].resetFields();
-                this.editVisible = false;
+                this.$refs["addForm"].resetFields();
+                this.addVisible = false;
             },
             lookContent(uuid) {
 

@@ -32,7 +32,7 @@ public class RocketMqOrderListener implements MessageListenerOrderly {
     @Override
     public ConsumeOrderlyStatus consumeMessage(List<MessageExt> messageExtList, ConsumeOrderlyContext context) {
 
-        int retryTimeLimit = 8;
+        int retryTimeLimit = 16;
 
         String redisKey = SYNC_ORDER_MSG_ID + messageExtList.get(0).getMsgId();
 

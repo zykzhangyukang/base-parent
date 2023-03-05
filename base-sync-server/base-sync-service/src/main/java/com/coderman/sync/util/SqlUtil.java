@@ -54,7 +54,7 @@ public class SqlUtil {
             }
 
             StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < sqlArray.length; i++) {
+            for (int i = 0; i < sqlArray.length -1; i++) {
 
 
                 if (params.get(i) instanceof String && (!((String) params.get(i)).startsWith("{") || SqlUtil.isMsgContent((String) params.get(i)))) {

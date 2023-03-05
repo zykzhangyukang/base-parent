@@ -20,6 +20,7 @@ import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.TaskResult;
+import com.coderman.sync.util.SqlUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
@@ -271,6 +272,9 @@ public class SyncDataTask extends AbstractTask {
             }
 
             executor.sql(sqlMeta);
+
+            sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
+
         }
 
         // 回调记录
@@ -279,6 +283,8 @@ public class SyncDataTask extends AbstractTask {
             SqlMeta sqlMeta = this.insertCallbackRecord(syncTask, destDb, dbType, syncTask.getPlanMeta().getCallbackMetas());
 
             executor.sql(sqlMeta);
+
+            sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
         }
 
     }

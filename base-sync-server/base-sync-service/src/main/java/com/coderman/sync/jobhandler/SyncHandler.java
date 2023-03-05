@@ -36,7 +36,7 @@ public class SyncHandler extends IJobHandler {
     public ReturnT<String> execute(String param) {
 
 
-        List<String> databases = multiDatasourceConfig.listDatabases();
+        List<String> databases = multiDatasourceConfig.listDatabases("message");
 
         for (String dbName : databases) {
 

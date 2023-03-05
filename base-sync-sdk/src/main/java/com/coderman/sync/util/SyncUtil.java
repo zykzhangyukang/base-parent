@@ -423,6 +423,12 @@ public class SyncUtil {
 
 
         builder.append("],");
+
+        if(StringUtils.isNotBlank(planMsg.getOrderlyMsgKey())){
+
+            builder.append("\"orderlyMsgKey\":\"").append(planMsg.getOrderlyMsgKey()).append("\",");
+        }
+
         builder.append("\"createTime\":\"").append(createTime).append("\",");
         builder.append("\"src\":\"").append(System.getProperty("domain")).append("\",");
         builder.append("\"msgId\":\"").append(msgId).append("\"}");

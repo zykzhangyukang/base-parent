@@ -224,7 +224,7 @@ public class SyncTask {
 
         } catch (Throwable e) {
 
-            log.error("同步数据出错,msgContent->" + this.resultModel.getMsgContent() + "\n,exception->" + e);
+            log.error("同步数据出错,msgContent->" + this.resultModel.getMsgContent() + "\n,exception->" + e,e);
             this.resultModel.setErrorMsg(e.getMessage());
 
             // 插入同步记录

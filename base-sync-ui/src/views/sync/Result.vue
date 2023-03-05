@@ -279,21 +279,12 @@
                     srcProject: '',
                     destProject: '',
                 },
-                createTimeRange: [new Date(new Date().toLocaleDateString()),new Date()],
+                createTimeRange: [],
                 total: 0,
                 pageSize: 16,
                 currentPage: 1,
                 pickerOptions: {
-                    shortcuts: [
-                        {
-                        text: '最近5分钟',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 1000 * 60 * 5);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, {
+                    shortcuts: [{
                         text: '最近一天',
                         onClick(picker) {
                             const end = new Date();
@@ -347,7 +338,7 @@
                 this.$refs["searchForm"].resetFields();
                 this.currentPage = 1;
                 this.uuid = '';
-                this.createTimeRange = [new Date(new Date().toLocaleDateString()),new Date()];
+                // this.createTimeRange = [new Date(new Date().toLocaleDateString()),new Date()];
                 this.getData();
             },
             getData() {

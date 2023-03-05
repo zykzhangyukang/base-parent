@@ -43,7 +43,7 @@ public abstract class AbstractExecutor {
         if(SyncConstant.DB_TYPE_MONGO.equals(dbType)){
 
             executor = new MongoExecutor();
-            Object obj = SpringContextUtil.getBean(dbName + "_mongoTempate");
+            Object obj = SpringContextUtil.getBean(dbName + "_mongoTemplate");
 
             if(null == obj){
 

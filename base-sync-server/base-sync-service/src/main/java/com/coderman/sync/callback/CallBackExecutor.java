@@ -12,6 +12,7 @@ import com.coderman.sync.sql.SelectBuilder;
 import com.coderman.sync.sql.UpdateBuilder;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
+import com.coderman.sync.util.SqlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -392,6 +393,8 @@ public class CallBackExecutor {
 
         executor.sql(sqlMeta);
 
+
+
         executor.execute();
 
     }
@@ -425,6 +428,8 @@ public class CallBackExecutor {
             sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_SELECT);
 
             executor.sql(sqlMeta);
+
+            sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
 
             List<SqlMeta> sqlMetaList = executor.execute();
 
@@ -472,6 +477,8 @@ public class CallBackExecutor {
         sqlMeta.setSqlType(SyncConstant.OPERATE_TYPE_UPDATE);
 
         executor.sql(sqlMeta);
+
+        sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
 
         List<SqlMeta> metaList = executor.execute();
 

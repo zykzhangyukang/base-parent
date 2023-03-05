@@ -61,7 +61,7 @@ public class ListenerConfig {
         mqPushConsumer.setNamesrvAddr(namesrvAddr);
         mqPushConsumer.setConsumerGroup(consumerOrderGroup);
         mqPushConsumer.subscribe(orderTopic, "*");
-        mqPushConsumer.setMessageListener(rocketMqListener);
+        mqPushConsumer.setMessageListener(rocketMqOrderListener);
         mqPushConsumer.setConsumeThreadMin(consumeThreadMin);
         mqPushConsumer.setConsumeThreadMax(consumeThreadMax);
         return mqPushConsumer;

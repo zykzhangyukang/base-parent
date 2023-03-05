@@ -31,6 +31,7 @@ public class DbConfigBuilder {
         for (MultiDatasourceConfig.SyncDbConfig datasource : dbList) {
 
             String url = datasource.getUrl();
+            String type = datasource.getType();
 
             if (StringUtils.startsWith(url, "jdbc:mysql")) {
 
@@ -50,7 +51,7 @@ public class DbConfigBuilder {
 
                 configList.add(getOracleDbConfig(datasource));
 
-            } else if (StringUtils.equalsIgnoreCase(url, ",mongo")) {
+            } else if (StringUtils.equalsIgnoreCase(type, "mongo")) {
 
                 configList.add(getMongoConfig(datasource));
 
@@ -64,11 +65,10 @@ public class DbConfigBuilder {
     private static MongoConfig getMongoConfig(MultiDatasourceConfig.SyncDbConfig syncDbConfig ) {
 
         // mongo 配置
-        String key = syncDbConfig.getDbname();
+        String dbname = syncDbConfig.getDbname();
         String url = syncDbConfig.getUrl();
         String username = syncDbConfig.getUsername();
         String password = syncDbConfig.getPassword();
-        String db = syncDbConfig.getDb();
         Integer connectionsPerHost = syncDbConfig.getConnectionsPerHost();
         Integer maxWaitTime = syncDbConfig.getMaxWaitTime();
         Integer connectTimeout = syncDbConfig.getConnectTimeout();
@@ -79,16 +79,16 @@ public class DbConfigBuilder {
 
 
         // 跳过sync的配置
-        if(StringUtils.equalsIgnoreCase("sync",key)){
+        if(StringUtils.equalsIgnoreCase("sync",dbname)){
             return null;
         }
 
         MongoConfig mongoConfig = new MongoConfig();
-        mongoConfig.setBeanId(key);
+        mongoConfig.setBeanId(dbname);
         mongoConfig.setUrl(url);
         mongoConfig.setUserName(username);
         mongoConfig.setPassword(password);
-        mongoConfig.setDb(db);
+        mongoConfig.setDb(dbname);
         mongoConfig.setConnectionsPerHost(connectionsPerHost);
         mongoConfig.setConnectTimeout(connectTimeout);
         mongoConfig.setMaxWaitTime(maxWaitTime);

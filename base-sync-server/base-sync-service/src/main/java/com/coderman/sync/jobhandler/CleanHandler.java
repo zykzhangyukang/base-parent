@@ -6,6 +6,7 @@ import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.executor.AbstractExecutor;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
+import com.coderman.sync.util.SqlUtil;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
@@ -18,9 +19,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @JobHandler(value = "cleanHandler")
 @Component
@@ -36,9 +35,16 @@ public class CleanHandler extends IJobHandler {
 
         Date ltTime = DateUtils.addMinutes(new Date(), -5);
 
-        List<String> databases = datasourceConfig.listDatabases();
+        Set<String> databaseSets = new HashSet<>();
 
-        for (String dbname : databases) {
+        List<String> messageDatabases = datasourceConfig.listDatabases("message");
+        List<String> callbackDatabases = datasourceConfig.listDatabases("callback");
+
+        databaseSets.addAll(messageDatabases);
+        databaseSets.addAll(callbackDatabases);
+
+
+        for (String dbname : databaseSets) {
 
             try {
 
@@ -53,45 +59,52 @@ public class CleanHandler extends IJobHandler {
 
                 List<Object> paramList = new ArrayList<>();
 
-                // 封装参数
-                if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
+                if (messageDatabases.contains(dbname)) {
 
-                    batchDelSql = "delete from pub_mq_message where deal_status='success' and create_time <? limit ?;";
-                    paramList.add(ltTime);
-                    paramList.add(10000);
+                    // 封装参数
+                    if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
 
-                } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+                        batchDelSql = "delete from pub_mq_message where deal_status='success' and create_time <? limit ?;";
+                        paramList.add(ltTime);
+                        paramList.add(10000);
 
-                    batchDelSql = "delete from pub_mq_message where mq_message_id in (select top " + 10000 + " mq_message_id from pub_mq_message where deal_status = 'success' and create_time <?)";
-                    paramList.add(ltTime);
+                    } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+
+                        batchDelSql = "delete from pub_mq_message where mq_message_id in (select top " + 10000 + " mq_message_id from pub_mq_message where deal_status = 'success' and create_time <?)";
+                        paramList.add(ltTime);
+                    }
+
+                    this.deleteLoop(dbname, batchDelSql, paramList);
                 }
-
-                this.deleteLoop(dbname, batchDelSql, paramList);
 
 
                 /******************************** 删除回调消息表冗余数据 ********************************/
 
                 paramList.clear();
-                if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
 
-                    batchDelSql = "delete from pub_callback where status='success' and create_time < ? limit ?;";
-                    paramList.add(ltTime);
-                    paramList.add(10000);
+                if (callbackDatabases.contains(dbname)) {
 
-                } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+                    if (SyncConstant.DB_TYPE_MYSQL.equalsIgnoreCase(dbType)) {
 
-                    batchDelSql = "delete from pub_callback where callback_id in (select top " + 10000 + " callback_id from pub_callback where status = 'success' and create_time <?)";
-                    paramList.add(ltTime);
+                        batchDelSql = "delete from pub_callback where status='success' and create_time < ? limit ?;";
+                        paramList.add(ltTime);
+                        paramList.add(10000);
+
+                    } else if (SyncConstant.DB_TYPE_MSSQL.equalsIgnoreCase(dbType)) {
+
+                        batchDelSql = "delete from pub_callback where callback_id in (select top " + 10000 + " callback_id from pub_callback where status = 'success' and create_time <?)";
+                        paramList.add(ltTime);
+                    }
+
+                    this.deleteLoop(dbname, batchDelSql, paramList);
                 }
-
-                this.deleteLoop(dbname, batchDelSql, paramList);
 
 
             } catch (Exception e) {
 
-                XxlJobLogger.log("清除冗余数据失败:" + dbname +",msg:"+e.getMessage());
+                XxlJobLogger.log("清除冗余数据失败:" + dbname + ",msg:" + e.getMessage());
 
-                log.error("清除冗余数据失败:{}",e.getMessage(),e);
+                log.error("清除冗余数据失败:{}", e.getMessage(), e);
             }
 
         }
@@ -124,6 +137,8 @@ public class CleanHandler extends IJobHandler {
 
 
             executor.sql(sqlMeta);
+
+            sqlMeta.setSql(SqlUtil.fillParam(sqlMeta,executor));
 
             List<SqlMeta> resultList = executor.execute();
 

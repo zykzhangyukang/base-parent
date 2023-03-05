@@ -5,9 +5,8 @@ spring:
       password: DES@2120FA78BC6EB99B019C119BD8067DB0
       url: jdbc:mysql://localhost:3306/base_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
-    host: 116.205.181.9
+    host: 127.0.0.1
     port: 6379
-    password: DES@2120FA78BC6EB99B019C119BD8067DB0
     jedis:
       pool:
         max-active: 8
@@ -26,7 +25,7 @@ sync:
   # es 配置
   elasticsearch:
     cluster-name: sync_es_cluster
-    hosts: 116.205.181.9:9200
+    hosts: 127.0.0.1:9200
     scheme: http
     connect-time-out: 5000
     socket-time-out: 60000
@@ -35,7 +34,7 @@ sync:
     max-connect-num-per-route: 100
   # rocketmq配置
   rocketmq:
-    namesrv-addr: 116.205.181.9:9876
+    namesrv-addr: 127.0.0.1:9876
     instance-name: SyncServer
     consumer-group: SyncConsumer
     consumer-order-group: SyncOrderConsumer
@@ -68,11 +67,30 @@ sync:
         url: jdbc:mysql://localhost:3306/datasource1?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
         password: DES@2120FA78BC6EB99B019C119BD8067DB0
+        callback: true
+        message: true
 
       - dbname: datasource2
         url: jdbc:mysql://localhost:3306/datasource2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
         password: DES@2120FA78BC6EB99B019C119BD8067DB0
+        callback: true
+        message: true
+
+      - dbname:  ecp_cart_dev
+        url: 127.0.0.1:27017
+        connectionsPerHost: 50
+        connectTimeout: 1000
+        type: mongo
+        maxWaitTime: 1500
+        serverSelectionTimeout: 10000
+        socketKeepAlive: true
+        socketTimeout: 600000
+        threadsAllowedToBlockForConnectionMultiplier: 20
+        username: root
+        password:  DES@2120FA78BC6EB99B019C119BD8067DB0
+
+
 
 logging:
   level:

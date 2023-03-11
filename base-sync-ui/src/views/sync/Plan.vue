@@ -98,8 +98,8 @@
                     label="操作"
                     width="150">
                 <template slot-scope="scope">
-                    <el-button @click="del(scope.row.uuid)" type="text" size="small"><i class="el-icon-delete"></i>&nbsp;删除</el-button>
-                    <el-button @click="openEdit(scope.row.uuid)" type="text" size="small"><i class="el-icon-edit"></i>&nbsp;编辑</el-button>
+                    <el-button @click="del(scope.row.uuid)" type="text" size="mini"><i class="el-icon-delete"></i>&nbsp;删除</el-button>
+                    <el-button @click="openEdit(scope.row.uuid)" type="text" size="mini"><i class="el-icon-edit"></i>&nbsp;编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>

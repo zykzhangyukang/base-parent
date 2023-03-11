@@ -128,10 +128,14 @@
 
             <el-table-column
                     prop="status"
-                    width="100px"
+                    width="80px"
                     label="同步结果">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status==='success'" style="color:#67C23A">成功  ({{(new Date(scope.row.syncTime).getTime() - new Date(scope.row.msgCreateTime)) / 1000 }})</span>
+                    <span v-if="scope.row.status==='success'" style="color:#67C23A;cursor: pointer">
+                        <el-tooltip class="item" effect="light" :content="'同步耗时:'+(new Date(scope.row.syncTime).getTime() - new Date(scope.row.msgCreateTime)) / 1000 +' s'" placement="top">
+                          <span>成功</span>
+                        </el-tooltip>
+                    </span>
                     <span v-else style="color: red;cursor: pointer">
                        <el-tooltip effect="light" popper-class="tooltip-width" :content="scope.row.errorMsg"
                                    placement="top">
@@ -209,46 +213,35 @@
 
         <!-- 校验数据 -->
         <el-dialog
-                title="校验数据"
                 :visible.sync="validVisible"
         >
 
-            <el-table size="mini" v-for="(item,index) in validTables"
-                      :data="[item]"
-                      :key="index"
-                    style="width: 100%"
-            >
-
-                <el-table-column  align="center" :label="item.srcTable + '->' + item.destTable">
-                    <el-table-column
-                            align="center"
-                            prop="province"
-                            width="200px"
-                            label="数据库字段"
-                    >
-                        <template slot-scope="{ row }">
-
-                            <el-row :gutter="20">
-                                <el-col :span="24">  <p  size="mini" v-for="(i,ix) in  item.srcColumnList" >{{i +'->' +item.destColumnList[ix] }}</p></el-col>
-                            </el-row>
-
-                        </template>
-
-                    </el-table-column>
-                    <el-table-column
-                            align="center"
-                            prop="city"
-                            label="数据库值"
-                    >
-                        <template slot-scope="{ row }">
-
-                            <el-col :span="24">   <p  size="mini" v-for="(i,ix) in  item.destResultList" >{{i + '->' + item.destResultList[ix]}}</p></el-col>
-
-                        </template>
-
-                    </el-table-column>
-                </el-table-column>
-            </el-table>
+            <div class="content-wrap">
+                <p v-if="validTables.length !==0">共有<b class="red">{{count}}</b>个字段不一致</p>
+                <table cellpadding="0" v-for="(item,index) in validTables" :key="index">
+                    <thead>
+                        <tr>
+                            <th colspan="2" align="center">{{item.srcTable +'->' + item.destTable}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td align="center">字段</td>
+                            <td align="center">值</td>
+                        </tr>
+                        {{item.srcCloumnList}}
+                        <tr v-for="(items,indexs) in  item.srcColumnList" :key="indexs">
+                            <td colspan="1" align="center">
+                                {{items + '->' + item.destColumnList[indexs]}}
+                            </td>
+                            <td colspan="1" align="center" :class="{'red': item.srcResultList[indexs] !==item.destResultList[indexs]}">
+                                {{item.srcResultList[indexs] + ' -> '+item.destResultList[indexs]}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="isCenter" v-if="validTables.length === 0">暂无数据</div>
+            </div>
 
         </el-dialog>
 
@@ -262,6 +255,7 @@
         data() {
             return {
                 uuid: '',
+                count: 0,
                 validTables: [],
                 loading: true,
                 syncVisible: false,
@@ -338,8 +332,29 @@
                 this.$refs["searchForm"].resetFields();
                 this.currentPage = 1;
                 this.uuid = '';
-                // this.createTimeRange = [new Date(new Date().toLocaleDateString()),new Date()];
+                this.createTimeRange = [new Date(new Date().getTime() - 15 * 60 * 1000),new Date()];
                 this.getData();
+            },
+            formatDate(value, fmt) {
+                let getDate = new Date(value);
+                let o = {
+                    'M+': getDate.getMonth() + 1,
+                    'd+': getDate.getDate(),
+                    'h+': getDate.getHours(),
+                    'm+': getDate.getMinutes(),
+                    's+': getDate.getSeconds(),
+                    'q+': Math.floor((getDate.getMonth() + 3) / 3),
+                    'S': getDate.getMilliseconds()
+                };
+                if (/(y+)/.test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (getDate.getFullYear() + '').substr(4 - RegExp.$1.length))
+                }
+                for (let k in o) {
+                    if (new RegExp('(' + k + ')').test(fmt)) {
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    }
+                }
+                return fmt;
             },
             getData() {
                 this.uuid = '';
@@ -350,8 +365,8 @@
                 })
                 params.page = this.currentPage;
                 params.limit = this.pageSize;
-                params.startTime = this.createTimeRange[0];
-                params.endTime = this.createTimeRange[1];
+                params.startTime = this.formatDate(this.createTimeRange[0],"yyyy-MM-dd hh:mm:ss");
+                params.endTime = this.formatDate(this.createTimeRange[1],"yyyy-MM-dd hh:mm:ss")
 
                 this.$sendAjax.doGet('/sync/result/search', {params}).then((data) => {
                     this.dataList = data.result.dataList;
@@ -407,9 +422,18 @@
 
                 this.$sendAjax.doPost('/sync/result/valid/data',{msgContent: row.msgContent},{ emulateJSON: true }).then(({result:res})=>{
 
-                    console.log(res)
                     this.validVisible = true;
                     this.validTables = res;
+
+                    let c = 0;
+                    this.validTables.forEach((item,index)=>{
+                        item.srcResultList.forEach((item,ind)=>{
+                            if(item!==this.validTables[index].destResultList[ind]){
+                                c +=1;
+                            }
+                        })
+                    })
+                    this.count = c;
 
                 }).finally(()=>{
 
@@ -459,6 +483,7 @@
             },
         },
         created() {
+            this.createTimeRange = [new Date(new Date().getTime() - 15 * 60 * 1000),new Date()];
             this.getData();
         }
     }
@@ -492,5 +517,34 @@
 
     .showContent {
         font-family: "Ubuntu Mono", serif !important;
+    }
+
+    .red{
+        color: #ff4400;
+    }
+    .content-wrap{
+        max-height: 400px;
+        overflow: auto;
+    }
+    .content-wrap >p{
+        margin-top: 0;
+    }
+    .content-wrap table{
+        width: 100%;
+        border-left: 1px solid #EBEEF5;
+    }
+    .content-wrap th{
+        background-color: #EBEEF5;
+        border-right: 1px solid #EBEEF5;
+        border-bottom: 1px solid #EBEEF5;
+        height: 40px;
+    }
+    .content-wrap td{
+        border-right: 1px solid #EBEEF5;
+        border-bottom: 1px solid #EBEEF5;
+        height: 40px;
+    }
+    .isCenter{
+        text-align: center;
     }
 </style>

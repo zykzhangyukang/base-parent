@@ -90,3 +90,6 @@ select count(1) c from db1_user;
 use datasource2;
 -- end --
 select count(1) c from db2_user;
+
+-- end --
+select count(1) from db3_user;

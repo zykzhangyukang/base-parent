@@ -34,7 +34,7 @@ sync:
     max-connect-num-per-route: 100
   # rocketmq配置
   rocketmq:
-    namesrv-addr: 127.0.0.1:9876
+    namesrv-addr: 103.133.179.32:9876
     instance-name: SyncServer
     consumer-group: SyncConsumer
     consumer-order-group: SyncOrderConsumer

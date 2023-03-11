@@ -91,9 +91,9 @@ public class SyncDataTask extends AbstractTask {
                 effectList.add(sqlMeta.getAffectNum());
             }
 
-            String sql = "\"sql\"[" + StringUtils.join(sqlList, ",") + "]";
+            String sql = "\"sql\":[" + StringUtils.join(sqlList, ",") + "]";
 
-            syncContent = "{" + sql + ",\"影响条数\"[" + StringUtils.join(effectList, ",") + "]}";
+            syncContent = "{" + sql + ",\"影响条数\":[" + StringUtils.join(effectList, ",") + "]}";
 
         } else {
 

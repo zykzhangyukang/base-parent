@@ -35,6 +35,22 @@ public class SyncHandler extends IJobHandler {
     @Override
     public ReturnT<String> execute(String param) {
 
+        // 将 前20分钟 - 前5分钟的消息重新投递到mq
+        int begin = -20;
+        int end = -5;
+
+        try {
+
+            if(StringUtils.isNotBlank(param) && StringUtils.contains(param,"#")){
+                begin = Integer.parseInt(param.split("#")[0]);
+                end = Integer.parseInt(param.split("#")[1]);
+            }
+
+        }catch (Exception e){
+            log.error("error parse use default:{},begin:{},end:{}",e.getMessage(),begin,end);
+        }
+
+        XxlJobLogger.log("前"+Math.abs(begin)+"分钟 - 前"+Math.abs(end)+"分钟的消息重新投递到mq");
 
         List<String> databases = multiDatasourceConfig.listDatabases("message");
 
@@ -45,7 +61,7 @@ public class SyncHandler extends IJobHandler {
             String sql = "select mq_message_id from pub_mq_message where send_status in ('sending','wait') and create_time < ?";
 
             // 1. 查询5分钟前处于发送中或者待发送的记录
-            List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, DateUtils.addMinutes(new Date(), -5));
+            List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, DateUtils.addMinutes(new Date(), end));
 
             StringBuilder sb = new StringBuilder();
 
@@ -84,8 +100,8 @@ public class SyncHandler extends IJobHandler {
             sql = "select msg_content from pub_mq_message where deal_count < ? and create_time > ? and create_time < ? and send_status = 'fail' and deal_status in ('wait','fail')";
 
             int retry = 5;
-            Date startTime = DateUtils.addMinutes(new Date(), -20);
-            Date endTime = DateUtils.addMinutes(new Date(), -5);
+            Date startTime = DateUtils.addMinutes(new Date(), begin);
+            Date endTime = DateUtils.addMinutes(new Date(), end);
 
             List<Map<String, Object>> resList = jdbcTemplate.queryForList(sql, retry, startTime, endTime);
 

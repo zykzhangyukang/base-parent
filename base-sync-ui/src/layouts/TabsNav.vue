@@ -68,6 +68,9 @@
                     this.refreshTabs();
                 }
             },
+        },
+        created(){
+
         }
     }
 </script>

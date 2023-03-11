@@ -1,6 +1,13 @@
 <template>
     <el-container class="wrapper" :class="{'folded':folded}">
         <el-aside class="left" width="200px">
+            <div style="text-align: center;margin: 10px 0">
+                <el-switch
+                        v-model="folded"
+                >
+                </el-switch>
+            </div>
+            <el-divider></el-divider>
             <el-menu
                     :open="1"
                     :collapse="folded"
@@ -11,7 +18,7 @@
             >
                 <el-submenu index="1">
                     <template slot="title">
-                        <i class="el-icon-location"></i>
+                        <i class="el-icon-folder-opened"></i>
                         <span slot="title">同步系统</span>
                     </template>
                     <el-menu-item-group>
@@ -153,5 +160,13 @@
 
     .folded .folded-btn {
         width: 60px
+    }
+
+    .el-menu-item-group__title{
+        display: none!important;
+    }
+    .el-divider--horizontal{
+        margin: 20px 0 0 1px !important;
+        background-color: #666666;
     }
 </style>

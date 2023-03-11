@@ -24,8 +24,8 @@ job:
 sync:
   # es 配置
   elasticsearch:
-    cluster-name: sync_es_cluster
-    hosts: 127.0.0.1:9200
+    cluster-name: sync
+    hosts: 103.133.179.32:9200
     scheme: http
     connect-time-out: 5000
     socket-time-out: 60000
@@ -76,6 +76,11 @@ sync:
         password: DES@2120FA78BC6EB99B019C119BD8067DB0
         callback: true
         message: true
+
+      - dbname: datasource3
+        url: jdbc:mysql://localhost:3306/datasource3?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
       - dbname:  ecp_cart_dev
         url: 127.0.0.1:27017

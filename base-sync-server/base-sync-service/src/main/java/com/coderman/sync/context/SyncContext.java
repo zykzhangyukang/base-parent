@@ -277,4 +277,8 @@ public class SyncContext {
 
         return syncTask;
     }
+
+    public String getDbByProject(String srcProject) {
+        return this.projectDbMap.get(srcProject);
+    }
 }

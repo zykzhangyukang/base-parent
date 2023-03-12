@@ -1,19 +1,22 @@
 <template>
 
     <div class="plan">
-
         <!-- 搜索区域 -->
         <el-form size="small" :inline="true" :model="searchForm" ref="searchForm">
+
             <el-form-item label="计划编号" prop="planCode">
                 <el-input v-model="searchForm.planCode" placeholder="计划编号"></el-input>
             </el-form-item>
+
             <el-form-item label="计划状态" prop="status">
-                <el-select @change="getData" v-model="searchForm.status" placeholder="计划状态">
+                <el-select v-model="searchForm.status" placeholder="计划状态" class="w150">
                     <el-option label="全部" value=""></el-option>
-                    <el-option label="启用" value="normal"></el-option>
-                    <el-option label="禁用" value="forbid"></el-option>
+                    <el-option v-for="item in planStatusG" :label="planStatusGName[item.code]" :value="item.code" :key="item.code">
+                    </el-option>
                 </el-select>
             </el-form-item>
+
+            <br/>
             <el-form-item>
                 <el-button type="primary"  @click="getData" icon="el-icon-search">查询</el-button>
                 <el-button type="warning"  @click="reset" icon="el-icon-refresh">重置</el-button>
@@ -42,6 +45,7 @@
                     prop="planCode"
                     label="计划编号"
                     width="300px"
+                    align="center"
                    >
                 <template slot-scope="scope">
                     <span class="planCode" :underline="false" type="primary"
@@ -52,45 +56,58 @@
             <el-table-column
                     prop="description"
                     label="计划名称"
-
+                    align="center"
                     >
             </el-table-column>
             <el-table-column
                     prop="srcDb"
                     label="源数据库"
+                    align="center"
                     >
             </el-table-column>
             <el-table-column
                     prop="destDb"
                     label="目标数据库"
+                    align="center"
                     >
             </el-table-column>
             <el-table-column
                     prop="srcProject"
                     label="源系统"
+                    align="center"
                     >
+                <template slot-scope="scope">
+                    {{srcProjectGName[scope.row.srcProject]}}
+                </template>
             </el-table-column>
             <el-table-column
                     prop="destProject"
                     label="目标系统"
+                    align="center"
                     >
+                <template slot-scope="scope">
+                    {{destProjectGName[scope.row.destProject]}}
+                </template>
             </el-table-column>
             <el-table-column
                     width="80"
+                    align="center"
                     label="启用状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status==='normal'"  style="color: green">启用</span>
-                    <span v-else type="danger" size="small" style="color: #f40">禁用</span>
+                    <span v-if="scope.row.status==='normal'"  style="color: green">{{planStatusGName[scope.row.status]}}</span>
+                    <span v-else type="danger" size="small" style="color: #f40">{{planStatusGName[scope.row.status]}}</span>
                 </template>
             </el-table-column>
             <el-table-column
                     width="150"
                     prop="createTime"
+                    align="center"
                     label="创建时间">
             </el-table-column>
             <el-table-column
                     width="150"
                     prop="updateTime"
+                    align="center"
                     label="更新时间">
             </el-table-column>
             <el-table-column
@@ -172,6 +189,7 @@
 </template>
 
 <script>
+    import constant from "@/util/constant";
     export default {
         name: "Plan.vue",
         data() {
@@ -202,6 +220,26 @@
                     ]
                 }
             }
+        },
+        computed: {
+            planStatusG() {
+                return constant.methods.getConst('plan_status');
+            },
+            planStatusGName(){
+                return constant.methods.formatConst(this.planStatusG);
+            },
+            srcProjectG() {
+                return constant.methods.getConst('src_project');
+            },
+            srcProjectGName(){
+                return constant.methods.formatConst(this.srcProjectG);
+            },
+            destProjectG() {
+                return constant.methods.getConst("dest_project");
+            },
+            destProjectGName(){
+                return constant.methods.formatConst(this.destProjectG);
+            },
         },
         methods: {
             reset() {

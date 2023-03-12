@@ -17,6 +17,16 @@
       window.addEventListener("beforeunload",()=>{
         sessionStorage.setItem("store",JSON.stringify(this.$store.state))
       })
+
+      // 加载常量
+      this.getAllConst();
+    },
+    methods:{
+      getAllConst() {
+        this.$sendAjax.doGet('/sync/const/list').then((data) => {
+          this.$store.commit('saveAllConst', data.result);
+        })
+      },
     }
   }
 </script>

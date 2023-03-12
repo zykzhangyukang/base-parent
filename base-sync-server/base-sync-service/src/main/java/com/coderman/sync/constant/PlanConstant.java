@@ -1,7 +1,9 @@
 package com.coderman.sync.constant;
 
 import com.coderman.api.anntation.ConstList;
+import com.coderman.api.anntation.Constant;
 
+@Constant(allowedConflict = false)
 public interface PlanConstant {
 
     /**
@@ -28,15 +30,7 @@ public interface PlanConstant {
     public static String RESULT_STATUS_FAIL = "fail";
 
 
-    /**
-     * 消息来源
-     */
-    @ConstList(group = "msg_source",name = "MQ")
-    public static final String MSG_ROCKET_MQ = "rocket_mq";
-    @ConstList(group = "msg_source",name = "定时器补偿")
-    public static final String MSG_SOURCE_JOB = "job";
-    @ConstList(group = "msg_source",name = "手动同步")
-    public static final String MSG_SOURCE_HANDLE = "handle";
+
 
 
     /**

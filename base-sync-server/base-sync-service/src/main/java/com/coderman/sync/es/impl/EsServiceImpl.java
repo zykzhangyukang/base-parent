@@ -16,6 +16,7 @@ import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -30,6 +31,7 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
@@ -136,7 +138,11 @@ public class EsServiceImpl implements EsService {
                                 "ctx._source.remark = '" + remark + "'", Collections.emptyMap())
         );
 
-        this.restHighLevelClient.updateByQuery(updateByQuery, RequestOptions.DEFAULT);
+        BulkByScrollResponse response = this.restHighLevelClient.updateByQuery(updateByQuery, RequestOptions.DEFAULT);
+        if(CollectionUtils.isNotEmpty(response.getBulkFailures())){
+
+            log.error("批量更新ES同步记录状态失败:{}",JSON.toJSONString(response.getBulkFailures()));
+        }
     }
 
     @Override
@@ -194,7 +200,7 @@ public class EsServiceImpl implements EsService {
             list.sort((o1, o2) -> (int) (o2 - o1));
 
             this.syncResultIndexName = "sync_result_" + list.get(0);
-            log.error("当前es工作索引为:{}", this.syncResultIndexName);
+            log.info("当前es工作索引为:{}", this.syncResultIndexName);
         }
     }
 

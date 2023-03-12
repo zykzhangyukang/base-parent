@@ -8,6 +8,7 @@ import com.xxl.job.core.handler.annotation.JobHandler;
 import com.xxl.job.core.log.XxlJobLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,14 +30,29 @@ public class ResultHandler extends IJobHandler {
     @Override
     public ReturnT<String> execute(String param) {
 
+        // 将 前20分钟 - 前5分钟的消息重新刷新到es
+        int begin = -20;
+        int end = -5;
+
+        try {
+
+            if(StringUtils.isNotBlank(param) && StringUtils.contains(param,"#")){
+                begin = Integer.parseInt(param.split("#")[0]);
+                end = Integer.parseInt(param.split("#")[1]);
+            }
+
+        }catch (Exception e){
+            log.error("es error parse use default:{},begin:{},end:{}",e.getMessage(),begin,end);
+        }
+
         StopWatch stopWatch = new StopWatch();
 
         stopWatch.start("刷新同步记录到ES");
 
         Date now = new Date();
 
-        Date endTime = DateUtils.addMinutes(now, -5);
-        Date startTime = DateUtils.addMinutes(now, -20);
+        Date endTime = DateUtils.addMinutes(now, end);
+        Date startTime = DateUtils.addMinutes(now, begin);
 
         final String sql = "select uuid,plan_uuid,plan_code,plan_name,msg_src" +
                 ",mq_id,msg_id,msg_content,src_project,dest_project,sync_content,msg_create_time,sync_time" +

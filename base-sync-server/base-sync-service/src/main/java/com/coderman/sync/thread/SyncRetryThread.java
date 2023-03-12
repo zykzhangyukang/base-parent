@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
@@ -124,12 +123,11 @@ public class SyncRetryThread {
 
                 JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
 
-                jdbcTemplate.update("update pub_sync_result set status=?,remark=?,sync_to_es=? where msg_id=?", preparedStatement -> {
+                jdbcTemplate.update("update pub_sync_result set status=?,remark=? where msg_id=?", preparedStatement -> {
 
                     preparedStatement.setString(1, PlanConstant.RESULT_STATUS_SUCCESS);
                     preparedStatement.setString(2, remark);
-                    preparedStatement.setBoolean(3, false);  // 这里要重新同步es
-                    preparedStatement.setString(4, resultModel.getMsgId());
+                    preparedStatement.setString(3, resultModel.getMsgId());
                 });
 
                 this.changeSyncResult(resultModel);
@@ -152,7 +150,7 @@ public class SyncRetryThread {
 
         try {
 
-            SyncTask syncTask = SyncContext.getContext().buildSyncTask(resultModel.getMsgContent(), StringUtils.EMPTY, PlanConstant.MSG_SOURCE_HANDLE, 0);
+            SyncTask syncTask = SyncContext.getContext().buildSyncTask(resultModel.getMsgContent(), StringUtils.EMPTY, SyncConstant.MSG_SOURCE_HANDLE, 0);
 
             WriteBackTask writeBackTask = WriteBackTask.build(syncTask);
 

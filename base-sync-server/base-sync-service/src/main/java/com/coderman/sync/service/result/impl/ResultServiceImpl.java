@@ -1,8 +1,6 @@
 package com.coderman.sync.service.result.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.CommonConstant;
-import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.service.anntation.LogError;
@@ -29,7 +27,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -116,12 +113,12 @@ public class ResultServiceImpl implements ResultService {
 
         if (StringUtils.isNotBlank(queryVO.getSrcProject())) {
 
-            queryBuilder.must(QueryBuilders.termQuery("srcProject", queryVO.getSyncStatus()));
+            queryBuilder.must(QueryBuilders.termQuery("srcProject", queryVO.getSrcProject()));
         }
 
         if (StringUtils.isNotBlank(queryVO.getDestProject())) {
 
-            queryBuilder.must(QueryBuilders.termQuery("destProject", queryVO.getSyncStatus()));
+            queryBuilder.must(QueryBuilders.termQuery("destProject", queryVO.getDestProject()));
         }
 
         if (queryVO.getRepeatCount() != null) {
@@ -163,7 +160,7 @@ public class ResultServiceImpl implements ResultService {
 
         String msgContent = resultModel.getMsgContent();
 
-        SyncContext.getContext().syncData(msgContent, resultModel.getMqId(), PlanConstant.MSG_SOURCE_HANDLE, resultModel.getRepeatCount() + 1);
+        SyncContext.getContext().syncData(msgContent, resultModel.getMqId(), SyncConstant.MSG_SOURCE_HANDLE, resultModel.getRepeatCount() + 1);
 
         return ResultUtil.getSuccess();
     }
@@ -186,16 +183,11 @@ public class ResultServiceImpl implements ResultService {
             return ResultUtil.getWarn("同步记录不存在!");
         }
 
-        if (!StringUtils.equals(resultModel.getStatus(), PlanConstant.RESULT_STATUS_FAIL)) {
-
-            return ResultUtil.getWarn("请选择失败的记录进行标记!");
-        }
-
         this.esService.updateSyncResultSuccess(resultModel, "手动标记成功");
 
         if (StringUtils.isNotBlank(resultModel.getMsgContent())) {
 
-            SyncTask syncTask = SyncTask.build(resultModel.getMsgContent(), StringUtils.EMPTY, PlanConstant.MSG_SOURCE_HANDLE, 0);
+            SyncTask syncTask = SyncTask.build(resultModel.getMsgContent(), StringUtils.EMPTY, SyncConstant.MSG_SOURCE_HANDLE, 0);
 
             WriteBackTask writeBackTask = WriteBackTask.build(syncTask);
             writeBackTask.process();

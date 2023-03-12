@@ -1,6 +1,64 @@
 package com.coderman.sync.constant;
 
+import com.coderman.api.anntation.ConstList;
+import com.coderman.api.anntation.Constant;
+
+@Constant(allowedConflict = false)
 public interface SyncConstant {
+
+    /**
+     * 源系统
+     */
+    @ConstList(group = "src_project",name = "测试系统")
+    public static final String SRC_PROJECT_DEMO= "demo";
+
+    /**
+     * 目标系统
+     */
+    @ConstList(group = "dest_project",name = "采购系统")
+    public static final String DEST_PROJECT_PMS = "pms";
+    @ConstList(group = "dest_project",name = "仓储系统")
+    public static final String DEST_PROJECT_WMS= "wms";
+    @ConstList(group = "dest_project",name = "营销后台")
+    public static final String DEST_PROJECT_MMS = "mms";
+    @ConstList(group = "dest_project",name = "购物车")
+    public static final String DEST_PROJECT_CART = "cart";
+    @ConstList(group = "dest_project",name = "营销前台")
+    public static final String DEST_PROJECT_MARKET= "market";
+    @ConstList(group = "dest_project",name = "订单系统")
+    public static final String DEST_PROJECT_ORDER = "order";
+    @ConstList(group = "dest_project",name = "索引系统")
+    public static final String DEST_PROJECT_PIM = "pim";
+
+
+    /**
+     * 消息来源
+     */
+    @ConstList(group = "msg_source",name = "RocketMQ")
+    public static final String MSG_ROCKET_MQ = "rocket_mq";
+    @ConstList(group = "msg_source",name = "分区有序")
+    public static final String MSG_ROCKET_ORDER_MQ = "rocket_order_mq";
+    @ConstList(group = "msg_source",name = "定时器补偿")
+    public static final String MSG_SOURCE_JOB = "job";
+    @ConstList(group = "msg_source",name = "手动同步")
+    public static final String MSG_SOURCE_HANDLE = "handle";
+
+    /**
+     * 消息重试次数
+     */
+    @ConstList(group = "repeat_times",name = ">=1")
+    public static final Integer REPEAT_TIMES_1 = 1;
+    @ConstList(group = "repeat_times",name = ">=2")
+    public static final Integer REPEAT_TIMES_2 = 2;
+    @ConstList(group = "repeat_times",name = ">=3")
+    public static final Integer REPEAT_TIMES_3 = 3;
+    @ConstList(group = "repeat_times",name = ">=4")
+    public static final Integer REPEAT_TIMES_4 = 4;
+    @ConstList(group = "repeat_times",name = ">=5")
+    public static final Integer REPEAT_TIMES_5 = 5;
+    @ConstList(group = "repeat_times",name = ">=6")
+    public static final Integer REPEAT_TIMES_6= 6;
+
 
     // 数据库类型 mysql
     public static final String DB_TYPE_MYSQL = "mysql";
@@ -19,7 +77,9 @@ public interface SyncConstant {
     /**
      * 任务执行结果
      */
+    @ConstList(group = "sync_status",name = "成功")
     public static final String TASK_CODE_SUCCESS = "success";
+    @ConstList(group = "sync_status",name = "失败")
     public static final String TASK_CODE_FAIL = "fail";
 
     /**

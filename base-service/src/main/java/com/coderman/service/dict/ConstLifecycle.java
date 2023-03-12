@@ -12,6 +12,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -23,7 +24,7 @@ public class ConstLifecycle implements SmartLifecycle {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
 

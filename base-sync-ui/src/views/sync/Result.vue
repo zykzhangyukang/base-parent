@@ -6,11 +6,13 @@
 
             <el-form-item label="源系统" prop="srcProject">
                 <el-select v-model="searchForm.srcProject" placeholder="源系统" class="w150">
+                    <el-option v-for="item in srcProjectG" :label="srcProjectGName[item.code]" :value="item.code" :key="item.code"></el-option>
                 </el-select>
             </el-form-item>
 
             <el-form-item label="目标系统" prop="destProject">
                 <el-select v-model="searchForm.destProject" placeholder="目标系统" class="w150">
+                    <el-option v-for="item in destProjectG" :label="destProjectGName[item.code]" :value="item.code" :key="item.code"></el-option>
                 </el-select>
             </el-form-item>
 
@@ -32,27 +34,19 @@
             <el-form-item label="同步状态" prop="syncStatus">
                 <el-select v-model="searchForm.syncStatus" placeholder="计划状态" class="w150">
                     <el-option label="全部" value=""></el-option>
-                    <el-option label="成功" value="success"></el-option>
-                    <el-option label="失败" value="fail"></el-option>
+                    <el-option v-for="item in syncStatusG" :label="syncStatusGName[item.code]" :value="item.code" :key="item.code"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="重试次数" prop="repeatCount">
                 <el-select v-model="searchForm.repeatCount" class="w150" placeholder="重试次数">
                     <el-option label="全部" value=""></el-option>
-                    <el-option label=">=1" value="1"></el-option>
-                    <el-option label=">=2" value="2"></el-option>
-                    <el-option label=">=3" value="3"></el-option>
-                    <el-option label=">=4" value="4"></el-option>
-                    <el-option label=">=5" value="5"></el-option>
-                    <el-option label=">=6" value="6"></el-option>
+                    <el-option v-for="item in repeatTimesG" :label="repeatTimesGName[item.code]" :value="item.code" :key="item.code"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="消息来源" prop="msgSrc">
                 <el-select v-model="searchForm.msgSrc" class="w150" placeholder="消息来源">
                     <el-option label="全部" value=""></el-option>
-                    <el-option label="RocketMQ" value="rocket_mq"></el-option>
-                    <el-option label="手动同步" value="handle"></el-option>
-                    <el-option label="定时器同步" value="job"></el-option>
+                    <el-option v-for="item in msgSourceG" :label="msgSourceGName[item.code]" :value="item.code" :key="item.code"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="关键词" prop="keywords">
@@ -87,6 +81,7 @@
                     prop="planCode"
                     label="计划编号"
                     width="260px"
+                    align="center"
             >
                 <template slot-scope="scope">
                     <span class="planCode">{{ scope.row.planCode | ellipsis(35) }}</span>
@@ -96,7 +91,7 @@
                     prop="planName"
                     label="计划名称"
                     width="150px"
-
+                    align="center"
             >
                 <template slot-scope="scope">
                     <span>{{ scope.row.planName | ellipsis(20) }}</span>
@@ -107,39 +102,50 @@
                     prop="srcProject"
                     label="源系统"
                     width="120px"
+                    align="center"
             >
+                <template slot-scope="scope">
+                    {{srcProjectGName[scope.row.srcProject]}}
+                </template>
             </el-table-column>
             <el-table-column
                     prop="destProject"
                     label="目标系统"
                     width="120px"
+                    align="center"
             >
+                <template slot-scope="scope">
+                    {{destProjectGName[scope.row.destProject]}}
+                </template>
             </el-table-column>
             <el-table-column
                     prop="msgCreateTime"
                     width="150px"
+                    align="center"
                     label="创建时间">
             </el-table-column>
             <el-table-column
                     prop="syncTime"
                     width="150px"
+                    align="center"
                     label="同步时间">
             </el-table-column>
 
             <el-table-column
                     prop="status"
                     width="80px"
+                    align="center"
                     label="同步结果">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status==='success'" style="color:#67C23A;cursor: pointer">
                         <el-tooltip class="item" effect="light" :content="'同步耗时:'+(new Date(scope.row.syncTime).getTime() - new Date(scope.row.msgCreateTime)) / 1000 +' s'" placement="top">
-                          <span>成功</span>
+                          <span>{{syncStatusGName[scope.row.status]}}</span>
                         </el-tooltip>
                     </span>
                     <span v-else style="color: red;cursor: pointer">
                        <el-tooltip effect="light" popper-class="tooltip-width" :content="scope.row.errorMsg"
                                    placement="top">
-                          <span>失败</span>
+                          <span>{{syncStatusGName[scope.row.status]}}</span>
                         </el-tooltip>
                    </span>
                 </template>
@@ -148,18 +154,24 @@
             <el-table-column
                     prop="repeatCount"
                     width="80px"
+                    align="center"
                     label="重试次数">
             </el-table-column>
 
             <el-table-column
                     prop="msgSrc"
                     width="100px"
+                    align="center"
                     label="来源">
+                <template slot-scope="scope">
+                    <span>{{ msgSourceGName[scope.row.msgSrc] }}</span>
+                </template>
             </el-table-column>
 
             <el-table-column
                     width="150px"
                     prop="msgContent"
+                    align="center"
                     label="消息内容">
                 <template slot-scope="scope">
                     <span @click="showMsgContent(scope.row.msgContent)" style="color: #3a8ee6;cursor: pointer">{{ scope.row.msgContent | ellipsis(15) }}</span>
@@ -169,6 +181,7 @@
             <el-table-column
                     width="150px"
                     prop="syncContent"
+                    align="center"
                     label="同步内容">
                 <template slot-scope="scope">
                     <span @click="showSyncContent(scope.row.syncContent)" style="color: #3a8ee6;cursor: pointer">{{ scope.row.syncContent | ellipsis(15) }}</span>
@@ -178,6 +191,7 @@
             <el-table-column
                     width="100px"
                     prop="remark"
+                    align="center"
                     label="备注系统">
                 <template slot-scope="scope">
                     <span style="color: #E6A23C;cursor: pointer">{{ scope.row.remark | ellipsis(5) }}</span>
@@ -200,7 +214,9 @@
                 title="同步内容"
                 :visible.sync="syncVisible"
         >
+            <div  class="sync_content_div">
             <pre v-if="syncVisible" v-highlightjs><code class="c++ showContent" v-text="syncContent"></code></pre>
+            </div>
         </el-dialog>
 
         <!-- 查看消息内容 -->
@@ -208,7 +224,9 @@
                 title="消息内容"
                 :visible.sync="msgVisible"
         >
-            <pre v-if="msgVisible" v-highlightjs><code class="c++ showContent" v-text="msgContent"></code></pre>
+            <div  class="msg_content_div">
+                <pre v-if="msgVisible" v-highlightjs><code class="c++ showContent" v-text="msgContent"></code></pre>
+            </div>
         </el-dialog>
 
         <!-- 校验数据 -->
@@ -249,7 +267,7 @@
 </template>
 
 <script>
-
+    import constant from "@/util/constant";
     export default {
         name: "Result.vue",
         data() {
@@ -317,6 +335,38 @@
             },
 
         },
+        computed: {
+            srcProjectG() {
+                return constant.methods.getConst('src_project');
+            },
+            srcProjectGName(){
+                return constant.methods.formatConst(this.srcProjectG);
+            },
+            destProjectG() {
+                return constant.methods.getConst("dest_project");
+            },
+            destProjectGName(){
+                return constant.methods.formatConst(this.destProjectG);
+            },
+            msgSourceG() {
+                return constant.methods.getConst('msg_source');
+            },
+            msgSourceGName(){
+                return constant.methods.formatConst(this.msgSourceG);
+            },
+            syncStatusG() {
+                return constant.methods.getConst('sync_status');
+            },
+            syncStatusGName(){
+                return constant.methods.formatConst(this.syncStatusG);
+            },
+            repeatTimesG() {
+                return constant.methods.getConst('repeat_times');
+            },
+            repeatTimesGName(){
+                return constant.methods.formatConst(this.repeatTimesG);
+            },
+        },
         methods: {
             showSyncContent(content) {
                 let ojb  = JSON.parse(content);
@@ -357,6 +407,12 @@
                 return fmt;
             },
             getData() {
+
+                if(this.createTimeRange == null || this.createTimeRange.length !==2){
+
+                    return this.$message.warning("请选择时间范围进行查询");
+                }
+
                 this.uuid = '';
                 this.loading = true;
                 const params = {};
@@ -546,5 +602,9 @@
     }
     .isCenter{
         text-align: center;
+    }
+    .msg_content_div, .sync_content_div{
+        max-height: 400px;
+        overflow: auto;
     }
 </style>

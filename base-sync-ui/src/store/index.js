@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    constant: [],
     editableTabsValue: '/sync/index',
     editableTabs:[
       {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
     ]
   },
   mutations: {
+    saveAllConst(state, allConst) {
+      state.constant =allConst;
+    },
     addTabs(state,tab){
       if(state.editableTabs.findIndex(e=>e.name===tab.path)===-1){
         state.editableTabs.push({

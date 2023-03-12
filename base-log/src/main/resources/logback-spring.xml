@@ -57,7 +57,6 @@
         <root level="info">
             <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
-            <appender-ref ref="LOG_DING_ALARM"/>
         </root>
 
         <logger name="java.sql.Connection" level="DEBUG" additivity="false"/>
@@ -93,9 +92,10 @@
 
 
     <!-- pro环境输出到文件 -->
-    <springProfile name="uat">
+    <springProfile name="pro">
         <root level="info">
             <appender-ref ref="LOG_FILE" />
+            <appender-ref ref="LOG_DING_ALARM"/>
         </root>
 
         <logger name="java.sql.Connection" level="ERROR" additivity="false"/>

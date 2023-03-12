@@ -82,14 +82,37 @@ CREATE TABLE `pub_mq_message` (
 ) ENGINE=InnoDB AUTO_INCREMENT=349249 DEFAULT CHARSET=utf8mb4;
 
 
-use datasource1;
+use demo;
 -- end --
-select count(1) c from db1_user;
+select count(1) as demo_user_count from demo_user;
 -- end --
 
-use datasource2;
+use ecp_market;
 -- end --
-select count(1) c from db2_user;
+select count(1) as  market_user_count from market_user;
+-- end --
 
+use ecp_order;
 -- end --
-select count(1) from db3_user;
+select count(1) as order_user_count from order_user;
+-- end --
+
+use ecp_pim;
+-- end --
+select count(1) as pim_user_count from pim_user;
+-- end --
+
+use erp_mms;
+-- end --
+select count(1) as mms_user_count from mms_user;
+-- end --
+
+use erp_pms;
+-- end --
+select count(1) as pms_user_count from pms_user;
+-- end --
+
+use erp_wms;
+-- end --
+select count(1) as wms_user_count from wms_user;
+-- end --

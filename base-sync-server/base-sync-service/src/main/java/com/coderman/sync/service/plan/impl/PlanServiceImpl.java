@@ -1,12 +1,12 @@
 package com.coderman.sync.service.plan.impl;
 
-import com.alibaba.fastjson.JSONObject;
-import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.anntation.LogError;
+import com.coderman.service.redis.RedisService;
 import com.coderman.service.util.UUIDUtils;
+import com.coderman.sync.config.PlanRefreshConfig;
 import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.parser.MetaParser;
@@ -31,6 +31,9 @@ public class PlanServiceImpl implements PlanService {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
+
+    @Resource
+    private RedisService redisService;
 
 
     @Override
@@ -97,6 +100,7 @@ public class PlanServiceImpl implements PlanService {
             throw new RuntimeException("新增同步计划失败");
         }
 
+        this.publishToRedis();
 
         return ResultUtil.getSuccess();
     }
@@ -129,6 +133,8 @@ public class PlanServiceImpl implements PlanService {
 
             return ResultUtil.getWarn("删除同步计划失败!");
         }
+
+        this.publishToRedis();
 
         return ResultUtil.getSuccess();
     }
@@ -195,8 +201,15 @@ public class PlanServiceImpl implements PlanService {
             throw new RuntimeException("更新同步计划失败");
         }
 
+        this.publishToRedis();
 
         return ResultUtil.getSuccess();
+    }
+
+
+    @LogError(value = "广播消息到redis")
+    public void publishToRedis(){
+        this.redisService.getRedisTemplate().convertAndSend(PlanRefreshConfig.PLAN_REFRESH_KEY,String.valueOf(System.currentTimeMillis()));
     }
 
     @Override
@@ -225,6 +238,8 @@ public class PlanServiceImpl implements PlanService {
 
             throw new RuntimeException("更新状态失败");
         }
+
+        this.publishToRedis();
 
         return ResultUtil.getSuccess();
     }

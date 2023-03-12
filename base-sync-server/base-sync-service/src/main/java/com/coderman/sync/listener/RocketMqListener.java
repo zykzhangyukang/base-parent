@@ -83,7 +83,7 @@ public class RocketMqListener implements MessageListenerConcurrently {
 
             try {
 
-                String result = SyncContext.getContext().syncData(msg, message.getMsgId(), PlanConstant.MSG_ROCKET_MQ, message.getReconsumeTimes());
+                String result = SyncContext.getContext().syncData(msg, message.getMsgId(), SyncConstant.MSG_ROCKET_MQ, message.getReconsumeTimes());
 
                 if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
 

@@ -2,7 +2,7 @@ package com.coderman.sync.jobhandler;
 
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.config.MultiDatasourceConfig;
-import com.coderman.sync.constant.PlanConstant;
+import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.task.base.MsgTask;
 import com.coderman.sync.util.SqlUtil;
@@ -122,7 +122,7 @@ public class SyncHandler extends IJobHandler {
                         msgTask.setMsg(SqlUtil.getFieldName("msg_content"));
                     }
 
-                    msgTask.setSource(PlanConstant.MSG_SOURCE_JOB);
+                    msgTask.setSource(SyncConstant.MSG_SOURCE_JOB);
                     SyncContext.getContext().addTaskToDelayQueue(msgTask);
 
                 }

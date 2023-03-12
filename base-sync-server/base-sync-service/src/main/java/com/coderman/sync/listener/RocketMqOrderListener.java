@@ -1,7 +1,6 @@
 package com.coderman.sync.listener;
 
 import com.coderman.service.redis.RedisService;
-import com.coderman.sync.constant.PlanConstant;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +75,7 @@ public class RocketMqOrderListener implements MessageListenerOrderly {
 
             try {
 
-                String result = SyncContext.getContext().syncData(msg, message.getMsgId(), PlanConstant.MSG_ROCKET_MQ, message.getReconsumeTimes());
+                String result = SyncContext.getContext().syncData(msg, message.getMsgId(), SyncConstant.MSG_ROCKET_ORDER_MQ, message.getReconsumeTimes());
 
                 if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
 

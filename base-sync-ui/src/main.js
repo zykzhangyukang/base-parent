@@ -9,7 +9,7 @@ import VueResource from 'vue-resource'
 import interceptors from "./util/interceptors";
 
 import VueHighlightJS from 'vue-highlightjs'
-import 'highlight.js/styles/monokai-sublime.css'
+import 'highlight.js/styles/stackoverflow-dark.css'
 
 
 Vue.use(VueHighlightJS)

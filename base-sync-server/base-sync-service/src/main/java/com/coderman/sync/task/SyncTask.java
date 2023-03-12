@@ -16,7 +16,6 @@ import com.coderman.sync.task.support.WriteBackTask;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -273,7 +272,7 @@ public class SyncTask {
 
         // 重试成功需要把之前失败的消息标记为成功
         boolean condition1 = PlanConstant.RESULT_STATUS_SUCCESS.equals(resultModel.getStatus()) && null != resultModel.getRepeatCount() && resultModel.getRepeatCount() > 0;
-        boolean condition2 = PlanConstant.RESULT_STATUS_SUCCESS.equals(resultModel.getStatus()) && StringUtils.equals(resultModel.getMsgSrc(), PlanConstant.MSG_SOURCE_JOB);
+        boolean condition2 = PlanConstant.RESULT_STATUS_SUCCESS.equals(resultModel.getStatus()) && StringUtils.equals(resultModel.getMsgSrc(), SyncConstant.MSG_SOURCE_JOB);
 
         if (condition1 || condition2) {
 

@@ -94,7 +94,7 @@
                     align="center"
                     label="启用状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status==='normal'"  style="color: green">{{planStatusGName[scope.row.status]}}</span>
+                    <span v-if="scope.row.status==='normal'"  style="color: #67C23A">{{planStatusGName[scope.row.status]}}</span>
                     <span v-else type="danger" size="small" style="color: #f40">{{planStatusGName[scope.row.status]}}</span>
                 </template>
             </el-table-column>

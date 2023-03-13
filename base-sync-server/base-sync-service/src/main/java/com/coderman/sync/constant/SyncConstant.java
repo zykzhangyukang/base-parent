@@ -95,4 +95,28 @@ public interface SyncConstant {
     String OPERATE_TYPE_UPDATE = "update";
     String OPERATE_TYPE_DELETE = "delete";
     String OPERATE_TYPE_INSERT = "insert";
+
+
+    /**
+     * 同步消息发送状态
+     */
+    @ConstList(group = "send_status",name = "发送成功")
+    public static final String SEND_STATUS_SUCCESS = "success";
+    @ConstList(group = "send_status",name = "发送失败")
+    public static final String SEND_STATUS_FAIL = "fail";
+    @ConstList(group = "send_status",name = "发送中")
+    public static final String SEND_STATUS_SENDING = "sending";
+    @ConstList(group = "send_status",name = "待发送")
+    public static final String SEND_STATUS_WAIT = "wait";
+
+
+    /**
+     * 同步消息发送状态
+     */
+    @ConstList(group = "deal_status",name = "待处理")
+    public static final String DEAL_STATUS_WAIT = "wait";
+    @ConstList(group = "deal_status",name = "处理成功")
+    public static final String DEAL_STATUS_SUCCESS = "success";
+    @ConstList(group = "deal_status",name = "处理失败")
+    public static final String DEAL_STATUS_FAIL = "fail";
 }

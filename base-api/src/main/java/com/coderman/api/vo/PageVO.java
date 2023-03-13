@@ -32,13 +32,15 @@ public class PageVO<T> {
     /**
      * 总条数
      */
-    private long totalRow;
+    private Long totalRow;
 
     /**
      * 数据集合
      */
     private T dataList;
 
+    public PageVO() {
+    }
 
     public PageVO(long totalRow, T dataList) {
         this.totalRow = totalRow;

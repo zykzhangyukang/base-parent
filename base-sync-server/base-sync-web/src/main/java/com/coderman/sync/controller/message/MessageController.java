@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/message")
+@RequestMapping(value = "/${domain}/message")
 public class MessageController {
 
     @Resource

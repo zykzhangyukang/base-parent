@@ -3,17 +3,44 @@ package com.coderman.sync.util;
 public enum ProjectEnum {
 
     /**
-     * 数据库1
+     * 测试系统
      */
-    SYS1("sys1"),
-
+    DEMO("demo"),
 
     /**
-     * 数据库2
+     * 索引系统
      */
-    SYS2("sys2");
+    PIM("pim"),
 
+    /**
+     * 采购系统
+     */
+    PMS("pms"),
 
+    /**
+     * 仓储系统
+     */
+    WMS("wms"),
+
+    /**
+     * 营销后台
+     */
+    MMS("mms"),
+
+    /**
+     * 购物车
+     */
+    CART("cart"),
+
+    /**
+     * 营销前台
+     */
+    MARKET("market"),
+
+    /**
+     * 下单系统
+     */
+    ORDER("order");
 
 
     private String key;

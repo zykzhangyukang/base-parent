@@ -64,6 +64,7 @@ public class ListenerConfig {
         mqPushConsumer.setMessageListener(rocketMqOrderListener);
         mqPushConsumer.setConsumeThreadMin(consumeThreadMin);
         mqPushConsumer.setConsumeThreadMax(consumeThreadMax);
+        mqPushConsumer.setSuspendCurrentQueueTimeMillis(5000);
         return mqPushConsumer;
     }
 

@@ -44,4 +44,5 @@ public interface CommonConstant {
      * 分页每页显示
      */
     Integer SYS_PAGE_SIZE = 30;
+    String SYS_PAGE_LIMIT = "30000";
 }

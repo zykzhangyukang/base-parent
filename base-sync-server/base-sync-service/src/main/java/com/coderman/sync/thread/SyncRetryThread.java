@@ -40,7 +40,7 @@ public class SyncRetryThread {
     @Resource
     private ResultService resultService;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     @Resource
     private EsService esService;

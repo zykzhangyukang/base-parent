@@ -29,6 +29,10 @@
                </el-select>
            </el-form-item>
 
+           <el-form-item label="消息id" prop="msgId">
+               <el-input v-model="searchForm.msgId" placeholder="消息id"></el-input>
+           </el-form-item>
+
            <br/>
            <el-form-item>
                <el-button type="primary"  @click="getData" icon="el-icon-search">查询</el-button>
@@ -150,7 +154,8 @@
                     srcProject: 'demo',
                     sendStatus: '',
                     dealStatus:'',
-                    destProject:''
+                    destProject:'',
+                    msgId: '',
                 },
                 loading: false,
                 dataList: [],
@@ -204,6 +209,7 @@
                 this.msgVisible = true;
             },
             reset() {
+                this.currentPage = 1;
                 this.$refs["searchForm"].resetFields();
                 this.getData();
             },

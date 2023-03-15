@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author coderman
@@ -100,7 +101,7 @@ public class ResultAspect {
             stringBuilder.append("ResultAspect清除返回信息:");
             for (Map.Entry<String,Set<String>> entry : resultClearMap.entrySet()){
 
-                stringBuilder.append("[").append(entry.getKey()).append(entry.getValue()).append("]");
+                stringBuilder.append("[").append(entry.getKey()).append(entry.getValue().stream().map(e->"\""+e+"\"").collect(Collectors.toSet())).append("]");
                 log.warn(stringBuilder.toString());
             }
         }

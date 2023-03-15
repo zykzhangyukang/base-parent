@@ -40,14 +40,14 @@ public class MessageServiceImpl extends BaseService implements MessageService {
             pageSize = CommonConstant.SYS_PAGE_SIZE;
         }
 
-        if (pageSize * currentPage > 3000) {
-
-            return ResultUtil.getWarnPage(MqMessageModel.class, destProject + ":最大查询数量不能超过3000条,请精确条件在查询");
-        }
-
         if (StringUtils.isBlank(srcProject)) {
 
             return ResultUtil.getSuccessPage(MqMessageModel.class, new PageVO<>());
+        }
+
+        if (pageSize * currentPage > 300000000) {
+
+            return ResultUtil.getWarnPage(MqMessageModel.class, destProject + "最大查询数量不能超过300000000条,请精确条件在查询");
         }
 
         String dbname = SyncContext.getContext().getDbByProject(srcProject);
@@ -106,7 +106,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
         if (StringUtils.isNotBlank(msgId)) {
 
-            builder.append(" and msg_id = ? ");
+            builder.append(" and uuid = ? ");
             paramList.add(msgId);
         }
 
@@ -138,6 +138,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
         pageVO.setTotalRow(count);
         pageVO.setCurrPage(currentPage);
+        pageVO.setPageRow(pageSize);
         pageVO.setDataList(list);
 
         if (count != null && count > 0) {
@@ -169,9 +170,9 @@ public class MessageServiceImpl extends BaseService implements MessageService {
                 MqMessageModel mqMessageModel = new MqMessageModel();
 
                 mqMessageModel.setMsgContent(resultMap.get("msg_content").toString());
-                mqMessageModel.setMid(resultMap.get("mid").toString());
                 mqMessageModel.setSrcProject(resultMap.get("src_project").toString());
                 mqMessageModel.setDestProject(resultMap.get("dest_project").toString());
+                mqMessageModel.setMid(resultMap.get("mid") == null ? null : resultMap.get("mid").toString());
                 mqMessageModel.setCreateTime(resultMap.get("create_time") == null ? null : this.formatTime(resultMap.get("create_time").toString()));
                 mqMessageModel.setSendTime(resultMap.get("send_time") == null ? null : this.formatTime(resultMap.get("send_time").toString()));
                 mqMessageModel.setAckTime(resultMap.get("ack_time") == null ? null : this.formatTime(resultMap.get("ack_time").toString()));

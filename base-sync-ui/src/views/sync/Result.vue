@@ -382,7 +382,7 @@
                 this.$refs["searchForm"].resetFields();
                 this.currentPage = 1;
                 this.uuid = '';
-                this.createTimeRange = [new Date(new Date().getTime() - 15 * 60 * 1000),new Date()];
+                this.createTimeRange = [new Date(new Date().getTime() - 60 * 60 * 1000),new Date()];
                 this.getData();
             },
             formatDate(value, fmt) {
@@ -539,7 +539,7 @@
             },
         },
         created() {
-            this.createTimeRange = [new Date(new Date().getTime() - 15 * 60 * 1000),new Date()];
+            this.createTimeRange = [new Date(new Date().getTime() - 60 * 60 * 1000),new Date()];
             this.getData();
         }
     }

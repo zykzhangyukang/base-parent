@@ -60,6 +60,24 @@
                     >
             </el-table-column>
             <el-table-column
+                    prop="srcProject"
+                    label="源系统"
+                    align="center"
+            >
+                <template slot-scope="scope">
+                    {{srcProjectGName[scope.row.srcProject]}}
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="destProject"
+                    label="目标系统"
+                    align="center"
+            >
+                <template slot-scope="scope">
+                    {{destProjectGName[scope.row.destProject]}}
+                </template>
+            </el-table-column>
+            <el-table-column
                     prop="srcDb"
                     label="源数据库"
                     align="center"
@@ -70,24 +88,6 @@
                     label="目标数据库"
                     align="center"
                     >
-            </el-table-column>
-            <el-table-column
-                    prop="srcProject"
-                    label="源系统"
-                    align="center"
-                    >
-                <template slot-scope="scope">
-                    {{srcProjectGName[scope.row.srcProject]}}
-                </template>
-            </el-table-column>
-            <el-table-column
-                    prop="destProject"
-                    label="目标系统"
-                    align="center"
-                    >
-                <template slot-scope="scope">
-                    {{destProjectGName[scope.row.destProject]}}
-                </template>
             </el-table-column>
             <el-table-column
                     width="80"

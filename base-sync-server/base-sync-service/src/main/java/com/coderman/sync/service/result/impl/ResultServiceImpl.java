@@ -167,7 +167,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @LogError(value = "标记成功")
-    public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException {
+    public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid,String remark) throws IOException {
 
         if (StringUtils.isBlank(uuid)) {
 
@@ -183,7 +183,7 @@ public class ResultServiceImpl implements ResultService {
             return ResultUtil.getWarn("同步记录不存在!");
         }
 
-        this.esService.updateSyncResultSuccess(resultModel, "手动标记成功");
+        this.esService.updateSyncResultSuccess(resultModel, remark);
 
         if (StringUtils.isNotBlank(resultModel.getMsgContent())) {
 

@@ -19,9 +19,11 @@ public interface MessageService {
      * @param startTime 开始时间
      * @param endTime 结束时间
      * @param msgId 消息id
+     * @param mid mq消息id
      * @param currentPage 分页
      * @param pageSize 每页条数
      * @return
      */
-    ResultVO<PageVO<List<MqMessageModel>>> selectMessagePage(String srcProject, String destProject, String sendStatus, String dealStatus,Date startTime, Date endTime, String msgId, Integer currentPage, Integer pageSize);
+    ResultVO<PageVO<List<MqMessageModel>>> selectMessagePage(String srcProject, String destProject, String sendStatus, String dealStatus,Date startTime, Date endTime, String msgId,
+                                                             String mid,Integer currentPage, Integer pageSize);
 }

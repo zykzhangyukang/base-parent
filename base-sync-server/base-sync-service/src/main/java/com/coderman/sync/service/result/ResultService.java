@@ -35,9 +35,10 @@ public interface ResultService {
      * 标记成功
      *
      * @param uuid uuid
+     * @param  remark 标记备注
      * @return
      */
-    com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException;
+    com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid,String remark) throws IOException;
 
 
     /**

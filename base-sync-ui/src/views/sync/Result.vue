@@ -56,7 +56,7 @@
                 <el-button type="primary" icon="el-icon-search" @click="getData">查询</el-button>
                 <el-button type="warning" @click="reset" icon="el-icon-refresh">重置</el-button>
                 <el-button type="primary" @click="signSuccess">标记成功</el-button>
-                <el-button type="primary" @click="validResult">校验数据</el-button>
+                <el-button type="primary" :loading="validLoading" @click="validResult">校验数据</el-button>
                 <el-button type="primary" @click="repeatSync">重新同步</el-button>
             </el-form-item>
         </el-form>
@@ -276,6 +276,7 @@
                 count: 0,
                 validTables: [],
                 loading: true,
+                validLoading: false,
                 syncVisible: false,
                 syncContent: '',
                 msgVisible: false,
@@ -476,6 +477,8 @@
 
                 let row = this.dataList.find(e=>e.uuid === this.uuid);
 
+                this.validLoading=true;
+
                 this.$sendAjax.doPost('/sync/result/valid/data',{msgContent: row.msgContent},{ emulateJSON: true }).then(({result:res})=>{
 
                     this.validVisible = true;
@@ -493,7 +496,7 @@
 
                 }).finally(()=>{
 
-                    this.loading=false;
+                    this.validLoading=false;
                 })
 
 

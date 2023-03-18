@@ -23,7 +23,7 @@ public class MessageController {
     private MessageService messageService;
 
     @RequestMapping(value = "/page")
-    @PageLimit
+    @PageLimit(limitTotal = "100000")
     @ApiReturnIgnore
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
@@ -32,8 +32,8 @@ public class MessageController {
                     "sendTime", "ackTime", "mid"})
     })
     public ResultVO<PageVO<List<MqMessageModel>>> selectMessagePage(String srcProject, String destProject, String sendStatus,String dealStatus, Date startTime, Date endTime,
-                                                                    String msgId, Integer currentPage, Integer pageSize){
+                                                                    String msgId, String mid,Integer currentPage, Integer pageSize){
 
-        return this.messageService.selectMessagePage(srcProject,destProject,sendStatus,dealStatus,startTime,endTime,msgId,currentPage,pageSize);
+        return this.messageService.selectMessagePage(srcProject,destProject,sendStatus,dealStatus,startTime,endTime,msgId,mid,currentPage,pageSize);
     }
 }

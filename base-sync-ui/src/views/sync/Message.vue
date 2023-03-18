@@ -29,8 +29,12 @@
                </el-select>
            </el-form-item>
 
-           <el-form-item label="消息id" prop="msgId">
-               <el-input v-model="searchForm.msgId" placeholder="消息id"></el-input>
+           <el-form-item label="消息ID" prop="msgId">
+               <el-input v-model="searchForm.msgId" placeholder="消息ID"></el-input>
+           </el-form-item>
+
+           <el-form-item label="MQ消息ID" prop="mid">
+               <el-input v-model="searchForm.mid" placeholder="MQ消息ID"></el-input>
            </el-form-item>
 
            <br/>
@@ -156,6 +160,7 @@
                     dealStatus:'',
                     destProject:'',
                     msgId: '',
+                    mid: '',
                 },
                 loading: false,
                 dataList: [],
@@ -241,6 +246,13 @@
 </script>
 
 <style scoped>
+    .w150 {
+        width: 150px;
+    }
+
+    .w500 {
+        width: 300px;
+    }
     .pagination {
         margin-top: 20px;
     }

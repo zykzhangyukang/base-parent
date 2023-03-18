@@ -2,6 +2,7 @@ package com.coderman.sync.sql;
 
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.pair.SyncPair;
+import com.coderman.sync.util.SqlUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -121,7 +122,6 @@ public class SelectBuilder {
     }
 
 
-    @SuppressWarnings("all")
     public String sql() {
 
 
@@ -181,6 +181,74 @@ public class SelectBuilder {
 
             builder.append(StringUtils.join(whereStrList, " and "));
             builder.append(";");
+        } else if (SyncConstant.DB_TYPE_MONGO.equalsIgnoreCase(this.dbType)) {
+
+            builder.append("{");
+            builder.append("\"find\": \"").append(SqlUtil.getCollectionName(this.table)).append("\",");
+            builder.append("\"filter\":{\"$and\":[");
+
+            List<String> whereStrList = new ArrayList<>();
+
+            if (CollectionUtils.isNotEmpty(this.inList)) {
+
+                for (SyncPair<String, Integer> param : this.inList) {
+
+                    String replaceStr = StringUtils.repeat("?", ",", param.getValue());
+                    whereStrList.add("{\"" + SqlUtil.getFieldName(param.getKey()) + "\":{\"$in\":[" + replaceStr + "]}}");
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(this.eqList)) {
+
+                for (String param : this.eqList) {
+
+                    whereStrList.add("{\"" + SqlUtil.getFieldName(param) + "\":?}");
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(this.ltList)) {
+
+                for (String param : this.ltList) {
+
+                    whereStrList.add("{\"" + SqlUtil.getFieldName(param) + "\":{\"$lt\":?}}");
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(this.gtList)) {
+
+                for (String param : this.gtList) {
+
+                    whereStrList.add("{\"" + SqlUtil.getFieldName(param) + "\":{\"$gt\":?}}");
+                }
+            }
+
+            builder.append(StringUtils.join(whereStrList, ","));
+            builder.append("]},");
+
+            builder.append("\"projection\":{");
+
+            List<String> columnStrList = new ArrayList<>();
+
+            for (String column : this.columnList) {
+
+                if ("_id".equals(column)) {
+
+                    continue;
+                }
+
+                columnStrList.add("\"" + SqlUtil.getFieldName(column) + "\":1");
+            }
+
+            if (this.columnList.contains("_id")) {
+
+                columnStrList.add("\"_id\":1");
+            } else {
+                columnStrList.add("\"_id\":0");
+            }
+
+            builder.append(StringUtils.join(columnStrList, ","));
+
+            builder.append("}}");
         }
 
 

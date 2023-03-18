@@ -30,7 +30,8 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @LogError(value = "MQ消息发送记录列表")
-    public ResultVO<PageVO<List<MqMessageModel>>> selectMessagePage(String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId, Integer currentPage, Integer pageSize) {
+    public ResultVO<PageVO<List<MqMessageModel>>> selectMessagePage(String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId,String mid
+            , Integer currentPage, Integer pageSize) {
 
         if (null == currentPage) {
             currentPage = 1;
@@ -45,11 +46,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
             return ResultUtil.getSuccessPage(MqMessageModel.class, new PageVO<>());
         }
 
-        if (pageSize * currentPage > 300000000) {
-
-            return ResultUtil.getWarnPage(MqMessageModel.class, destProject + "最大查询数量不能超过300000000条,请精确条件在查询");
-        }
-
         String dbname = SyncContext.getContext().getDbByProject(srcProject);
 
         if (StringUtils.isBlank(dbname)) {
@@ -61,14 +57,15 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
         if (SyncConstant.DB_TYPE_MONGO.equalsIgnoreCase(dbType)) {
 
-            return this.selectMessageByMongo(dbType, srcProject, destProject, sendStatus, dealStatus, startTime, endTime, msgId, currentPage, pageSize, dbname);
+            return this.selectMessageByMongo(dbType, srcProject, destProject, sendStatus, dealStatus, startTime, endTime, msgId,mid, currentPage, pageSize, dbname);
         } else {
 
-            return this.selectMessageBySql(dbType, srcProject, destProject, sendStatus, dealStatus, startTime, endTime, msgId, currentPage, pageSize, dbname);
+            return this.selectMessageBySql(dbType, srcProject, destProject, sendStatus, dealStatus, startTime, endTime, msgId,mid, currentPage, pageSize, dbname);
         }
     }
 
-    private ResultVO<PageVO<List<MqMessageModel>>> selectMessageBySql(String dbType, String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId, Integer currentPage, Integer pageSize, String dbname) {
+    private ResultVO<PageVO<List<MqMessageModel>>> selectMessageBySql(String dbType, String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId,
+                                                                      String mid,Integer currentPage, Integer pageSize, String dbname) {
 
         StringBuilder builder = new StringBuilder();
 
@@ -108,6 +105,12 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
             builder.append(" and uuid = ? ");
             paramList.add(msgId);
+        }
+
+        if (StringUtils.isNotBlank(mid)) {
+
+            builder.append(" and mid = ? ");
+            paramList.add(mid);
         }
 
         if (null != startTime) {
@@ -233,7 +236,8 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
     }
 
-    private ResultVO<PageVO<List<MqMessageModel>>> selectMessageByMongo(String dbType, String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId, Integer currentPage, Integer pageSize, String dbname) {
+    private ResultVO<PageVO<List<MqMessageModel>>> selectMessageByMongo(String dbType, String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId,
+                                                                        String mid,Integer currentPage, Integer pageSize, String dbname) {
         return null;
     }
 }

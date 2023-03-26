@@ -11,9 +11,13 @@ import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.context.SyncContext;
 import com.coderman.sync.message.MqMessageModel;
 import com.coderman.sync.service.message.MessageService;
+import com.mongodb.DBObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -238,6 +242,18 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     private ResultVO<PageVO<List<MqMessageModel>>> selectMessageByMongo(String dbType, String srcProject, String destProject, String sendStatus, String dealStatus, Date startTime, Date endTime, String msgId,
                                                                         String mid,Integer currentPage, Integer pageSize, String dbname) {
+        MongoTemplate mongoTemplate;
+
+        try {
+            mongoTemplate = SpringContextUtil.getBean(dbname+"_mongoTemplate");
+        }catch (NoSuchBeanDefinitionException beanDefinitionException){
+
+            return ResultUtil.getWarnPage(MqMessageModel.class,"'无此系统信息'");
+        }
+
+
+        Query query =  new Query();
+        // todo
         return null;
     }
 }

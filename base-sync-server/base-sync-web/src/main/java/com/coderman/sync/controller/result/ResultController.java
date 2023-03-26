@@ -59,7 +59,7 @@ public class ResultController {
     @ApiReturnIgnore
     public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException {
 
-        return this.resultService.signSuccess(uuid,"手动标记成功");
+        return this.resultService.signSuccess(uuid,"手动标记");
     }
 
 

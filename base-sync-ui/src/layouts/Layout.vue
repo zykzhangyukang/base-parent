@@ -81,11 +81,6 @@
                         name: '回调列表',
                         icon: 'el-icon-timer',
                         path: '/sync/callback',
-                    },
-                    {
-                        name: '系统配置',
-                        icon: 'el-icon-setting',
-                        path: '/sync/setting',
                     }
                 ]
             }

@@ -33,11 +33,6 @@ const routes = [
         path : 'sync/callback',
         name: 'Callback',
         component: () => import('../views/sync/Callback')
-      },
-      {
-        path : 'sync/setting',
-        name: 'Callback',
-        component: () => import('../views/sync/Setting')
       }
     ]
   }

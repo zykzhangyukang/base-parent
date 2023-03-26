@@ -9,6 +9,8 @@ public interface SyncConstant {
     /**
      * 源系统
      */
+    @ConstList(group = "src_project",name = "订单系统")
+    public static final String SRC_PROJECT_ORDER = "order";
     @ConstList(group = "src_project",name = "测试系统")
     public static final String SRC_PROJECT_DEMO= "demo";
 

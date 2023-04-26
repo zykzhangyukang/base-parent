@@ -24,6 +24,8 @@ public class PropertyInitializer implements ApplicationContextInitializer<Config
     @Override
     public synchronized void initialize(ConfigurableApplicationContext applicationContext) {
 
+        // 检查一下必填的属性
+        applicationContext.getEnvironment().setRequiredProperties("domain");
 
         Map<String, String> configMap = new HashMap<>();
         Map<String, Map<String, String>> dictMap = new HashMap<>();

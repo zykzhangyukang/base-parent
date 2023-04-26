@@ -15,6 +15,21 @@ public class LogFileDir extends PropertyDefinerBase {
 
         String logFile = System.getProperty("log.file");
 
+        String env = System.getProperty("spring.profiles.active");
+
+        if(StringUtils.isEmpty(env)){
+
+            try {
+
+                throw new Exception("请指定环境[dev,fat,uat,pro]值,具体配置请参考:-Dspring.profiles.active=dev");
+
+            }catch (Exception e){
+
+                e.printStackTrace();
+                System.exit(0);
+            }
+        }
+
         if(StringUtils.isEmpty(logFile)){
 
 

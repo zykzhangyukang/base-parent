@@ -18,7 +18,7 @@
     <!--输出到控制台-->
     <appender name="LOG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>[%-5p]%n%logOwner%d{ISO8601}%n{}StackTrace: %replace(%caller{1}){'Caller.{1}0\t at', 'at'}**************************%n[%thread] %m%n**************************%n%n</Pattern>
+            <Pattern>[%-5p]%n%logOwner%d{ISO8601}%n{}StackTrace: %replace(%caller{1}){'Caller.{1}0\t at', 'at'}**************************%n%m%n**************************%n%n</Pattern>
             <!-- 设置字符集 -->
             <charset>UTF-8</charset>
         </encoder>
@@ -30,7 +30,7 @@
         <!-- 正在记录的日志文件的路径及文件名 -->
         <file>${log.file}/AllLog</file>
         <encoder>
-            <pattern>[%-5p]%n%logOwner%d{ISO8601}%n{}StackTrace: %replace(%caller{1}){'Caller.{1}0\t at', ''}**************************%n[%thread] %m%n**************************%n%n</pattern>
+            <pattern>[%-5p]%n%logOwner%d{ISO8601}%n{}StackTrace: %replace(%caller{1}){'Caller.{1}0\t at', ''}**************************%n%m%n**************************%n%n</pattern>
             <charset>UTF-8</charset> <!-- 设置字符集 -->
         </encoder>
 
@@ -61,7 +61,7 @@
 
         <logger name="java.sql.Connection" level="DEBUG" additivity="false"/>
         <logger name="java.sql.Statement" level="DEBUG" additivity="false"/>
-        <logger name="com.coderman" level="INFO" additivity="true"/>
+        <logger name="com.coderman" level="DEBUG" additivity="true"/>
     </springProfile>
 
 

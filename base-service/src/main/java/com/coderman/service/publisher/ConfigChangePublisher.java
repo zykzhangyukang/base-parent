@@ -6,11 +6,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 @EnableAsync
 @Component
 public class ConfigChangePublisher {
 
-    @Autowired
+    @Resource
     private ApplicationEventPublisher eventPublisher;
 
 

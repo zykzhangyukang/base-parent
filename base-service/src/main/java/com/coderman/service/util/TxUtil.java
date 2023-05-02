@@ -12,7 +12,7 @@ public class TxUtil {
 
     private static final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-    public void doAfterCommit(Runnable runnable){
+    public static void doAfterCommit(Runnable runnable){
 
         if(TransactionSynchronizationManager.isActualTransactionActive()){
 

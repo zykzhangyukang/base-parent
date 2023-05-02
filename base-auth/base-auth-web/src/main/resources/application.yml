@@ -14,9 +14,8 @@ spring:
     time-zone: GMT+8
   redis:
     auth:
-      host: 116.205.181.9
+      host: 127.0.0.1
       port: 6379
-      password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
 mybatis:
   configuration:

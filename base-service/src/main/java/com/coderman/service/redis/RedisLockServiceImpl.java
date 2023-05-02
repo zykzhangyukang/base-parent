@@ -90,6 +90,7 @@ public class RedisLockServiceImpl implements RedisLockService {
 
                         redisTemplate.expire(redisLockName, lockValue, TimeUnit.MILLISECONDS);
                         log.info("[tryLock-3]获取到锁成功");
+                        break;
                     }
 
                 } catch (Exception e) {

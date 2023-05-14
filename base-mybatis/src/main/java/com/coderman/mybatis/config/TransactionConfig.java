@@ -1,4 +1,4 @@
-package com.coderman.mybatis.configure;
+package com.coderman.mybatis.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
@@ -6,7 +6,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +31,6 @@ import java.util.List;
  */
 @Aspect
 @Configuration
-@SuppressWarnings("all")
 @Slf4j
 public class TransactionConfig {
 

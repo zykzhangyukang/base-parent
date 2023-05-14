@@ -38,11 +38,19 @@
         <spring.data.mongodb.version>1.10.23.RELEASE</spring.data.mongodb.version>
         <httpclient.version>4.5.13</httpclient.version>
         <elasticsearch.version>6.5.0</elasticsearch.version>
+        <easy.captcha.version>1.6.2</easy.captcha.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.github.whvcse</groupId>
+                <artifactId>easy-captcha</artifactId>
+                <version>${easy.captcha.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>

@@ -1,6 +1,7 @@
 package com.coderman.service.anntation;
 
 import com.coderman.api.constant.CommonConstant;
+import com.coderman.swagger.annotation.EnableCustomSwagger2;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
@@ -23,6 +24,7 @@ import java.lang.annotation.*;
 @Inherited
 @SpringBootConfiguration
 @EnableAutoConfiguration
+@EnableCustomSwagger2
 @ComponentScan(basePackages = {CommonConstant.BASE_PACKAGE},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
                 @ComponentScan.Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)})

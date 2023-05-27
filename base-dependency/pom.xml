@@ -21,7 +21,7 @@
         <mybatis.boot.starter>2.2.2</mybatis.boot.starter>
         <pagehelper.boot.starter>1.4.1</pagehelper.boot.starter>
         <druid.boot.starter>1.1.13</druid.boot.starter>
-        <mybatis.generator.version>1.3.7.base.version</mybatis.generator.version>
+        <mybatis.generator.version>1.3.2</mybatis.generator.version>
         <collections4.version>4.4</collections4.version>
         <rocketmq.boot.version>2.1.1</rocketmq.boot.version>
         <rocketmq.client.version>4.7.0</rocketmq.client.version>

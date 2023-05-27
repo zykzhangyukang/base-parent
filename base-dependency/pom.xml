@@ -39,11 +39,35 @@
         <httpclient.version>4.5.13</httpclient.version>
         <elasticsearch.version>6.5.0</elasticsearch.version>
         <easy.captcha.version>1.6.2</easy.captcha.version>
+        <knife4j.version>3.0.3</knife4j.version>
+        <swagger.version>3.0.0</swagger.version>
+        <swagger.annotations.version>1.5.13</swagger.annotations.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.github.whvcse</groupId>

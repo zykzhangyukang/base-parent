@@ -32,6 +32,8 @@
         <base.version>1.0.0-${base.env}-SNAPSHOT</base.version>
         <!-- 项目版本 -->
         <i.project.version>1.0.0-${base.env}-SNAPSHOT</i.project.version>
+        <!-- cloud项目版本 -->
+        <i.cloud.version>1.0.0-${base.env}-CLOUD-SNAPSHOT</i.cloud.version>
         <!-- 第三方包依赖 -->
         <dependency.version>1.0.0</dependency.version>
     </properties>

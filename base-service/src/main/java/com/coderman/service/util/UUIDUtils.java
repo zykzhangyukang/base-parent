@@ -18,4 +18,13 @@ public class UUIDUtils {
     public synchronized static String getPrimaryValue() {
         return UUID.randomUUID().toString().replace("-", "");
     }
+
+    /**
+     * 生成普通的uuid
+     *
+     * @return
+     */
+    public synchronized static String getUuid(){
+        return UUID.randomUUID().toString();
+    }
 }

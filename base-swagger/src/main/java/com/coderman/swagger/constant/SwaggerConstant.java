@@ -10,6 +10,11 @@ public interface SwaggerConstant {
 
     public final static String METHOD_GET = "GET";
     public final static String METHOD_POST = "POST";
+    public final static String METHOD_DELETE= "DELETE";
+    public final static String METHOD_PUT = "PUT";
+    public final static String METHOD_HEAD = "HEAD";
+    public final static String METHOD_OPTIONS = "OPTIONS";
+    public final static String METHOD_PATCH = "PATCH";
 
     public final static String PARAM_FORM = "form";
     public final static String PARAM_BODY = "body";

@@ -166,7 +166,7 @@
                         <!-- 覆盖生成文件 -->
                         <overwrite>true</overwrite>
                         <!-- 定义配置文件 -->
-                        <configurationFile>mybatis-generator.xml</configurationFile>
+                        <configurationFile>${basedir}/src/main/resources/mybatis-generator.xml</configurationFile>
                     </configuration>
                     <dependencies>
                         <dependency>

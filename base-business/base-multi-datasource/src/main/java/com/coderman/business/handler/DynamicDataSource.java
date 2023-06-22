@@ -41,10 +41,14 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Appl
                 // 多数据源列表,排除datasource本身
                 if (!(dataSourceEntry.getValue() instanceof DynamicDataSource)) {
 
+                    // 默认数据源 - step1
+                    dataSource = dataSourceEntry.getValue();
+                    defaultDataSourceName =dataSourceEntry.getKey();
+
                     targetDataSources.put(dataSourceEntry.getKey(),dataSourceEntry.getValue());
                 }
 
-                // 默认数据源
+                // 默认数据源 - step2
                 if (dataSourceEntry.getKey().toLowerCase().contains(domain.toLowerCase())) {
 
                     dataSource = dataSourceEntry.getValue();

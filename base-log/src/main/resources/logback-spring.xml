@@ -37,6 +37,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.file}/AllLog.%d{yyyyMMdd}</fileNamePattern>
             <maxHistory>7</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
     </appender>
 

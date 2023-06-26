@@ -1,11 +1,13 @@
 package com.coderman.api.util;
 
 
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.vo.PageVO;
 import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PageUtil {
 
@@ -21,8 +23,14 @@ public class PageUtil {
     public static Map<String, Object> getConditionMap(Map<String, Object> conditionMap, Integer currentPage, Integer pageSize) {
 
         Assert.notNull(conditionMap, "conditionMap is null");
-        Assert.notNull(currentPage, "currentPage is null");
-        Assert.notNull(pageSize, "pageSize is null");
+
+        if(Objects.isNull(currentPage)){
+            currentPage = 1;
+        }
+
+        if(Objects.isNull(pageSize)){
+            pageSize = CommonConstant.SYS_PAGE_SIZE;
+        }
 
         Integer offset = currentPage < 1 ? 1 : (currentPage - 1) * pageSize;
 

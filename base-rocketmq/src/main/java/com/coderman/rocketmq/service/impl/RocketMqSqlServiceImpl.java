@@ -102,7 +102,7 @@ public class RocketMqSqlServiceImpl implements RocketMqSqlService {
                 mqMsgDAO.updateByPrimaryKeySelective(model);
 
                 // 发送消息,没有抛出异常说明消息发送成功
-                Message message = new Message(applicationName + "_topic", msg.getTag(), StringUtils.EMPTY, msg.getMsg().getBytes(StandardCharsets.UTF_8));
+                Message message = new Message(StringUtils.upperCase(applicationName) + "@TOPIC", msg.getTag(), StringUtils.EMPTY, msg.getMsg().getBytes(StandardCharsets.UTF_8));
                 SendResult sendResult = defaultMQProducer.send(message);
 
 

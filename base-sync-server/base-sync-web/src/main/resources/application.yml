@@ -19,13 +19,13 @@ job:
   appName: sync-executor
   logPath: /data/jobhandler
   logRetentionDays: 4
-  enable: true
+  enable: false
 
 sync:
   # es 配置
   elasticsearch:
     cluster-name: sync
-    hosts: 103.133.179.32:9200
+    hosts: 165.154.133.250:9200
     scheme: http
     connect-time-out: 5000
     socket-time-out: 60000
@@ -34,7 +34,7 @@ sync:
     max-connect-num-per-route: 100
   # rocketmq配置
   rocketmq:
-    namesrv-addr: 116.198.202.255:9876
+    namesrv-addr: 103.133.179.32:9876
     instance-name: SyncServer
     consumer-group: SyncConsumer
     consumer-order-group: SyncOrderConsumer

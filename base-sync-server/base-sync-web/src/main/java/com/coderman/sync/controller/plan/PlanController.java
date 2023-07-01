@@ -45,8 +45,8 @@ public class PlanController {
 
     @GetMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", paramType = SwaggerConstant.DATA_INT, dataType = SwaggerConstant.DATA_INT, value = "当前页", required = true),
-            @ApiImplicitParam(name = "limit", paramType = SwaggerConstant.DATA_INT, dataType = SwaggerConstant.DATA_INT, value = "分页大小", required = true),
+            @ApiImplicitParam(name = "page", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_INT, value = "当前页", required = true),
+            @ApiImplicitParam(name = "limit", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_INT, value = "分页大小", required = true),
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "PlanVO", value = {"srcProject", "destDb", "destProject", "planContent", "updateTime", "createTime", "srcDb",
@@ -64,7 +64,7 @@ public class PlanController {
 
     @GetMapping(value = "/content")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.DATA_STRING, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
     })
     public ResultVO<String> selectContent(String uuid) {
 
@@ -73,7 +73,7 @@ public class PlanController {
 
     @GetMapping(value = "/delete")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.DATA_STRING, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
     })
     public ResultVO<Void> deletePlan(String uuid) {
 
@@ -82,7 +82,7 @@ public class PlanController {
 
     @GetMapping(value = "/status")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.DATA_STRING, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
+            @ApiImplicitParam(name = "uuid", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "uuid", required = true),
     })
     public ResultVO<Void> updateStatus(String uuid) {
 

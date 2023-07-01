@@ -45,7 +45,7 @@ public class FuncController {
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "功能解绑用户")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "funcId",paramType = SwaggerConstant.DATA_INT,dataType = SwaggerConstant.DATA_INT,value = "功能id",required = true)
+            @ApiImplicitParam(name = "funcId",paramType = SwaggerConstant.PARAM_QUERY,dataType = SwaggerConstant.DATA_INT,value = "功能id",required = true)
     })
     @GetMapping(value = "/delete/user/bind")
     @ApiReturnParams({
@@ -58,7 +58,7 @@ public class FuncController {
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET,value = "功能解绑资源")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "funcId",paramType = SwaggerConstant.DATA_INT,dataType = SwaggerConstant.DATA_INT,value = "功能id",required = true)
+            @ApiImplicitParam(name = "funcId",paramType = SwaggerConstant.PARAM_QUERY,dataType = SwaggerConstant.DATA_INT,value = "功能id",required = true)
     })
     @GetMapping(value = "/delete/resc/bind")
     @ApiReturnParams({

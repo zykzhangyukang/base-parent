@@ -9,12 +9,6 @@
     <groupId>com.coderman</groupId>
     <packaging>pom</packaging>
 
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <groupId>org.springframework.boot</groupId>
-        <version>2.2.4.RELEASE</version>
-    </parent>
-
     <properties>
         <fastjson.version>1.2.71</fastjson.version>
         <mysql.connector.version>8.0.19</mysql.connector.version>
@@ -26,6 +20,7 @@
         <rocketmq.boot.version>2.1.1</rocketmq.boot.version>
         <rocketmq.client.version>4.7.0</rocketmq.client.version>
         <xxl.job.version>2.1.0</xxl.job.version>
+        <jedis.version>3.1.0</jedis.version>
         <jsoup.version>1.12.1</jsoup.version>
         <jasypt.boot.starter>2.1.1</jasypt.boot.starter>
         <ip2region.version>1.7.2</ip2region.version>

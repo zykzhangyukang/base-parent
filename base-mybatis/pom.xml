@@ -89,11 +89,11 @@
                         <configuration>
                             <encoding>UTF-8</encoding>
                             <outputDirectory>
-                                ${env.MAVEN_HOME}/conf
+                                ${env.MAVEN_HOME}/conf/mybatis
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <directory>${project.basedir}/src/main/resources/mybatis</directory>
                                 </resource>
                             </resources>
                             <overwrite>true</overwrite>

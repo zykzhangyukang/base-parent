@@ -173,7 +173,7 @@
                         <!-- 覆盖生成文件 -->
                         <overwrite>true</overwrite>
                         <!-- 定义配置文件 -->
-                        <configurationFile>  ${env.MAVEN_HOME}/conf/example/mybatis-generator.xml</configurationFile>
+                        <configurationFile>  ${env.MAVEN_HOME}/conf/mybatis/mybatis-generator.xml</configurationFile>
                     </configuration>
                     <dependencies>
                         <dependency>

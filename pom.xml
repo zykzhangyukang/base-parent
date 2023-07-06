@@ -153,34 +153,6 @@
     <build>
         <pluginManagement>
             <plugins>
-
-                <!-- 文件拷贝插件 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>copy-resources</id>
-                            <phase>prepare-package</phase>
-                            <goals>
-                                <goal>copy-resources</goal>
-                            </goals>
-                            <configuration>
-                                <encoding>UTF-8</encoding>
-                                <outputDirectory>
-                                    ${env.MAVEN_HOME}
-                                </outputDirectory>
-                                <resources>
-                                    <resource>
-                                        <directory>${project.basedir}/src/main/resources</directory>
-                                    </resource>
-                                </resources>
-                                <overwrite>true</overwrite>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
                 <!-- mybatis 代码生成插件 -->
                 <plugin>
                     <groupId>org.mybatis.generator</groupId>
@@ -201,7 +173,7 @@
                         <!-- 覆盖生成文件 -->
                         <overwrite>true</overwrite>
                         <!-- 定义配置文件 -->
-                        <configurationFile>  ${env.MAVEN_HOME}/example/mybatis-generator.xml</configurationFile>
+                        <configurationFile>  ${env.MAVEN_HOME}/conf/example/mybatis-generator.xml</configurationFile>
                     </configuration>
                     <dependencies>
                         <dependency>

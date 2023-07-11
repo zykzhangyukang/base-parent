@@ -19,7 +19,6 @@
         <module>base-serial</module>
         <module>base-db-queue</module>
         <module>base-rocketmq</module>
-        <module>base-auth</module>
         <module>base-erp-service</module>
         <module>base-business</module>
         <module>base-sync-sdk</module>

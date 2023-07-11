@@ -2,6 +2,8 @@ package com.coderman.service.config;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -26,34 +28,32 @@ public class PropertyInitializer implements ApplicationContextInitializer<Config
         // 检查一下必填的属性
         applicationContext.getEnvironment().setRequiredProperties("domain");
 
-        Map<String, String> configMap = new HashMap<>();
-        Map<String, Map<String, String>> dictMap = new HashMap<>();
+        if(applicationContext instanceof AnnotationConfigServletWebServerApplicationContext){
 
+            Map<String, String> configMap = new HashMap<>();
+            Map<String, Map<String, String>> dictMap = new HashMap<>();
+            ConfigurableEnvironment environment = applicationContext.getEnvironment();
 
-        ConfigurableEnvironment environment = applicationContext.getEnvironment();
+            for (PropertySource<?> propertySource : environment.getPropertySources()) {
 
-        for (PropertySource<?> propertySource : environment.getPropertySources()) {
+                if (propertySource instanceof CompositePropertySource) {
+                    CompositePropertySource compositePropertySource = (CompositePropertySource) propertySource;
+                    setProperty(compositePropertySource.getPropertyNames(), compositePropertySource, environment, configMap, dictMap);
+                }
 
+                // propertySource instanceof MapPropertySource && (propertySource.getName().contains("bootstrap") || propertySource.getName().equals(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME))
+                if (propertySource instanceof MapPropertySource  || propertySource.getName().equals(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)) {
 
-            if (propertySource instanceof CompositePropertySource) {
-                CompositePropertySource compositePropertySource = (CompositePropertySource) propertySource;
-                setProperty(compositePropertySource.getPropertyNames(), compositePropertySource, environment, configMap, dictMap);
+                    assert propertySource instanceof MapPropertySource;
+                    MapPropertySource mapPropertySource = (MapPropertySource) propertySource;
+                    setProperty(mapPropertySource.getPropertyNames(), mapPropertySource, environment, configMap, dictMap);
+                }
+
             }
 
-            // propertySource instanceof MapPropertySource && (propertySource.getName().contains("bootstrap") || propertySource.getName().equals(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME))
-
-            if (propertySource instanceof MapPropertySource  || propertySource.getName().equals(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)) {
-
-                assert propertySource instanceof MapPropertySource;
-                MapPropertySource mapPropertySource = (MapPropertySource) propertySource;
-                setProperty(mapPropertySource.getPropertyNames(), mapPropertySource, environment, configMap, dictMap);
-            }
-
+            PropertyConfig.setConfigMap(configMap);
+            PropertyConfig.setDictMap(dictMap);
         }
-
-        PropertyConfig.setConfigMap(configMap);
-        PropertyConfig.setDictMap(dictMap);
-
     }
 
     @SuppressWarnings("all")

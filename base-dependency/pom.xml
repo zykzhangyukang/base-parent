@@ -26,11 +26,9 @@
         <ip2region.version>1.7.2</ip2region.version>
         <commons-io.version>2.8.0</commons-io.version>
         <poi.version>4.1.2</poi.version>
-        <mongo.java.driver.version>3.5.0</mongo.java.driver.version>
         <dbcp.version>1.4</dbcp.version>
         <mssql.version>8.2.0.jre8</mssql.version>
         <ojdbc10.version>19.15.0.0.1</ojdbc10.version>
-        <spring.data.mongodb.version>1.10.23.RELEASE</spring.data.mongodb.version>
         <httpclient.version>4.5.13</httpclient.version>
         <elasticsearch.version>6.5.0</elasticsearch.version>
         <easy.captcha.version>1.6.2</easy.captcha.version>
@@ -173,12 +171,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongo-java-driver</artifactId>
-                <version>${mongo.java.driver.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
                 <version>${dbcp.version}</version>
@@ -194,13 +186,6 @@
                 <groupId>com.oracle.database.jdbc</groupId>
                 <artifactId>ojdbc10</artifactId>
                 <version>${ojdbc10.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-mongodb</artifactId>
-                <version>${spring.data.mongodb.version}</version>
             </dependency>
 
 

@@ -11,6 +11,7 @@ import com.coderman.erp.api.UserApi;
 import com.coderman.erp.config.AuthErpConfig;
 import com.coderman.erp.util.AuthUtil;
 import com.coderman.erp.vo.AuthUserVO;
+import com.coderman.service.util.HttpContextUtil;
 import com.coderman.service.util.SpringContextUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -23,7 +24,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -49,32 +53,34 @@ import java.util.concurrent.TimeUnit;
  */
 @Aspect
 @Component
-@Slf4j
-@SuppressWarnings("all")
 @Order(value = AopConstant.AUTH_ASPECT_ORDER)
+@Lazy(value = false)
+@Slf4j
 public class AuthAspect {
 
-
-    @Autowired(required = false)
     private UserApi userApi;
-
-
-    @Autowired(required = false)
     private RescApi rescApi;
 
-
-    @Autowired
-    private AuthErpConfig authErpConfig;
-
-
-    @Autowired
-    private SpringContextUtil springContextUtil;
-
+    private final AuthErpConfig authErpConfig;
     /**
-     * 不拦截的接口
+     * 白名单接口
      */
-    public static List<String> whitelistUrl = new ArrayList<>();
+    public static List<String> whiteListUrl = new ArrayList<>();
+    /**
+     * 资源url与功能关系
+     */
+    public static Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
+    /**
+     * 无需拦截的url且有登录信息
+     */
+    public static List<String> unFilterHasLoginInfoUrl = new ArrayList<>();
 
+
+    public AuthAspect(@Autowired(required = false) UserApi userApi, @Autowired(required = false) RescApi rescApi, @Autowired AuthErpConfig authErpConfig) {
+        this.userApi = userApi;
+        this.rescApi = rescApi;
+        this.authErpConfig = authErpConfig;
+    }
 
     /**
      * 保存token与用户的关系
@@ -96,18 +102,6 @@ public class AuthAspect {
             .build();
 
 
-    /**
-     * 资源与功能资源id
-     */
-    public static Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
-
-
-    /**
-     * 不需要过滤的url且有登入信息
-     */
-    public static List<String> unFilterHasLoginInfoUrlList = new ArrayList<>();
-
-
     @PostConstruct
     public void init() {
 
@@ -115,9 +109,7 @@ public class AuthAspect {
         String project = System.getProperty("domain");
 
         // 白名单
-        whitelistUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all",
-                "/auth/api/resc/all", "/auth/api/user/info"));
-
+        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all", "/auth/api/resc/all", "/auth/api/user/info"));
 
         // 刷新系统资源
         refreshSystemAllRescMap(project);
@@ -134,7 +126,7 @@ public class AuthAspect {
 
             if (rescApi == null) {
 
-                rescApi = springContextUtil.getBean(RescApi.class);
+                rescApi = SpringContextUtil.getBean(RescApi.class);
             }
 
             systemAllResourceMap = this.rescApi.getSystemAllRescMap(project).getResult();
@@ -155,32 +147,29 @@ public class AuthAspect {
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
 
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-
+        HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
+        HttpServletResponse response = HttpContextUtil.getHttpServletResponse();
 
         String path = request.getServletPath();
 
         // 白名单直接放行
-        if (whitelistUrl.contains(path)) {
+        if (whiteListUrl.contains(path)) {
+
             return point.proceed();
         }
 
         // 访问令牌
-        String token = Optional.ofNullable(request.getHeader(CommonConstant.USER_TOKEN_NAME)).orElse(request.getParameter("token"));
+        String token = request.getHeader(CommonConstant.USER_TOKEN_NAME);
 
         if (StringUtils.isBlank(token)) {
 
-            assert response != null;
             response.setStatus(ResultConstant.RESULT_CODE_401);
             return null;
         }
 
         // 系统不存在的资源直接返回
-        if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrlList.contains(path)) {
+        if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrl.contains(path)) {
 
-
-            assert response != null;
             response.setStatus(ResultConstant.RESULT_CODE_404);
             return null;
         }
@@ -196,7 +185,7 @@ public class AuthAspect {
 
                     if (userApi == null) {
 
-                        userApi = springContextUtil.getBean(UserApi.class);
+                        userApi = SpringContextUtil.getBean(UserApi.class);
                     }
 
                     return userApi.getUserByToken(token).getResult();
@@ -223,7 +212,7 @@ public class AuthAspect {
 
 
         // 不需要过滤的url且有登入信息,设置会话后直接放行
-        if (unFilterHasLoginInfoUrlList.contains(path)) {
+        if (unFilterHasLoginInfoUrl.contains(path)) {
 
             AuthUtil.setCurrent(authUserVO);
             return point.proceed();
@@ -261,7 +250,7 @@ public class AuthAspect {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.add("Authorization", token);
+        httpHeaders.add(CommonConstant.USER_TOKEN_NAME, token);
         httpHeaders.add("authSecurityCode", authErpConfig.getAuthSecurityCode());
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
@@ -305,14 +294,12 @@ public class AuthAspect {
             return null;
         }
 
-
         return authUserVO;
     }
 
 
     @SuppressWarnings("unchecked")
     private void getAllAuthByHttp(String domain) {
-
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -326,9 +313,8 @@ public class AuthAspect {
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);
 
         // 请求auth获取用户信息
-        ResultVO<Map<String, Set<Integer>>> resultVO = null;
+        ResultVO<?> resultVO = null;
         String[] authUrlArr = authErpConfig.getAuthServerArr().split(",");
-
 
         for (String authUrl : authUrlArr) {
 
@@ -357,7 +343,7 @@ public class AuthAspect {
             return;
         }
 
-        systemAllResourceMap = resultVO.getResult();
+        systemAllResourceMap = (Map<String, Set<Integer>>) resultVO.getResult();
     }
 
 

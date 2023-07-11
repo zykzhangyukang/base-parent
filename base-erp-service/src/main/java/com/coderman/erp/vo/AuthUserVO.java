@@ -14,11 +14,17 @@ import java.util.List;
 @Data
 public class AuthUserVO extends BaseModel {
 
+    @ApiModelProperty(value = "用户id")
+    private Integer userId;
+
     @ApiModelProperty(value = "用户名")
     private String username;
 
     @ApiModelProperty(value = "密码")
     private String password;
+
+    @ApiModelProperty(value = "部门名称")
+    private String deptName;
 
     @ApiModelProperty(value = "部门编号")
     private String deptCode;

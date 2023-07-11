@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Configuration
 public class PropertyInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     private static final Pattern pattern = Pattern.compile("\\w+\\[\\d+\\]");

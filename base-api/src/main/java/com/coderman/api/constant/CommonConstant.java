@@ -30,9 +30,9 @@ public interface CommonConstant {
     String USER_TOKEN_NAME = "Authorization";
 
     /**
-     * 安全码
+     * 请求头权限安全码
      */
-    String AUTH_SECURITY_CODE ="coderman";
+    String AUTH_SECURITY_NAME = "AuthSecurityCode";
 
     /**
      * redis 分布式锁

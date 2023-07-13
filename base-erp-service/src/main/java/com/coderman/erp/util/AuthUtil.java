@@ -2,8 +2,9 @@ package com.coderman.erp.util;
 
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.erp.vo.AuthUserVO;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import com.coderman.service.util.HttpContextUtil;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class AuthUtil {
 
@@ -14,9 +15,16 @@ public class AuthUtil {
      * @return
      */
     public static AuthUserVO getCurrent() {
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        assert servletRequestAttributes != null;
-        return (AuthUserVO) servletRequestAttributes.getRequest().getAttribute(CommonConstant.USER_SESSION_KEY);
+
+        HttpServletRequest httpServletRequest = HttpContextUtil.getHttpServletRequest();
+        Object obj = httpServletRequest.getAttribute(CommonConstant.USER_SESSION_KEY);
+
+        if (obj instanceof AuthUserVO) {
+
+            return (AuthUserVO) obj;
+        }
+
+        return null;
     }
 
 
@@ -26,8 +34,7 @@ public class AuthUtil {
      * @param authUserVO 用户信息
      */
     public static void setCurrent(AuthUserVO authUserVO) {
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        assert servletRequestAttributes != null;
-        servletRequestAttributes.getRequest().setAttribute(CommonConstant.USER_SESSION_KEY, authUserVO);
+        HttpServletRequest httpServletRequest = HttpContextUtil.getHttpServletRequest();
+        httpServletRequest.setAttribute(CommonConstant.USER_SESSION_KEY, authUserVO);
     }
 }

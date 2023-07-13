@@ -249,7 +249,7 @@ public class AuthAspect {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         httpHeaders.add(CommonConstant.USER_TOKEN_NAME, token);
-        httpHeaders.add("authSecurityCode", authErpConfig.getAuthSecurityCode());
+        httpHeaders.add(CommonConstant.AUTH_SECURITY_NAME, authErpConfig.getAuthSecurityCode());
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
 
@@ -303,7 +303,7 @@ public class AuthAspect {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("authSecurityCode", authErpConfig.getAuthSecurityCode());
+        paramMap.add(CommonConstant.AUTH_SECURITY_NAME, authErpConfig.getAuthSecurityCode());
         paramMap.add("domain", domain);
 
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);

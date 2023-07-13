@@ -24,9 +24,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpEntity;
@@ -36,8 +35,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -61,6 +58,7 @@ public class AuthAspect {
     private UserApi userApi;
     private RescApi rescApi;
 
+    private final RestTemplate restTemplate;
     private final AuthErpConfig authErpConfig;
     /**
      * 白名单接口
@@ -76,10 +74,12 @@ public class AuthAspect {
     public static List<String> unFilterHasLoginInfoUrl = new ArrayList<>();
 
 
-    public AuthAspect(@Autowired(required = false) UserApi userApi, @Autowired(required = false) RescApi rescApi, @Autowired AuthErpConfig authErpConfig) {
+    public AuthAspect(@Autowired(required = false) UserApi userApi, @Autowired(required = false) RescApi rescApi,
+                                   @Autowired AuthErpConfig authErpConfig,@Autowired RestTemplateBuilder restTemplateBuilder) {
         this.userApi = userApi;
         this.rescApi = rescApi;
         this.authErpConfig = authErpConfig;
+        this.restTemplate = restTemplateBuilder.build();
     }
 
     /**
@@ -246,8 +246,6 @@ public class AuthAspect {
 
     private AuthUserVO getUserByHttp(String token) {
 
-        RestTemplate restTemplate = new RestTemplate();
-
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         httpHeaders.add(CommonConstant.USER_TOKEN_NAME, token);
@@ -300,8 +298,6 @@ public class AuthAspect {
 
     @SuppressWarnings("unchecked")
     private void getAllAuthByHttp(String domain) {
-
-        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

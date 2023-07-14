@@ -1,4 +1,4 @@
-package com.coderman.log;
+package com.coderman.log.core;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;

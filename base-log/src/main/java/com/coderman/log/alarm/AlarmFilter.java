@@ -6,8 +6,8 @@ import ch.qos.logback.core.spi.FilterReply;
 
 public class AlarmFilter extends LevelFilter {
 
-    public static final String LOG_SYS_FAIL = " Controller统一异常处理";
-    public static final String LOG_SYS_CLASS = "com.coderman.service.aop.GlobalExceptionHandler";
+    String LOG_SYS_FAIL = " Controller统一异常处理";
+    String LOG_SYS_CLASS = "com.coderman.service.aop.GlobalExceptionHandler";
 
     @Override
     public FilterReply decide(ILoggingEvent event) {
@@ -20,7 +20,7 @@ public class AlarmFilter extends LevelFilter {
         // 如果等级匹配上了, 要进一步匹配是否由全局异常的日志
         if (FilterReply.ACCEPT.equals(decide)) {
 
-            if (LOG_SYS_CLASS.equalsIgnoreCase(loggerName) && message != null && message.contains(LOG_SYS_FAIL)) {
+            if (LOG_SYS_CLASS.equalsIgnoreCase(loggerName) &&  message !=null && message.contains(LOG_SYS_FAIL)) {
 
                 return FilterReply.ACCEPT;
             } else {

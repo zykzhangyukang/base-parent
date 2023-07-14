@@ -18,7 +18,6 @@ public interface CommonConstant {
      */
     String BASE_DAO_PACKAGE= "com.coderman.*.dao";
 
-
     /**
      * 用户会话key
      */
@@ -38,6 +37,11 @@ public interface CommonConstant {
      * redis 分布式锁
      */
     String REDIS_GLOBAL_LOCK_KEY_CONSTANT = "redis_global_lock_";
+
+    /**
+     * 全局异常报错信息
+     */
+    public static final String GLOBAL_FAIL_MSG = " Controller统一异常处理";
 
 
     /**

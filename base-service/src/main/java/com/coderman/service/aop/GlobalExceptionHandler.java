@@ -1,12 +1,10 @@
 package com.coderman.service.aop;
 
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.log.LogConstant;
 import com.coderman.service.service.BaseService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -19,13 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author coderman
  * @Title: 全局异常处理
- * @Description: TOD
+ *
  * @date 2022/3/519:01
  */
 @ControllerAdvice
 public class GlobalExceptionHandler extends BaseService {
 
-    private static final Logger log = LoggerFactory.getLogger(LogConstant.LOG_SYS_CLASS);
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
@@ -47,12 +45,11 @@ public class GlobalExceptionHandler extends BaseService {
 
             resultVO.setMsg("系统繁忙,请稍后重试");
 
-            log.error(LogConstant.LOG_SYS_FAIL+":{}", request.getRequestURI(), e);
+            log.error(CommonConstant.GLOBAL_FAIL_MSG +":{}", request.getRequestURI(), e);
         }
 
 
         resultVO.setCode(ResultConstant.RESULT_CODE_500);
-
 
         return resultVO;
     }

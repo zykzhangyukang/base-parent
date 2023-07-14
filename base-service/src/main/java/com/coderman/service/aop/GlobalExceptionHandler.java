@@ -29,7 +29,6 @@ public class GlobalExceptionHandler extends BaseService {
     @ResponseBody
     public ResultVO<Void> handlerException(HttpServletRequest request, Exception e) {
 
-
         ResultVO<Void> resultVO = new ResultVO<>();
 
         if (e instanceof BusinessException) {
@@ -48,9 +47,7 @@ public class GlobalExceptionHandler extends BaseService {
             log.error(CommonConstant.GLOBAL_FAIL_MSG +":{}", request.getRequestURI(), e);
         }
 
-
         resultVO.setCode(ResultConstant.RESULT_CODE_500);
-
         return resultVO;
     }
 

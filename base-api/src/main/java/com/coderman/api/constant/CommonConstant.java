@@ -34,6 +34,11 @@ public interface CommonConstant {
     String AUTH_SECURITY_NAME = "AuthSecurityCode";
 
     /**
+     * 全局异常错误信息提示
+     */
+    String GLOBAL_FAIL_MSG = "Controller统一异常处理";
+
+    /**
      * redis 分布式锁
      */
     String REDIS_GLOBAL_LOCK_KEY_CONSTANT = "redis_global_lock_";

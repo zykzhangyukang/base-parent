@@ -43,11 +43,6 @@ public interface CommonConstant {
      */
     String REDIS_GLOBAL_LOCK_KEY_CONSTANT = "redis_global_lock_";
 
-    /**
-     * 全局异常报错信息
-     */
-    public static final String GLOBAL_FAIL_MSG = " Controller统一异常处理";
-
 
     /**
      * 分页每页显示

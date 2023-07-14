@@ -1,4 +1,4 @@
-package com.coderman.log;
+package com.coderman.log.core;
 
 import ch.qos.logback.core.PropertyDefinerBase;
 import org.springframework.stereotype.Component;

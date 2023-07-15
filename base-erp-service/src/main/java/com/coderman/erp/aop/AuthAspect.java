@@ -96,7 +96,7 @@ public class AuthAspect {
             .expireAfterWrite(30, TimeUnit.MINUTES)
             // 过期监听
             .removalListener((RemovalListener<String, AuthUserVO>) removalNotification -> {
-                log.info("过期会话缓存清除 token:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
+                log.debug("过期会话缓存清除 token:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
             })
             .recordStats()
             .build();
@@ -179,7 +179,7 @@ public class AuthAspect {
         try {
             authUserVO = userTokenCacheMap.get(token, () -> {
 
-                log.info("尝试从redis中获取用户信息结果.token:{}", token);
+                log.debug("尝试从redis中获取用户信息结果.token:{}", token);
 
                 try {
 
@@ -202,7 +202,7 @@ public class AuthAspect {
         }
 
 
-        if (authUserVO == null) {
+        if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
 
             userTokenCacheMap.invalidate(token);
             assert response != null;

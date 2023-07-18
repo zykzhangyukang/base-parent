@@ -6,6 +6,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -23,7 +24,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @SpringBootConfiguration
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude = {MongoAutoConfiguration.class})
 @EnableCustomSwagger2
 @ComponentScan(basePackages = {CommonConstant.BASE_PACKAGE},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),

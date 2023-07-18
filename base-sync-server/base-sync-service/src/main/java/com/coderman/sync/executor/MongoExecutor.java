@@ -6,8 +6,8 @@ import com.coderman.sync.exception.SyncException;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
@@ -33,15 +33,17 @@ public class MongoExecutor extends AbstractExecutor {
 
             log.info("执行SQL语句->" + sqlMeta.getSql());
 
-            CommandResult commandResult = mongoTemplate.executeCommand(sqlMeta.getSql());
-            if (!commandResult.ok()) {
+            Document commandResult  = mongoTemplate.executeCommand(sqlMeta.getSql());
+            if (!commandResult .getBoolean("ok")) {
 
-                throw new SyncException(ErrorCodeEnum.DB_MONGO_ERROR, "mongo执行异常," + commandResult.getErrorMessage());
+                throw new SyncException(ErrorCodeEnum.DB_MONGO_ERROR, "mongo执行异常," + commandResult .getString("errmsg"));
             }
 
-            if (commandResult.containsField("writeErrors")) {
+            if (commandResult .containsKey("writeErrors")) {
 
-                String errmsg = ((BasicDBObject) ((BasicDBList) commandResult.get("writeErrors")).get(0)).getString("errmsg");
+                Document writeErrors = ((List<Document>) commandResult .get("writeErrors")).get(0);
+                String errmsg = writeErrors.getString("errmsg");
+
                 if (errmsg.contains("E11000 duplicate key error")) {
 
                     throw new SyncException(ErrorCodeEnum.DB_KEY_DUPLICATE, "键值重复," + errmsg);
@@ -65,7 +67,8 @@ public class MongoExecutor extends AbstractExecutor {
                 sqlMeta.setResultList(result);
             } else {
 
-                sqlMeta.setAffectNum(commandResult.getInt("n"));
+                int affectedRows = commandResult.getInteger("n");
+                sqlMeta.setAffectNum(affectedRows);
             }
 
             return super.getSqlList();

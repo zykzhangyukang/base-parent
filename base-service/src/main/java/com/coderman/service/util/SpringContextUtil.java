@@ -3,13 +3,13 @@ package com.coderman.service.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
+@Order(Integer.MIN_VALUE)
 @Lazy(value = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.ANY)
 public class SpringContextUtil implements ApplicationContextAware, DisposableBean {
@@ -25,7 +26,7 @@ public class SpringContextUtil implements ApplicationContextAware, DisposableBea
     private static ApplicationContext applicationContext = null;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext){
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext){
         SpringContextUtil.applicationContext = applicationContext;
     }
 

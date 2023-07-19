@@ -27,16 +27,16 @@ import java.util.Map;
 @Component
 public class QueueDAO {
 
-    private static String PUSH_SQL = "insert into %spub_queue (queue_name,business_data,create_time,is_consumed) values(:queueName,:businessData,:createTime,0)";
     private static final String POP_SQL_FIRST = "select top";
-    public static String POP_SQL_SECOND = "node_id as nodeId,business_data as businessData from %spub_queue where queue_name = :queueName and is_consumed=0 order by create_time asc";
-    public static String DELETE_SQL = "delete from pub_queue where is_consumed=1 and create_time < dateadd(day,:clearDay,getutcdate())";
-    public static String POP_SQL_MYSQL= "select node_id as nodeId,business_data as businessData from %spub_queue where queue_name =:queueName and is_consumed=0 order by create_time asc limit ";
-    public static String DELETE_SQL_POSTGRESQL="delete from %spub_queue where is_consumed=1 and create_time <cast(now()+':clearDay day' as TIMESTAMP(0))";
-    public static String CONSUME_SQL = "update %spub_queue set is_consumed =1 where node_id in (:idList)";
-    public static final String SQL_TYPE_SQL_SERVER = "sqlServer";
-    public static final String SQL_TYPE_MYSQL = "mysql";
-    public static final String SQL_TYPE_POSTGRESQL="postgresql";
+    private static  String PUSH_SQL = "insert into %spub_queue (queue_name,business_data,create_time,is_consumed) values(:queueName,:businessData,:createTime,0)";
+    private static   String POP_SQL_SECOND = "node_id as nodeId,business_data as businessData from %spub_queue where queue_name = :queueName and is_consumed=0 order by create_time asc";
+    private static   String POP_SQL_MYSQL= "select node_id as nodeId,business_data as businessData from %spub_queue where queue_name =:queueName and is_consumed=0 order by create_time asc limit ";
+    private static   String CONSUME_SQL = "update %spub_queue set is_consumed =1 where node_id in (:idList)";
+    public static  String SQL_TYPE_SQL_SERVER = "sqlServer";
+    public static  String SQL_TYPE_MYSQL = "mysql";
+    public static  String SQL_TYPE_POSTGRESQL="postgresql";
+    private static final String DELETE_SQL_POSTGRESQL = "delete from %spub_queue where is_consumed=1 and create_time <cast(now()+':clearDay day' as TIMESTAMP(0))";
+    private static  String DELETE_SQL = "delete from pub_queue where is_consumed=1 and create_time < dateadd(day,:clearDay,getutcdate())";
 
     public static String sqlType;
 

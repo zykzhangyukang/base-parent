@@ -22,7 +22,8 @@ CREATE TABLE `pub_mq_message` (
 -- 同步计划 --
 CREATE TABLE `pub_sync_plan` (
   `uuid` varchar(32) NOT NULL,
-  `plan_code` varchar(32) NOT NULL,
+  `plan_code` varchar(64) NOT NULL,
+  `description` varchar(64) NOT NULL,
   `src_db` varchar(16) NOT NULL,
   `dest_db` varchar(16) NOT NULL,
   `src_project` varchar(32) NOT NULL,

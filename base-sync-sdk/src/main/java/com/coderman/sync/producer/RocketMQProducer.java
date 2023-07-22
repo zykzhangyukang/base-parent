@@ -5,17 +5,36 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+@Component
 public class RocketMQProducer extends BaseService {
 
     private DefaultMQProducer defaultMQProducer;
+
+    @Value("${sync.rocketmq.producerGroup}")
     private String producerGroup;
+
+    @Value("${sync.rocketmq.namesrvAddr}")
     private String namesrvAddr;
+
+    @Value("${sync.rocketmq.instantName}")
     private String instantName;
+
+    @Value("${sync.rocketmq.syncTopic}")
     private String syncTopic;
+
+    @Value("${sync.rocketmq.sendMsgTimeoutMillis}")
     private int sendMsgTimeoutMillis;
+
+    @Value("${sync.rocketmq.retryTimes}")
     private int retryTimes;
 
+    @PostConstruct
     public void init() throws MQClientException {
         this.defaultMQProducer = new DefaultMQProducer(this.producerGroup);
         defaultMQProducer.setNamesrvAddr(this.namesrvAddr);
@@ -28,6 +47,7 @@ public class RocketMQProducer extends BaseService {
         logger.info("rocketMQ初始化生产者完成[productGroup:{},instantName:{}]", this.producerGroup, this.instantName);
     }
 
+    @PreDestroy
     public void destroy() {
         this.defaultMQProducer.shutdown();
         logger.info("rocketMQ生产者[productGroup:{},instantName:{}]销毁", this.producerGroup, this.instantName);

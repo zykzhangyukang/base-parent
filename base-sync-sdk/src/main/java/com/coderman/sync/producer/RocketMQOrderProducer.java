@@ -5,32 +5,52 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+@Component
 public class RocketMQOrderProducer extends BaseService {
 
     private DefaultMQProducer defaultMQProducer;
-    private String producerGroup;
+
+    @Value("${sync.rocketmq.producerOrderGroup}")
+    private String producerOrderGroup;
+
+    @Value("${sync.rocketmq.namesrvAddr}")
     private String namesrvAddr;
+
+    @Value("${sync.rocketmq.instantName}")
     private String instantName;
-    private String syncTopic;
+
+    @Value("${sync.rocketmq.syncOrderTopic}")
+    private String syncOrderTopic;
+
+    @Value("${sync.rocketmq.sendMsgTimeoutMillis}")
     private int sendMsgTimeoutMillis;
+
+    @Value("${sync.rocketmq.retryTimes}")
     private int retryTimes;
 
+    @PostConstruct
     public void init() throws MQClientException {
-        this.defaultMQProducer = new DefaultMQProducer(this.producerGroup);
+        this.defaultMQProducer = new DefaultMQProducer(this.producerOrderGroup);
         defaultMQProducer.setNamesrvAddr(this.namesrvAddr);
-        defaultMQProducer.setCreateTopicKey(this.syncTopic);
+        defaultMQProducer.setCreateTopicKey(this.syncOrderTopic);
         defaultMQProducer.setInstanceName(this.instantName);
         defaultMQProducer.setSendMsgTimeout(this.sendMsgTimeoutMillis);
         defaultMQProducer.setRetryTimesWhenSendFailed(this.retryTimes);
         defaultMQProducer.start();
 
-        logger.info("rocketMQ初始化有序生产者完成[productOrderGroup:{},instantName:{}]", this.producerGroup, this.instantName);
+        logger.info("rocketMQ初始化有序生产者完成[productOrderGroup:{},instantName:{}]", this.producerOrderGroup, this.instantName);
     }
 
+    @PreDestroy
     public void destroy() {
         this.defaultMQProducer.shutdown();
-        logger.info("rocketMQ有序生产者[productOrderGroup:{},instantName:{}]销毁", this.producerGroup, this.instantName);
+        logger.info("rocketMQ有序生产者[productOrderGroup:{},instantName:{}]销毁", this.producerOrderGroup, this.instantName);
     }
 
     public SendResult send(Message message, String key) throws Exception {
@@ -53,12 +73,12 @@ public class RocketMQOrderProducer extends BaseService {
         this.defaultMQProducer = defaultMQProducer;
     }
 
-    public String getProducerGroup() {
-        return producerGroup;
+    public String getProducerOrderGroup() {
+        return producerOrderGroup;
     }
 
-    public void setProducerGroup(String producerGroup) {
-        this.producerGroup = producerGroup;
+    public void setProducerOrderGroup(String producerOrderGroup) {
+        this.producerOrderGroup = producerOrderGroup;
     }
 
     public String getNamesrvAddr() {
@@ -77,12 +97,12 @@ public class RocketMQOrderProducer extends BaseService {
         this.instantName = instantName;
     }
 
-    public String getSyncTopic() {
-        return syncTopic;
+    public String getSyncOrderTopic() {
+        return syncOrderTopic;
     }
 
-    public void setSyncTopic(String syncTopic) {
-        this.syncTopic = syncTopic;
+    public void setSyncOrderTopic(String syncOrderTopic) {
+        this.syncOrderTopic = syncOrderTopic;
     }
 
     public int getSendMsgTimeoutMillis() {
@@ -100,5 +120,4 @@ public class RocketMQOrderProducer extends BaseService {
     public void setRetryTimes(int retryTimes) {
         this.retryTimes = retryTimes;
     }
-
 }

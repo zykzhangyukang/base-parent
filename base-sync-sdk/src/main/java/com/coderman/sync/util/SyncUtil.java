@@ -323,7 +323,7 @@ public class SyncUtil {
             // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
             if (rocketMQOrderProducer != null && orderlyMsgKey != null) {
 
-                Message message = new Message(rocketMQOrderProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
+                Message message = new Message(rocketMQOrderProducer.getSyncOrderTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
                 sendResult = rocketMQOrderProducer.send(message, orderlyMsgKey);
 
             } else {

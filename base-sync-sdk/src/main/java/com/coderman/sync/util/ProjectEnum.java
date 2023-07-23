@@ -3,6 +3,11 @@ package com.coderman.sync.util;
 public enum ProjectEnum {
 
     /**
+     * 权限系统
+     */
+    AUTH("auth"),
+
+    /**
      * 测试系统
      */
     DEMO("demo"),

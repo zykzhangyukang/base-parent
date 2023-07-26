@@ -32,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -244,7 +245,14 @@ public class AuthAspect {
         return null;
     }
 
+    private void checkAuthErpConfig(){
+        Assert.notNull(authErpConfig.getAuthSecurityCode(), "缺少权限系统配置 {authSecurityCode}");
+        Assert.notNull(authErpConfig.getAuthServerArr(), "缺少权限系统配置 {authServerArr}");
+    }
+
     private AuthUserVO getUserByHttp(String token) {
+
+        this.checkAuthErpConfig();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -252,8 +260,6 @@ public class AuthAspect {
         httpHeaders.add(CommonConstant.AUTH_SECURITY_NAME, authErpConfig.getAuthSecurityCode());
 
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-
-
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);
 
         // 请求auth获取用户信息
@@ -296,8 +302,10 @@ public class AuthAspect {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     private void getAllAuthByHttp(String domain) {
+
+        this.checkAuthErpConfig();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -305,7 +313,6 @@ public class AuthAspect {
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
         paramMap.add(CommonConstant.AUTH_SECURITY_NAME, authErpConfig.getAuthSecurityCode());
         paramMap.add("domain", domain);
-
         HttpEntity<MultiValueMap<String, String>> restRequest = new HttpEntity<>(paramMap, httpHeaders);
 
         // 请求auth获取用户信息

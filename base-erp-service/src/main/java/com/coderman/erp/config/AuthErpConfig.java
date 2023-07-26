@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Data
-@SuppressWarnings("all")
 @ConfigurationProperties(prefix = "auth.erp")
 public class AuthErpConfig  {
 

@@ -12,6 +12,9 @@ public interface AopConstant {
     /**
      * Controller开始层切面
      */
+    // 请求限流
+    public static final int RATE_LIMIT_ASPECT_ORDER = 50;
+
 
     // 权限拦截
     public static final int AUTH_ASPECT_ORDER = 100;

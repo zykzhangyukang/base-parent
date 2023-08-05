@@ -1,10 +1,11 @@
 package com.coderman.limiter.aop;
 
+import com.coderman.api.constant.AopConstant;
 import com.coderman.limiter.annotation.RateLimit;
-import com.coderman.limiter.exception.RateLimitException;
+import com.coderman.api.exception.RateLimitException;
 import com.coderman.limiter.properties.DefaultLimitProperties;
-import com.coderman.limiter.resolver.KeyResolver;
 import com.coderman.limiter.properties.LimitProperties;
+import com.coderman.limiter.resolver.KeyResolver;
 import com.coderman.redis.RedisService;
 import com.coderman.service.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -28,25 +30,24 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Aspect
+@Component
+@Order(value = AopConstant.RATE_LIMIT_ASPECT_ORDER)
 public class RateLimitAspect implements ApplicationContextAware {
 
     @Resource
-    private RedisScript<List<Long>> rateLimitRedisScript;
-
-    @Resource
     private RedisService redisService;
-
 
     private ApplicationContext applicationContext;
 
     @Around("execution(public * *(..)) && @annotation(com.coderman.limiter.annotation.RateLimit)")
     public Object interceptor(ProceedingJoinPoint pjp) throws Throwable {
+
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         Method method = signature.getMethod();
         RateLimit rateLimit = method.getAnnotation(RateLimit.class);
 
         // 断言不会被限流
-        assertNonLimit(rateLimit, pjp);
+        this.assertNonLimit(rateLimit, pjp);
 
         return pjp.proceed();
     }
@@ -57,6 +58,7 @@ public class RateLimitAspect implements ApplicationContextAware {
     }
 
     public void assertNonLimit(RateLimit rateLimit, ProceedingJoinPoint pjp) {
+
         Class<? extends KeyResolver> keyResolverClazz = rateLimit.keyResolver();
         KeyResolver keyResolver = applicationContext.getBean(keyResolverClazz);
         String resolve = keyResolver.resolve(HttpContextUtil.getHttpServletRequest(), pjp);
@@ -129,7 +131,7 @@ public class RateLimitAspect implements ApplicationContextAware {
         return Arrays.asList(tokenKey, timestampKey);
     }
 
-    private String getLuaScript(){
+    private String getLuaScript() {
         return "local tokens_key = KEYS[1]\n" +
                 "local timestamp_key = KEYS[2]\n" +
                 "local rate = tonumber(ARGV[1])\n" +

@@ -38,18 +38,17 @@ public class GlobalExceptionHandler extends BaseService {
 
         } else if (e instanceof RateLimitException) {
 
-            resultVO.setMsg("请求过于频繁，您已被限流！");
+            resultVO.setMsg("请求过于频繁");
             resultVO.setCode(ResultConstant.RESULT_CODE_429);
-
-            log.warn("请求限流,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
+            log.warn("请求过于频繁,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
 
 
         } else if (e instanceof HttpRequestMethodNotSupportedException) {
 
             resultVO.setMsg("请求错误");
             resultVO.setCode(ResultConstant.RESULT_CODE_400);
-
             log.warn("非法请求:{},url:{}", e.getMessage(), request.getRequestURI());
+
         } else {
 
             resultVO.setMsg("系统繁忙,请稍后重试！");

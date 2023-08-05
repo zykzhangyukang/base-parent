@@ -1,6 +1,7 @@
 package com.coderman.limiter.resolver;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 1.0.0
  * 根据请求的uri进行限流
  */
+@Component
 public class UriKeyResolver implements KeyResolver {
 
     @Override

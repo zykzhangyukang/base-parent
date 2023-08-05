@@ -35,11 +35,13 @@ public class GlobalExceptionHandler extends BaseService {
         if (e instanceof BusinessException) {
 
             resultVO.setMsg(e.getMessage());
+            resultVO.setCode(ResultConstant.RESULT_CODE_402);
 
         } else if (e instanceof RateLimitException) {
 
             resultVO.setMsg("请求过于频繁");
             resultVO.setCode(ResultConstant.RESULT_CODE_429);
+
             log.warn("请求过于频繁,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
 
 
@@ -47,16 +49,17 @@ public class GlobalExceptionHandler extends BaseService {
 
             resultVO.setMsg("请求错误");
             resultVO.setCode(ResultConstant.RESULT_CODE_400);
+
             log.warn("非法请求:{},url:{}", e.getMessage(), request.getRequestURI());
 
         } else {
 
+            resultVO.setCode(ResultConstant.RESULT_CODE_500);
             resultVO.setMsg("系统繁忙,请稍后重试！");
 
             log.error(CommonConstant.GLOBAL_FAIL_MSG + ":{}", request.getRequestURI(), e);
         }
 
-        resultVO.setCode(ResultConstant.RESULT_CODE_500);
         return resultVO;
     }
 

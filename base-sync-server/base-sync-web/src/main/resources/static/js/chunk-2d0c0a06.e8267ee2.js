@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0c0a06"],{"431b":function(e,n,t){"use strict";t.r(n);var a=function(){var e=this,n=e.$createElement,t=e._self._c||n;return t("h1",[e._v("本地消息")])},c=[],s={name:"Message.vue"},u=s,r=t("2877"),l=Object(r["a"])(u,a,c,!1,null,"60f10019",null);n["default"]=l.exports}}]);
-//# sourceMappingURL=chunk-2d0c0a06.e8267ee2.js.map

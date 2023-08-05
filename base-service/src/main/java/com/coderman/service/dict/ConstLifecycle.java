@@ -1,10 +1,9 @@
 package com.coderman.service.dict;
 
 import com.coderman.api.constant.RedisDbConstant;
-import com.coderman.service.redis.RedisService;
+import com.coderman.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisCallback;

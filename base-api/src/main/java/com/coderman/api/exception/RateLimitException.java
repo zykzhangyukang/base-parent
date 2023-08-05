@@ -1,4 +1,4 @@
-package com.coderman.limiter.exception;
+package com.coderman.api.exception;
 
 /**
  * 限流异常

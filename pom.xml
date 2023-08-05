@@ -17,8 +17,8 @@
         <module>base-erp-service</module>
         <module>base-business</module>
         <module>base-sync-sdk</module>
-        <module>base-sync-server</module>
         <module>base-log</module>
+        <module>base-redis</module>
     </modules>
 
     <groupId>com.coderman</groupId>
@@ -105,6 +105,20 @@
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-rocketmq</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
+            <!-- 基础redis模块 -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-redis</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
+            <!-- 基础限流模块 -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-aop-limiter</artifactId>
                 <version>${base.version}</version>
             </dependency>
 

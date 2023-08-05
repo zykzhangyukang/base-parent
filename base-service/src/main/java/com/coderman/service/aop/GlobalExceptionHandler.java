@@ -3,8 +3,10 @@ package com.coderman.service.aop;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
+import com.coderman.api.exception.RateLimitException;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.service.BaseService;
+import com.coderman.service.util.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -17,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author coderman
  * @Title: 全局异常处理
- *
  * @date 2022/3/519:01
  */
 @ControllerAdvice
@@ -35,16 +36,25 @@ public class GlobalExceptionHandler extends BaseService {
 
             resultVO.setMsg(e.getMessage());
 
+        } else if (e instanceof RateLimitException) {
+
+            resultVO.setMsg("请求过于频繁，您已被限流！");
+            resultVO.setCode(ResultConstant.RESULT_CODE_429);
+
+            log.warn("请求限流,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
+
+
         } else if (e instanceof HttpRequestMethodNotSupportedException) {
 
             resultVO.setMsg("请求错误");
+            resultVO.setCode(ResultConstant.RESULT_CODE_400);
 
             log.warn("非法请求:{},url:{}", e.getMessage(), request.getRequestURI());
         } else {
 
-            resultVO.setMsg("系统繁忙,请稍后重试");
+            resultVO.setMsg("系统繁忙,请稍后重试！");
 
-            log.error(CommonConstant.GLOBAL_FAIL_MSG +":{}", request.getRequestURI(), e);
+            log.error(CommonConstant.GLOBAL_FAIL_MSG + ":{}", request.getRequestURI(), e);
         }
 
         resultVO.setCode(ResultConstant.RESULT_CODE_500);

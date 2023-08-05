@@ -13,6 +13,12 @@ public interface ResultConstant {
      */
     Integer RESULT_CODE_200 = 200;
 
+
+    /**
+     * 400 请求错误
+     */
+    Integer RESULT_CODE_400 = 400;
+
     /**
      * 401 未登入
      */
@@ -40,6 +46,12 @@ public interface ResultConstant {
      * 405 警告
      */
     Integer RESULT_CODE_405 = 405;
+
+
+    /**
+     * 429 限流
+     */
+    Integer RESULT_CODE_429 = 429;
 
 
     /**

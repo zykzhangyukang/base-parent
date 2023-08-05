@@ -59,13 +59,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-redis</artifactId>
         </dependency>
 
         <dependency>

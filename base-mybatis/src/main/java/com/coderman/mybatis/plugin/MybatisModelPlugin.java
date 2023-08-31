@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -41,7 +40,6 @@ public class MybatisModelPlugin extends PluginAdapter {
         topLevelClass.addImportedType(Data.class.getName());
         topLevelClass.addImportedType(EqualsAndHashCode.class.getName());
         topLevelClass.addImportedType(ApiModel.class.getName());
-        topLevelClass.addImportedType(Accessors.class.getName());
         topLevelClass.addImportedType(baseJavaType);
 
         // 添加父类
@@ -49,9 +47,8 @@ public class MybatisModelPlugin extends PluginAdapter {
 
         // 添加注解
         topLevelClass.addAnnotation("@" + EqualsAndHashCode.class.getSimpleName() + "(callSuper = " + Boolean.TRUE + ")");
-        topLevelClass.addAnnotation("@" + Accessors.class.getSimpleName() + "(chain = " + Boolean.TRUE + ")");
         topLevelClass.addAnnotation("@" + Data.class.getSimpleName());
-        topLevelClass.addAnnotation("@" + ApiModel.class.getSimpleName() + "(value=\"" + topLevelClass.getType().getShortName() + "\", description = \"\")");
+        topLevelClass.addAnnotation("@" + ApiModel.class.getSimpleName() + "(value=\"" + topLevelClass.getType().getShortName() + "\", description = \"XX实体类\")");
 
         return true;
     }

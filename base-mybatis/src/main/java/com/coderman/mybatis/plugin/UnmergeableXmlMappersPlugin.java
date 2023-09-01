@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class UnmergeableXmlMappersPlugin extends PluginAdapter {
 
+    @Override
     public boolean sqlMapGenerated(GeneratedXmlFile sqlMap, IntrospectedTable introspectedTable) {
         try {
             Field isMergeable = GeneratedXmlFile.class.getDeclaredField("isMergeable");

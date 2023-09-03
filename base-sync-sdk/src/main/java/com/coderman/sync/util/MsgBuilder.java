@@ -49,7 +49,7 @@ public class MsgBuilder {
      */
     public static MsgBuilder createOrderlyMsg(String planCode,ProjectEnum srcProject,ProjectEnum destProject,String businessKey){
 
-        return new MsgBuilder(planCode,destProject,destProject,businessKey);
+        return new MsgBuilder(planCode,srcProject,destProject,businessKey);
     }
 
 

@@ -16,7 +16,7 @@ public interface CommonConstant {
     /**
      * 基础的dao包名称
      */
-    String BASE_DAO_PACKAGE= "com.coderman.**.dao";
+    String BASE_DAO_PACKAGE= "com.coderman.*.dao";
 
     /**
      * 用户会话key

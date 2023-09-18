@@ -298,14 +298,14 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void delHash(String hashkey, String field, int db) {
+    public void delHash(String hashKey, String field, int db) {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
             public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-                redisConnection.hDel(serializeKey(hashkey), serializeHashKey(field));
+                redisConnection.hDel(serializeKey(hashKey), serializeHashKey(field));
                 return null;
             }
         });

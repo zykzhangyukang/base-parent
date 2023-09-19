@@ -98,6 +98,7 @@
     <!-- pro环境输出到文件 -->
     <springProfile name="pro">
         <root level="info">
+            <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
             <appender-ref ref="LOG_DING_ALARM"/>
         </root>

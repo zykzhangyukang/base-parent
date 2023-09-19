@@ -1,6 +1,7 @@
 package com.coderman.swagger.config;
 
-import org.springframework.context.annotation.Configuration;
+import com.coderman.swagger.condition.SwaggerEnabledCondition;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -8,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * swagger 资源映射路径
  * @author Devin
  */
-@Configuration
+@Conditional(value = {SwaggerEnabledCondition.class})
 public class SwaggerWebConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

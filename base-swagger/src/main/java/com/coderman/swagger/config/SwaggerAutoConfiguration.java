@@ -1,9 +1,11 @@
 package com.coderman.swagger.config;
 
+import com.coderman.swagger.condition.SwaggerEnabledCondition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -32,11 +34,8 @@ import java.util.function.Predicate;
  * 该属性为true时，配置文件中缺少对应的value或name的对应的属性值，也会注入成功
  * name : 用来设置是否开启swagger ui
  */
-@Configuration
 @EnableSwagger2
-@EnableAutoConfiguration
-@ConditionalOnProperty(name = "swagger.enabled", matchIfMissing = true)
-@Profile({"dev", "fat","uat"})
+@Conditional(value = {SwaggerEnabledCondition.class})
 public class SwaggerAutoConfiguration {
 
     /*** 默认的排除路径，排除Spring Boot默认的错误处理路径和端点*/

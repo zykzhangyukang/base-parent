@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -21,9 +22,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
+ *
  * Swagger 自动配置类
  * @version: V1.0
- *
+ * @author zhangyukang
  * matchIfMissing属性：
  * 用来指定如果配置文件中未进行对应属性配置时的默认处理：默认情况下matchIfMissing为false，也就是说如果未进行属性配置，则自动配置不生效。
  * 如果matchIfMissing为true，则表示如果没有对应的属性配置，则自动配置默认生效。
@@ -34,6 +36,7 @@ import java.util.function.Predicate;
 @EnableSwagger2
 @EnableAutoConfiguration
 @ConditionalOnProperty(name = "swagger.enabled", matchIfMissing = true)
+@Profile({"dev", "fat","uat"})
 public class SwaggerAutoConfiguration {
 
     /*** 默认的排除路径，排除Spring Boot默认的错误处理路径和端点*/

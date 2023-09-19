@@ -28,6 +28,8 @@ public class SystemStartedUpRunner implements ApplicationRunner {
     private String port;
     @Value("${server.servlet.context-path:}")
     private String contextPath;
+    @Value("${spring.profiles.active:}")
+    private String profilesActive;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -38,7 +40,7 @@ public class SystemStartedUpRunner implements ApplicationRunner {
                 url += contextPath;
             }
 
-            log.info("应用系统启动完毕，当前系统时间：{}，地址：{}", DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"), url);
+            log.info("应用系统启动完毕，当前系统时间：{}，地址：{} , profilesActive:{}", DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"), url , profilesActive);
         }
     }
 }

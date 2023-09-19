@@ -70,6 +70,7 @@
     <!-- fat环境输出到文件 -->
     <springProfile name="fat">
         <root level="info">
+            <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
         </root>
 
@@ -83,6 +84,7 @@
     <!-- uat环境输出到文件 -->
     <springProfile name="uat">
         <root level="info">
+            <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
         </root>
 

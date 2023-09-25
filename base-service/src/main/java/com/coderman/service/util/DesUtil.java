@@ -84,10 +84,39 @@ public class DesUtil {
      *
      * @return
      */
+    public static String decrypt(String data, String crypyKey) {
+
+        try {
+            return new String(decrypt(hex2byte(data.getBytes()), crypyKey.getBytes()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 密码解密
+     *
+     * @return
+     */
     public static String encrypt(String password) {
 
         try {
             return byte2hex(encrypt(password.getBytes(), PASSWORD_CRYPY_KEY.getBytes()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * 密码解密
+     *
+     * @return
+     */
+    public static String encrypt(String password, String crypyKey) {
+
+        try {
+            return byte2hex(encrypt(password.getBytes(), crypyKey.getBytes()));
         } catch (Exception e) {
             return null;
         }

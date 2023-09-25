@@ -25,11 +25,16 @@ public class EncryptPropertyConfig {
                 return value;
             }
 
-            if (value.trim().startsWith("DES@")) {
+            String crypyKey = System.getProperty("secret.key");
 
-                return DesUtil.decrypt(value.trim().substring(4));
+            if (value.trim().startsWith("DES@") && StringUtils.isBlank(crypyKey)) {
+
+                value =  DesUtil.decrypt(value.trim().substring(4));
+
+            }else if (value.trim().startsWith("DES@") && StringUtils.isNotBlank(crypyKey)){
+
+                value =  DesUtil.decrypt(value.trim().substring(4), crypyKey);
             }
-
 
             return value;
         };

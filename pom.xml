@@ -144,6 +144,13 @@
                 <version>${base.version}</version>
             </dependency>
 
+            <!-- 阿里云OSS -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-aliyun-oss</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
 
             <!-- 依赖模块引入 -->
             <dependency>

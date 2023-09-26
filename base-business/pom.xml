@@ -16,6 +16,7 @@
         <module>base-business-share</module>
         <module>base-multi-datasource</module>
         <module>base-aop-limiter</module>
+        <module>base-aliyun-oss</module>
     </modules>
 
 

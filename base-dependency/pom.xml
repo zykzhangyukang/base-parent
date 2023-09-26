@@ -43,11 +43,18 @@
         <knife4j.version>3.0.3</knife4j.version>
         <swagger.version>3.0.0</swagger.version>
         <swagger.annotations.version>1.5.13</swagger.annotations.version>
+        <aliyun.oss.version>3.17.1</aliyun.oss.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun.oss.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.springfox</groupId>

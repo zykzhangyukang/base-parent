@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,7 +51,10 @@ public class GlobalExceptionHandler extends BaseService {
             log.warn("请求过于频繁,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
 
 
-        } else if (e instanceof HttpRequestMethodNotSupportedException || e instanceof MethodArgumentTypeMismatchException || e instanceof MissingServletRequestPartException) {
+        } else if (e instanceof HttpRequestMethodNotSupportedException ||
+                e instanceof MethodArgumentTypeMismatchException ||
+                e instanceof MissingServletRequestPartException ||
+        e instanceof MissingServletRequestParameterException) {
 
             resultVO.setMsg("请求错误！");
             resultVO.setCode(ResultConstant.RESULT_CODE_400);

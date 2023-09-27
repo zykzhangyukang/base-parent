@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Api(value = "项目常量", tags = "项目常量")
+/**
+ * @author zhangyukang
+ */
+@Api(value = "本项目常量", tags = "本项目常量 [内存]")
 @RestController
 @RequestMapping(value = "/${domain}/const")
 public class ConstController {
 
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "项目常量列表")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "本项目常量列表")
     @GetMapping(value = "/list")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),

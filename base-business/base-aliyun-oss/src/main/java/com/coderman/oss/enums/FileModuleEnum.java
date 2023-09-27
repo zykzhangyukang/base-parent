@@ -1,5 +1,7 @@
 package com.coderman.oss.enums;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author ：zhangyukang
  * @date ：2023/09/27 10:57
@@ -21,6 +23,22 @@ public enum  FileModuleEnum {
      */
     USER_MODULE("user" , "用户模块")
     ;
+
+
+    /**
+     * 根据code获取枚举对象
+     *
+     * @param code code值
+     * @return
+     */
+    public static FileModuleEnum codeOf(String code){
+        for (FileModuleEnum value : FileModuleEnum.values()) {
+            if(StringUtils.equals(value.getCode() , code)){
+                return value;
+            }
+        }
+        return null;
+    }
 
     private String code;
 

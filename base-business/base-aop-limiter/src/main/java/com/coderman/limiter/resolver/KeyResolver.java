@@ -5,7 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author yuwenbo1
+ * @author zhangyukang
  * @since 1.0.0
  */
 public interface KeyResolver {

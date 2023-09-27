@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler extends BaseService {
             log.warn("请求过于频繁,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
 
 
-        } else if (e instanceof HttpRequestMethodNotSupportedException || e instanceof MethodArgumentTypeMismatchException) {
+        } else if (e instanceof HttpRequestMethodNotSupportedException || e instanceof MethodArgumentTypeMismatchException || e instanceof MissingServletRequestPartException) {
 
             resultVO.setMsg("请求错误！");
             resultVO.setCode(ResultConstant.RESULT_CODE_400);

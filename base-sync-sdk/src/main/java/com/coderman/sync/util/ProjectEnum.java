@@ -8,44 +8,9 @@ public enum ProjectEnum {
     AUTH("auth"),
 
     /**
-     * 测试系统
+     * 权限系统-sync
      */
-    DEMO("demo"),
-
-    /**
-     * 索引系统
-     */
-    PIM("pim"),
-
-    /**
-     * 采购系统
-     */
-    PMS("pms"),
-
-    /**
-     * 仓储系统
-     */
-    WMS("wms"),
-
-    /**
-     * 营销后台
-     */
-    MMS("mms"),
-
-    /**
-     * 购物车
-     */
-    CART("cart"),
-
-    /**
-     * 营销前台
-     */
-    MARKET("market"),
-
-    /**
-     * 下单系统
-     */
-    ORDER("order");
+    AUTH_SYNC("auth_sync");
 
 
     private String key;

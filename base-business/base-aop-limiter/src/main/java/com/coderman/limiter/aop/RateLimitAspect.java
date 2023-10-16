@@ -6,7 +6,7 @@ import com.coderman.api.exception.RateLimitException;
 import com.coderman.limiter.properties.DefaultLimitProperties;
 import com.coderman.limiter.properties.LimitProperties;
 import com.coderman.limiter.resolver.KeyResolver;
-import com.coderman.redis.RedisService;
+import com.coderman.redis.service.RedisService;
 import com.coderman.service.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -1,4 +1,4 @@
-package com.coderman.service.config;
+package com.coderman.redis.config;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;

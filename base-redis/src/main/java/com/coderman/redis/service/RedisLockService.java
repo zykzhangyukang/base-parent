@@ -1,4 +1,4 @@
-package com.coderman.redis;
+package com.coderman.redis.service;
 
 public interface RedisLockService {
 

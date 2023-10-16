@@ -1,6 +1,7 @@
-package com.coderman.redis;
+package com.coderman.redis.service.impl;
 
 import com.coderman.api.constant.CommonConstant;
+import com.coderman.redis.service.RedisLockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;

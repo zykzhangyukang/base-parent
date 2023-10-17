@@ -420,4 +420,12 @@ public interface RedisService {
      */
     Set<String> keys(String key, int db);
 
+
+    /**
+     * 发布订阅消息
+     *
+     * @param topic 主题
+     * @param msgObj 消息内容
+     */
+    void sendMessage(String topic , Object msgObj);
 }

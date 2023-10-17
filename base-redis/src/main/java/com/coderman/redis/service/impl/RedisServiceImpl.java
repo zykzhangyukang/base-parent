@@ -1050,4 +1050,15 @@ public class RedisServiceImpl implements RedisService {
 
         return (Set<String>) obj;
     }
+
+    @Override
+    public void sendMessage(String topic, Object msgObj) {
+        redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                Long publish = redisConnection.publish(serializeKey(topic), serializeValue(msgObj));
+                return null;
+            }
+        }, true);
+    }
 }

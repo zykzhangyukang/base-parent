@@ -1,6 +1,7 @@
 package com.coderman.redis.config;
 
 import com.coderman.redis.annotaion.RedisChannelListener;
+import com.coderman.redis.parser.CommonRedisSerializer;
 import com.coderman.redis.parser.RedisChannelListenerParser;
 import com.coderman.redis.service.RedisService;
 import lombok.NonNull;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -23,6 +25,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Objects;
@@ -36,6 +39,10 @@ import java.util.stream.Stream;
 public abstract class BaseRedisConfig implements EnvironmentAware {
 
     private Environment environment;
+
+    @Resource
+    private RedisChannelListenerParser listenerParser;
+
 
     @Override
     public void setEnvironment(@NonNull Environment environment) {
@@ -70,6 +77,22 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
         return stringRedisTemplate;
     }
 
+
+    @SuppressWarnings("all")
+    public RedisTemplate createRedisTemplate(JedisConnectionFactory connectionFactory) {
+
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+
+        RedisTemplate redisTemplate = new RedisTemplate();
+
+        redisTemplate.setConnectionFactory(connectionFactory);
+        redisTemplate.setKeySerializer(stringRedisSerializer);
+        redisTemplate.setValueSerializer(genericJackson2JsonRedisSerializer);
+        redisTemplate.setHashKeySerializer(stringRedisSerializer);
+        redisTemplate.setHashValueSerializer(genericJackson2JsonRedisSerializer);
+        return redisTemplate;
+    }
 
     public JedisConnectionFactory createJedisConnectionFactory(RedisProperties properties, JedisPoolConfig jedisPoolConfig){
 
@@ -107,10 +130,10 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
     }
 
 
-    public RedisMessageListenerContainer redisMessageListenerContainer(@Autowired RedisService redisService, @Autowired RedisChannelListenerParser listenerParser) {
+    public RedisMessageListenerContainer createMessageListenerContainer(JedisConnectionFactory jedisConnectionFactory) {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(Objects.requireNonNull(redisService.getRedisTemplate().getConnectionFactory()));
+        container.setConnectionFactory(jedisConnectionFactory);
         CopyOnWriteArraySet<RedisChannelListenerParser.RedisListenerMetaData> cacheList = listenerParser.getCacheList();
 
         for (RedisChannelListenerParser.RedisListenerMetaData metaData : cacheList) {
@@ -120,6 +143,7 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
             for (RedisChannelListener listener : listeners) {
 
                 String channelName = listener.channelName();
+                Class<?> clazz = listener.clazz();
                 MessageListenerAdapter adapter = new MessageListenerAdapter();
                 Object bean = metaData.getBean();
                 Method method = metaData.getMethod();
@@ -127,11 +151,12 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
                 adapter.setDelegate(bean);
                 adapter.setDefaultListenerMethod(name);
                 adapter.afterPropertiesSet();
+                adapter.setSerializer(new CommonRedisSerializer<>(clazz));
 
                 // 用于区分环境
                 String relName = listener.envDiff() ? StringUtils.upperCase(getCurrentEnv()) + "_" + channelName : channelName;
                 container.addMessageListener(adapter, new ChannelTopic(relName));
-                log.info("方法名{}订阅消息{}注册成功!!", method, relName);
+                log.info("方法名{} 订阅消息{} 注册成功!!", method, relName);
             }
         }
         container.afterPropertiesSet();

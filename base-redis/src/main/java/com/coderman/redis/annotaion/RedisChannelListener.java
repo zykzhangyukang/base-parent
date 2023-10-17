@@ -3,6 +3,7 @@ package com.coderman.redis.annotaion;
 import java.lang.annotation.*;
 
 /**
+ * @author zhangyukang
  * redis 发布定义监听者注解 用于标注在方法上 省去多余的注册操作
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})

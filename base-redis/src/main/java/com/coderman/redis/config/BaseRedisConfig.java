@@ -3,9 +3,14 @@ package com.coderman.redis.config;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.parser.RedisChannelListenerParser;
 import com.coderman.redis.service.RedisService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
@@ -22,9 +27,31 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Stream;
 
+/**
+ * @author zhangyukang
+ */
 @Slf4j
-public abstract class BaseRedisConfig {
+public abstract class BaseRedisConfig implements EnvironmentAware {
+
+    private Environment environment;
+
+    @Override
+    public void setEnvironment(@NonNull Environment environment) {
+        this.environment = environment;
+    }
+
+
+    /**
+     * 获取当前的环境
+     *
+     * @return
+     */
+    public String getCurrentEnv() {
+        String[] profiles = environment.getActiveProfiles();
+        return Stream.of(profiles).findFirst().orElse(null);
+    }
 
 
     public StringRedisTemplate createStringRedisTemplate(JedisConnectionFactory connectionFactory){
@@ -91,8 +118,8 @@ public abstract class BaseRedisConfig {
             RedisChannelListener[] listeners = metaData.getListeners();
 
             for (RedisChannelListener listener : listeners) {
+
                 String channelName = listener.channelName();
-                // Class<?> targetClazz = listener.clazz();
                 MessageListenerAdapter adapter = new MessageListenerAdapter();
                 Object bean = metaData.getBean();
                 Method method = metaData.getMethod();
@@ -100,10 +127,11 @@ public abstract class BaseRedisConfig {
                 adapter.setDelegate(bean);
                 adapter.setDefaultListenerMethod(name);
                 adapter.afterPropertiesSet();
+
                 // 用于区分环境
-                String relName = listener.envDiff() ? "DEV"+ "_" + channelName : channelName;
+                String relName = listener.envDiff() ? StringUtils.upperCase(getCurrentEnv()) + "_" + channelName : channelName;
                 container.addMessageListener(adapter, new ChannelTopic(relName));
-                log.info("方法名{}订阅消息{}注册成功!!", method.toString(), relName);
+                log.info("方法名{}订阅消息{}注册成功!!", method, relName);
             }
         }
         container.afterPropertiesSet();

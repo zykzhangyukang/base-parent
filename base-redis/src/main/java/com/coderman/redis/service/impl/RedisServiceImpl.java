@@ -1,6 +1,7 @@
 package com.coderman.redis.service.impl;
 
 import com.coderman.redis.service.RedisService;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
@@ -17,14 +18,19 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 
+/**
+ * @author zhangyukang
+ */
 @Service
-@SuppressWarnings("all")
 public class RedisServiceImpl implements RedisService {
 
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Getter
     private static String host;
+
+    @Getter
     private static int port;
 
 
@@ -45,18 +51,6 @@ public class RedisServiceImpl implements RedisService {
 
     private void setHost(String hostName) {
         RedisServiceImpl.host = hostName;
-    }
-
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
-
-    public static String getHost() {
-        return host;
-    }
-
-    public static int getPort() {
-        return port;
     }
 
     @SuppressWarnings("unchecked")

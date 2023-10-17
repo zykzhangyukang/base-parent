@@ -1,5 +1,6 @@
 package com.coderman.service.util;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -23,15 +24,12 @@ import org.springframework.stereotype.Service;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.ANY)
 public class SpringContextUtil implements ApplicationContextAware, DisposableBean {
 
+    @Getter
     private static ApplicationContext applicationContext = null;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext){
         SpringContextUtil.applicationContext = applicationContext;
-    }
-
-    public static ApplicationContext getApplicationContext(){
-        return applicationContext;
     }
 
     public static <T> T getBean(Class<T> clazz) throws BeansException{

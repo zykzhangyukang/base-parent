@@ -18,12 +18,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
+ * @author zhangyukang
  * RedisChannelListener 的解析器自动注册
  */
 @Component
 public class RedisChannelListenerParser implements BeanPostProcessor {
 
-    private static final CopyOnWriteArraySet<RedisListenerMetaData> cacheList = new CopyOnWriteArraySet<>();
+    private static final CopyOnWriteArraySet<RedisListenerMetaData> CACHE_LIST = new CopyOnWriteArraySet<>();
 
     private Collection<RedisChannelListener> findListenerAnnotations(AnnotatedElement element) {
         return MergedAnnotations.from(element, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
@@ -36,14 +37,15 @@ public class RedisChannelListenerParser implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean,@NonNull String beanName) throws BeansException {
         Class<?> targetClass = AopUtils.getTargetClass(bean);
+
         ReflectionUtils.doWithMethods(targetClass, method -> {
             Collection<RedisChannelListener> listenerAnnotations = findListenerAnnotations(method);
-            if (listenerAnnotations.size() > 0) {
+            if (!listenerAnnotations.isEmpty()) {
                 RedisListenerMetaData metaData = new RedisListenerMetaData();
                 metaData.setBean(bean);
                 metaData.setMethod(method);
                 metaData.setListeners(listenerAnnotations.toArray(new RedisChannelListener[0]));
-                cacheList.add(metaData);
+                CACHE_LIST.add(metaData);
             }
         }, ReflectionUtils.USER_DECLARED_METHODS);
         return bean;
@@ -51,7 +53,7 @@ public class RedisChannelListenerParser implements BeanPostProcessor {
 
 
     public CopyOnWriteArraySet<RedisListenerMetaData> getCacheList() {
-        return cacheList;
+        return CACHE_LIST;
     }
 
 

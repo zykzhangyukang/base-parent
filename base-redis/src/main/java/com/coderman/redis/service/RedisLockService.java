@@ -1,5 +1,9 @@
 package com.coderman.redis.service;
 
+/**
+ * Redis分布式锁
+ * @author zhangyukang
+ */
 public interface RedisLockService {
 
 

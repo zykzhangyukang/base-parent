@@ -70,7 +70,7 @@ public class DiffUtils {
     }
 
     private static boolean isContainsField(String fieldName, String... fields) {
-        if (fields == null || fields.length == 0) {
+        if (fields == null) {
             return false;
         }
         for (String excludeField : fields) {

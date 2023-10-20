@@ -232,6 +232,37 @@ public interface RedisService {
      */
     <T> void setSet(String key, Set<T> set, int db);
 
+
+    /**
+     * 将一个obj到 Redis 集合中（无序集合）。
+     *
+     * @param key 键名
+     * @param obj 要存储的obj
+     * @param db  数据库索引
+     */
+    <T> void addToSet(String key, T obj, int db);
+
+
+    /**
+     * 将一个集合存储到 Redis 集合中（无序集合）。
+     *
+     * @param key 键名
+     * @param obj 要存储的obj
+     * @param db  数据库索引
+     * @return b
+     */
+    <T> boolean isSetMember(String key, T obj, int db);
+
+
+    /**
+     *
+     * 将一个ob从Redis 集合中删除（无序集合）。
+     * @param key 键名
+     * @param obj 要存储的obj
+     * @param db  数据库索引
+     */
+    <T> void  removeFromSet(String key, T obj, int db);
+
     /**
      * 将一个列表存储到 Redis 列表中（有序集合，从左侧插入）。
      *

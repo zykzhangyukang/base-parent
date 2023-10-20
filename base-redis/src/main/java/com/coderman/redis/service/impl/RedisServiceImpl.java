@@ -543,6 +543,54 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public <T> void addToSet(String key, T obj, int db) {
+
+        redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+
+                redisConnection.select(db);
+                redisConnection.sAdd(serializeKey(key), serializeValue(obj));
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public <T> boolean isSetMember(String key, T obj, int db) {
+
+        Object object = redisTemplate.execute(new RedisCallback<Boolean>() {
+
+            @Override
+            public Boolean doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                redisConnection.select(db);
+                return redisConnection.sIsMember(serializeKey(key), serializeValue(obj));
+            }
+        });
+
+        if (object != null) {
+            return (boolean) object;
+        }
+
+        return false;
+    }
+
+    @Override
+    public <T> void removeFromSet(String key, T obj, int db) {
+
+        Object object = redisTemplate.execute(new RedisCallback<Object>() {
+
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                redisConnection.select(db);
+                redisConnection.sRem(serializeKey(key), serializeValue(obj));
+                return null;
+            }
+        });
+
+    }
+
+    @Override
     public <T> void setListData(String key, List<T> list, int db) {
 
         List result = redisTemplate.executePipelined(new RedisCallback<Object>() {

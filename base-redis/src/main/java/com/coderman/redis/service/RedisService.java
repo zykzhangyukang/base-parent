@@ -283,7 +283,7 @@ public interface RedisService {
 
 
     /**
-     * 将一个对象或对象列表存储到 Redis 集合中（无序集合）。
+     * 将一个对象或对象列表存储到 Redis 集合中（有序集合）。
      *
      * @param key     键名
      * @param obj     要存储的对象或对象列表

@@ -639,11 +639,11 @@ public class RedisServiceImpl implements RedisService {
 
                     List objList = (List) obj;
                     for (Object objVal : objList) {
-                        redisConnection.sAdd(serializeKey(key), serializeValue(objVal));
+                        redisConnection.lPush(serializeKey(key), serializeValue(objVal));
                     }
                 } else {
 
-                    redisConnection.sAdd(serializeKey(key), serializeValue(obj));
+                    redisConnection.lPush(serializeKey(key), serializeValue(obj));
                 }
 
                 return null;

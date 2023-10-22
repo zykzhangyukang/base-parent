@@ -11,11 +11,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface RedisChannelListener {
 
-    /**
-     * 是否区分环境,默认区分环境
-     */
-    boolean envDiff() default true;
-
 
     /**
      * 实际通道名

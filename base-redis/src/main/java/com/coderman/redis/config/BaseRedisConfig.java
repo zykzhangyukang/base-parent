@@ -154,9 +154,8 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
                 adapter.setSerializer(new CommonRedisSerializer<>(clazz));
 
                 // 用于区分环境
-                String relName = listener.envDiff() ? StringUtils.upperCase(getCurrentEnv()) + "_" + channelName : channelName;
-                container.addMessageListener(adapter, new ChannelTopic(relName));
-                log.info("方法名{} 订阅消息{} 注册成功!!", method, relName);
+                container.addMessageListener(adapter, new ChannelTopic(channelName));
+                log.info("方法名{} 订阅消息{} 注册成功!!", method, channelName);
             }
         }
         container.afterPropertiesSet();

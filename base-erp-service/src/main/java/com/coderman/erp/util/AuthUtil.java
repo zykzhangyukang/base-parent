@@ -1,11 +1,18 @@
 package com.coderman.erp.util;
 
+import com.alibaba.fastjson.JSON;
 import com.coderman.api.constant.CommonConstant;
+import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.erp.vo.AuthUserVO;
+import com.coderman.redis.service.RedisService;
 import com.coderman.service.util.HttpContextUtil;
+import com.coderman.service.util.SpringContextUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Slf4j
 public class AuthUtil {
 
 
@@ -22,6 +29,30 @@ public class AuthUtil {
         if (obj instanceof AuthUserVO) {
 
             return (AuthUserVO) obj;
+
+        } else{
+
+            // 如果用户的token存在，则尝试从redis中获取
+            String token = httpServletRequest.getHeader(CommonConstant.USER_TOKEN_NAME);
+            if (StringUtils.isNotBlank(token)) {
+
+                AuthUserVO authUserVO = null;
+                try {
+
+                    RedisService redisService = SpringContextUtil.getBean(RedisService.class);
+                    authUserVO = redisService.getObject(CommonConstant.USER_TOKEN_NAME + token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+
+                } catch (Exception e) {
+                    log.error("从redis获取用户信息失败！error:{}", e.getMessage(), e);
+                }
+
+                if(authUserVO!=null){
+                    log.warn("从redis中获取用户信息成功:authUserVO:{}", JSON.toJSONString(authUserVO));
+                }
+
+                return authUserVO;
+            }
+
         }
 
         return null;

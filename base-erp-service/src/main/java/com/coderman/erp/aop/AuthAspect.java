@@ -124,7 +124,7 @@ public class AuthAspect {
      *
      * @param project 域名
      */
-    private void refreshSystemAllRescMap(String project) {
+    public void refreshSystemAllRescMap(String project) {
 
         try {
 

@@ -3,13 +3,8 @@ package com.coderman.redis.config;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.parser.CommonRedisSerializer;
 import com.coderman.redis.parser.RedisChannelListenerParser;
-import com.coderman.redis.service.RedisService;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisPassword;
@@ -23,12 +18,12 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.lang.NonNull;
 import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Stream;
 
@@ -152,9 +147,8 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
                 adapter.setDefaultListenerMethod(name);
                 adapter.afterPropertiesSet();
                 adapter.setSerializer(new CommonRedisSerializer<>(clazz));
-
-                // 用于区分环境
                 container.addMessageListener(adapter, new ChannelTopic(channelName));
+
                 log.info("方法名{} 订阅消息{} 注册成功!!", method, channelName);
             }
         }

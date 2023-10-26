@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `pub_mq_message` (
                                   KEY `ix_uq_uuid` (`uuid`),
                                   KEY `ix_create_time` (`create_time`),
                                   KEY `ix_deal_status` (`deal_status`),
-                                  KEY `ix_src_project_dest_project_create_time` (`src_project`,`dest_project`,`create_time`)
+                                  KEY `ix_src_project_dest_project_create_time` (`src_project`,`dest_project`,`create_time`),
+                                  FULLTEXT KEY `ix_msg_content` (`msg_content`)
 ) ENGINE=InnoDB AUTO_INCREMENT 1 DEFAULT CHARSET=utf8mb4;
 -- end --
 

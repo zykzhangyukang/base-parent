@@ -9,18 +9,21 @@
 
     <define name="logFile" class="com.coderman.log.core.LogFileDir"/>
     <conversionRule conversionWord="logOwner" converterClass="com.coderman.log.core.LogOwner"/>
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
 
     <!-- name的值是变量的名称，value的值时变量定义的值。通过定义的值会被插入到logger上下文中。定义变量后，可以使“${}”来使用变量-->
     <property name="log.file" value="${logFile}" />
     <!-- 日志打印格式模板 -->
-    <property name="log.pattern" value="[%-5p]%n%logOwner%d{ISO8601}%n{} [%thread]=>StackTrace: %replace(%caller{1}){'Caller.{1}0\t at', 'at'}**************************%n%m%n**************************%n%n"/>
-
-
+    <property name="log.file.pattern" value="[%-5p]%n%logOwner%d{ISO8601}%n{} [%thread]=>StackTrace: %replace(%caller{1}){'Caller.{1}0\t at', 'at'}**************************%n%m%n**************************%n%n"/>
+    <!-- 控制台打格式模板 -->
+    <property name="log.console.pattern" value="${log.console.pattern:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
     <!--输出到控制台-->
     <appender name="LOG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>${log.pattern}}</Pattern>
+            <Pattern>${log.console.pattern}</Pattern>
             <!-- 设置字符集 -->
             <charset>UTF-8</charset>
         </encoder>
@@ -32,7 +35,7 @@
         <!-- 正在记录的日志文件的路径及文件名 -->
         <file>${log.file}/AllLog</file>
         <encoder>
-            <pattern>${log.pattern}</pattern>
+            <pattern>${log.file.pattern}</pattern>
             <charset>UTF-8</charset> <!-- 设置字符集 -->
         </encoder>
 

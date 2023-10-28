@@ -172,7 +172,7 @@ public class SyncUtil {
             for (MsgBody item : LOCAL_MAP.get()) {
 
 
-                logger.info("消息队列,将消息放入发送线程队列,uuid:{}", item.getMsgId());
+                logger.debug("消息队列,将消息放入发送线程队列,uuid:{}", item.getMsgId());
                 taskQueue.add(item);
             }
 

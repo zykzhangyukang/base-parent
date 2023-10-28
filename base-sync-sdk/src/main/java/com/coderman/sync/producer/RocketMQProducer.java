@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.List;
 
 @Component
 public class RocketMQProducer extends BaseService {
@@ -55,6 +56,10 @@ public class RocketMQProducer extends BaseService {
 
     public SendResult send(Message message) throws Exception {
         return this.defaultMQProducer.send(message);
+    }
+
+    public SendResult send(List<Message> messageList) throws Exception {
+        return this.defaultMQProducer.send(messageList);
     }
 
     public DefaultMQProducer getDefaultMQProducer() {

@@ -24,25 +24,29 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 
 public class SyncUtil {
 
-
     private final static Logger logger = LoggerFactory.getLogger(SyncUtil.class);
 
-
-    private final static Queue<MsgBody> taskQueue = new ConcurrentLinkedDeque<MsgBody>();
-
-
+    /**
+     * 队列最大预警长度
+     */
     private final static Integer QUEUE_SIZE_ALERT_NUM = 2000;
-
-
+    /**
+     * 任务队列
+     */
+    private final static Queue<MsgBody> TASK_QUEUE = new ConcurrentLinkedQueue<>();
+    /**
+     * 存在当前线程的消息内容
+     */
     private final static ThreadLocal<List<MsgBody>> LOCAL_MAP = new ThreadLocal<>();
-
-
+    /**
+     * 线程安全的时间类型
+     */
     private final static ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
 
@@ -64,11 +68,9 @@ public class SyncUtil {
 
         try {
 
-
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
             rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
             rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
-
 
             // 初始化队列
             List<Map<String, Object>> resultList = jdbcTemplate.queryForList(INIT_SQL);
@@ -82,8 +84,7 @@ public class SyncUtil {
                     String uuid = resultMap.get("uuid").toString();
                     Integer mqMessageId = resultMap.get("mq_message_id") == null ? null : (Integer) resultMap.get("mq_message_id");
 
-
-                    taskQueue.add(new MsgBody(uuid, content, SyncUtil.create(content).getPlanCode(), mqMessageId));
+                    TASK_QUEUE.add(new MsgBody(uuid, content, SyncUtil.create(content).getPlanCode(), mqMessageId));
                 }
 
             }
@@ -93,10 +94,8 @@ public class SyncUtil {
             logger.error("初始化同步系统队列失败", e);
         }
 
-
         // 处理队列任务
         dealTask();
-
     }
 
 
@@ -112,7 +111,7 @@ public class SyncUtil {
 
                 try {
 
-                    if (taskQueue.isEmpty()) {
+                    if (TASK_QUEUE.isEmpty()) {
 
                         TimeUnit.SECONDS.sleep(1);
 
@@ -120,10 +119,8 @@ public class SyncUtil {
                         continue;
                     }
 
-
                     // 发送消息
-                    SyncUtil.sendMsgBySql(taskQueue.poll());
-
+                    SyncUtil.sendMsgBySql(TASK_QUEUE.poll());
 
                 } catch (InterruptedException e) {
 
@@ -162,15 +159,15 @@ public class SyncUtil {
 
         if (null != LOCAL_MAP.get()) {
 
-            if (taskQueue.size() > QUEUE_SIZE_ALERT_NUM) {
+            if (TASK_QUEUE.size() > QUEUE_SIZE_ALERT_NUM) {
 
-                logger.error("同步系统队列长度警报,MQ消息队列已经超过" + QUEUE_SIZE_ALERT_NUM + ",请及时处理");
+                logger.error("同步系统队列长度警报,MQ消息队列已经超过" + QUEUE_SIZE_ALERT_NUM + ",请及时处理!");
             }
 
             for (MsgBody item : LOCAL_MAP.get()) {
 
-                logger.debug("消息队列,将消息放入发送线程队列,uuid:{}", item.getMsgId());
-                taskQueue.add(item);
+                TASK_QUEUE.add(item);
+                logger.debug("消息队列,将消息放入发送线程队列,uuid:{}, queueSize:{}", item.getMsgId(), TASK_QUEUE.size());
             }
         }
 
@@ -338,7 +335,6 @@ public class SyncUtil {
 
                 jdbcTemplate.update(UPDATE_FINAL_SQL, resultStr, mid, formatTime(new Date()), msgBody.getMsgId());
             }
-
         }
     }
 
@@ -434,7 +430,7 @@ public class SyncUtil {
                 stringBuilder.append(content).append("\r\n\t");
             }
 
-            if(StringUtils.isNotBlank(sb)){
+            if (StringUtils.isNotBlank(sb)) {
 
                 logger.debug("消息队列,清除消息,uuid: [{}]", sb.toString() + "\r\n\t" + stringBuilder.toString());
             }

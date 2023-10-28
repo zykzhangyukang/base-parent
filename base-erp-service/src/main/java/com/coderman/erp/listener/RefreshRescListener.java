@@ -22,7 +22,7 @@ public class RefreshRescListener {
             String project = System.getProperty("domain");
             this.authAspect.refreshSystemAllRescMap(project);
 
-            log.info("refreshSystemResc |  刷新同步计划完成！ -> {} | project:{}", messageContent,project);
+            log.info("refreshSystemResc |  刷新系统资源完成！ -> {} | project:{}", messageContent,project);
 
         } catch (Exception e) {
             log.error("refreshSystemResc |  刷新系统资源失败！| error:{}", e.getMessage(), e);

@@ -162,20 +162,16 @@ public class SyncUtil {
 
         if (null != LOCAL_MAP.get()) {
 
-
             if (taskQueue.size() > QUEUE_SIZE_ALERT_NUM) {
 
                 logger.error("同步系统队列长度警报,MQ消息队列已经超过" + QUEUE_SIZE_ALERT_NUM + ",请及时处理");
             }
 
-
             for (MsgBody item : LOCAL_MAP.get()) {
-
 
                 logger.debug("消息队列,将消息放入发送线程队列,uuid:{}", item.getMsgId());
                 taskQueue.add(item);
             }
-
         }
 
         LOCAL_MAP.remove();
@@ -258,27 +254,21 @@ public class SyncUtil {
 
         for (int i = 0; i < jsonArray.size(); i++) {
 
-
             JSONObject json = jsonArray.getJSONObject(i);
 
-
             if (json.get("unique") instanceof JSONArray) {
-
 
                 for (int j = 0; j < ((JSONArray) json.get("unique")).size(); j++) {
 
                     msgBuilder.add(json.getString("code"), ((JSONArray) json.get("unique")).getString(j));
                 }
-
             } else {
 
                 msgBuilder.add(json.getString("code"), json.getString("unique"));
             }
-
         }
 
         String orderlyMsgKey = jsonObject.getString("orderlyMsgKey");
-
         PlanMsg planMsg = msgBuilder.build();
         planMsg.setSrcProject(StringUtils.EMPTY);
         planMsg.setDescProject(StringUtils.EMPTY);
@@ -299,25 +289,20 @@ public class SyncUtil {
 
         try {
 
-            int resultNum = -1;
+            int resultNum;
 
             // 先把消息的发送状态改为发送中
             if (msgBody.getMqMessageId() != null) {
-
                 resultNum = jdbcTemplate.update(UPDATE_SENDING_BY_PK_SQL, msgBody.getMqMessageId());
-
             } else {
-
                 resultNum = jdbcTemplate.update(UPDATE_SENDING_SQL, msgBody.getMsgId());
             }
 
             if (resultNum == 0) {
-
                 return;
             }
 
-            SendResult sendResult = null;
-
+            SendResult sendResult;
             String orderlyMsgKey = create(msgBody.getMsg()).getOrderlyMsgKey();
 
             // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
@@ -332,12 +317,10 @@ public class SyncUtil {
                 sendResult = rocketMQProducer.send(message);
             }
 
-
             if (null != sendResult) {
 
                 mid = sendResult.getMsgId();
             }
-
 
         } catch (Exception e) {
 
@@ -384,15 +367,11 @@ public class SyncUtil {
 
         for (int i = 0; i < planMsg.getMsgItemList().size(); i++) {
 
-
             com.coderman.sync.vo.MsgItem msgItem = planMsg.getMsgItemList().get(i);
 
             builder.append("{\"code\":\"");
             builder.append(msgItem.getCode()).append("\",\"unique\":[");
-
-
             for (int j = 0; j < msgItem.getUnique().size(); j++) {
-
 
                 builder.append("\"").append(msgItem.getUnique().get(j)).append("\"");
 
@@ -400,11 +379,9 @@ public class SyncUtil {
 
                     builder.append(",");
                 }
-
             }
 
             builder.append("]");
-
 
             if (msgItem.getMustAffectRows() != null) {
 
@@ -413,14 +390,11 @@ public class SyncUtil {
 
             builder.append("}");
 
-
             if (i != planMsg.getMsgItemList().size() - 1) {
 
                 builder.append(",");
             }
-
         }
-
 
         builder.append("],");
 
@@ -432,7 +406,6 @@ public class SyncUtil {
         builder.append("\"createTime\":\"").append(createTime).append("\",");
         builder.append("\"src\":\"").append(System.getProperty("domain")).append("\",");
         builder.append("\"msgId\":\"").append(msgId).append("\"}");
-
         return builder.toString();
     }
 
@@ -444,20 +417,16 @@ public class SyncUtil {
 
         if (logger.isDebugEnabled()) {
 
-
             StringBuilder sb = new StringBuilder();
 
             if (null != LOCAL_MAP.get()) {
 
-
                 for (MsgBody item : LOCAL_MAP.get()) {
                     sb.append(item.getMsgId()).append(",");
                 }
-
             }
 
             StringBuilder stringBuilder = new StringBuilder();
-
             StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
             for (StackTraceElement stackTraceElement : stackTraceElements) {
 
@@ -465,7 +434,10 @@ public class SyncUtil {
                 stringBuilder.append(content).append("\r\n\t");
             }
 
-            logger.debug("消息队列,清除消息,uuid:{}", sb.toString() + "\r\n\t" + stringBuilder.toString());
+            if(StringUtils.isNotBlank(sb)){
+
+                logger.debug("消息队列,清除消息,uuid: [{}]", sb.toString() + "\r\n\t" + stringBuilder.toString());
+            }
         }
 
         LOCAL_MAP.remove();

@@ -1,4 +1,4 @@
-package com.coderman.sync.callback;
+package com.coderman.callback;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

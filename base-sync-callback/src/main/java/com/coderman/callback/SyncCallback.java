@@ -1,4 +1,4 @@
-package com.coderman.sync.callback;
+package com.coderman.callback;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

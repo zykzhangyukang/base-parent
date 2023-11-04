@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS `pub_callback` (
                                 KEY `ix_create_time` (`create_time`),
                                 KEY `ix_send_time` (`send_time`),
                                 KEY `ix_status` (`status`),
-                                KEY `ix_uq_uuid` (`uuid`)
+                                KEY `ix_uq_uuid` (`uuid`),
+                                FULLTEXT KEY `ix_msg_content` (`msg_content`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 -- end --
 

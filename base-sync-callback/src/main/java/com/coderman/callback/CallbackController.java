@@ -1,4 +1,4 @@
-package com.coderman.sync.callback;
+package com.coderman.callback;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

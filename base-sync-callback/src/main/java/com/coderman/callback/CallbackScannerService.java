@@ -1,4 +1,4 @@
-package com.coderman.sync.callback;
+package com.coderman.callback;
 
 import com.coderman.api.exception.BusinessException;
 import com.coderman.service.anntation.ClassPathScanningComponentProvider;

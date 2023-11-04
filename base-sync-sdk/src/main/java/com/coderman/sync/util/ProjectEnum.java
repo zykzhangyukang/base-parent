@@ -8,6 +8,11 @@ public enum ProjectEnum {
     AUTH("auth"),
 
     /**
+     * 课程系统
+     */
+    BIZEDU("bizedu"),
+
+    /**
      * 权限系统-sync
      */
     AUTH_SYNC("auth_sync");

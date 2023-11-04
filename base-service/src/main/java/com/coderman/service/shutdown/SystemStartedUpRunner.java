@@ -40,7 +40,7 @@ public class SystemStartedUpRunner implements ApplicationRunner {
                 url += contextPath;
             }
 
-            log.info("应用系统启动完毕，当前系统时间：{}，地址：{} , profilesActive:{}", DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"), url , profilesActive);
+            log.info("应用系统启动完毕，当前系统时间：{}，地址：{} , env: {}", DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"), url , profilesActive);
         }
     }
 }

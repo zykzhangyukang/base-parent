@@ -23,7 +23,7 @@
     <!--输出到控制台-->
     <appender name="LOG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>${log.console.pattern}</Pattern>
+            <Pattern>${log.file.pattern}</Pattern>
             <!-- 设置字符集 -->
             <charset>UTF-8</charset>
         </encoder>

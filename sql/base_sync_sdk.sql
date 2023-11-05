@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `pub_mq_message` (
 CREATE TABLE IF NOT EXISTS `pub_callback` (
                                 `callback_id` int(11) NOT NULL AUTO_INCREMENT,
                                 `uuid` char(32) NOT NULL,
+                                `msg_id` char(32) NOT NULL,
                                 `sync_uuid` char(32) NOT NULL,
                                 `src_project` varchar(16) NOT NULL,
                                 `dest_project` varchar(16) NOT NULL,
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `pub_callback` (
                                 KEY `ix_create_time` (`create_time`),
                                 KEY `ix_send_time` (`send_time`),
                                 KEY `ix_status` (`status`),
+                                KEY `msg_id` (`msg_id`),
                                 KEY `ix_uq_uuid` (`uuid`),
                                 FULLTEXT KEY `ix_msg_content` (`msg_content`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;

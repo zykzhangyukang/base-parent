@@ -44,6 +44,7 @@
         <swagger.version>3.0.0</swagger.version>
         <swagger.annotations.version>1.5.13</swagger.annotations.version>
         <aliyun.oss.version>3.17.1</aliyun.oss.version>
+        <activemq.version>5.16.3</activemq.version>
     </properties>
 
 
@@ -237,6 +238,17 @@
                 <artifactId>elasticsearch-rest-high-level-client</artifactId>
                 <version>${elasticsearch.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-broker</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-kahadb-store</artifactId>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

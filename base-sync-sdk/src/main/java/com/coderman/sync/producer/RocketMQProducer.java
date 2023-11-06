@@ -12,6 +12,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.List;
 
+/**
+ * rocketMQ生产者 - 顺序消息
+ * @author zhangyukang
+ */
 @Component
 public class RocketMQProducer extends BaseService {
 

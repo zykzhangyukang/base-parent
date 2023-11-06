@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+/**
+ * rocketMQ生产者
+ * @author zhangyukang
+ */
 @Component
 public class RocketMQOrderProducer extends BaseService {
 

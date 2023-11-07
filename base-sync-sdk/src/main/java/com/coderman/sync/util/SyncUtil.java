@@ -6,7 +6,6 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.Constant;
-import com.coderman.sync.producer.ActiveMQProducer;
 import com.coderman.sync.producer.RocketMQOrderProducer;
 import com.coderman.sync.producer.RocketMQProducer;
 import com.coderman.sync.vo.MsgBody;
@@ -63,31 +62,14 @@ public class SyncUtil {
 
     private static RocketMQProducer rocketMQProducer;
     private static RocketMQOrderProducer rocketMQOrderProducer;
-    private static ActiveMQProducer activeMQProducer;
 
     static {
 
         try {
 
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-
-            try {
-                rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
-            }catch (Exception e){
-                logger.warn("rocketMQProducer is empty [{}]", e.getMessage());
-            }
-
-            try {
-                rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
-            }catch (Exception e){
-                logger.warn("rocketMQOrderProducer is empty [{}]", e.getMessage());
-            }
-
-            try {
-                activeMQProducer = SpringContextUtil.getBean(ActiveMQProducer.class);
-            }catch (Exception e){
-                logger.warn("activeMQProducer  is empty [{}]", e.getMessage());
-            }
+            rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
+            rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
 
             // 初始化队列
             List<Map<String, Object>> resultList = jdbcTemplate.queryForList(INIT_SQL);
@@ -322,13 +304,6 @@ public class SyncUtil {
 
                 Message message = new Message(rocketMQProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
                 sendResult = rocketMQProducer.send(message);
-
-            }else if(activeMQProducer !=null){
-
-                mid = activeMQProducer.send(msgBody.getMsg());
-            }else {
-
-                throw new IllegalArgumentException("消息发送不支持！");
             }
 
             if (null != sendResult) {

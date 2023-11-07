@@ -6,6 +6,7 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.Constant;
+import com.coderman.sync.producer.ActiveMQProducer;
 import com.coderman.sync.producer.RocketMQOrderProducer;
 import com.coderman.sync.producer.RocketMQProducer;
 import com.coderman.sync.vo.MsgBody;
@@ -61,16 +62,32 @@ public class SyncUtil {
     private static JdbcTemplate jdbcTemplate;
 
     private static RocketMQProducer rocketMQProducer;
-
     private static RocketMQOrderProducer rocketMQOrderProducer;
+    private static ActiveMQProducer activeMQProducer;
 
     static {
 
         try {
 
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
-            rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
+
+            try {
+                rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
+            }catch (Exception e){
+                logger.warn("rocketMQProducer is empty [{}]", e.getMessage());
+            }
+
+            try {
+                rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
+            }catch (Exception e){
+                logger.warn("rocketMQOrderProducer is empty [{}]", e.getMessage());
+            }
+
+            try {
+                activeMQProducer = SpringContextUtil.getBean(ActiveMQProducer.class);
+            }catch (Exception e){
+                logger.warn("activeMQProducer  is empty [{}]", e.getMessage());
+            }
 
             // 初始化队列
             List<Map<String, Object>> resultList = jdbcTemplate.queryForList(INIT_SQL);
@@ -181,12 +198,10 @@ public class SyncUtil {
      */
     public static void sync(final PlanMsg planMsg) {
 
-
         if (null == LOCAL_MAP.get()) {
 
             LOCAL_MAP.set(new ArrayList<>());
         }
-
 
         final String msgId = UUIDUtils.getPrimaryValue();
         final String createTime = formatTime(new Date());
@@ -197,8 +212,6 @@ public class SyncUtil {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         int insertRows = jdbcTemplate.update(connection -> {
-
-
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, msgId);
             ps.setString(2, msg);
@@ -211,13 +224,10 @@ public class SyncUtil {
 
             return ps;
         }, keyHolder);
-
-
         if (insertRows > 0) {
 
             mqMessageId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         }
-
 
         LOCAL_MAP.get().add(new MsgBody(msgId, msg, planMsg.getPlanCode(), mqMessageId));
     }
@@ -299,7 +309,7 @@ public class SyncUtil {
                 return;
             }
 
-            SendResult sendResult;
+            SendResult sendResult = null;
             String orderlyMsgKey = create(msgBody.getMsg()).getOrderlyMsgKey();
 
             // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
@@ -308,10 +318,17 @@ public class SyncUtil {
                 Message message = new Message(rocketMQOrderProducer.getSyncOrderTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
                 sendResult = rocketMQOrderProducer.send(message, orderlyMsgKey);
 
-            } else {
+            } else if (rocketMQProducer != null){
 
                 Message message = new Message(rocketMQProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
                 sendResult = rocketMQProducer.send(message);
+
+            }else if(activeMQProducer !=null){
+
+                mid = activeMQProducer.send(msgBody.getMsg());
+            }else {
+
+                throw new IllegalArgumentException("消息发送不支持！");
             }
 
             if (null != sendResult) {

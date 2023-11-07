@@ -4,7 +4,7 @@ import com.coderman.service.service.BaseService;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -17,8 +17,8 @@ import javax.jms.*;
  * @author ：zhangyukang
  * @date ：2023/11/06 9:43
  */
-@Configuration
 @Component
+@ConditionalOnProperty(name = "sync.store.type", havingValue = "activemq")
 public class ActiveMQProducer extends BaseService {
 
     @Value("${sync.activemq.brokerUrl}")
@@ -48,12 +48,12 @@ public class ActiveMQProducer extends BaseService {
         logger.info("ActiveMQ生产者[brokerUrl:{},queueName:{}]销毁", this.brokerUrl, this.queueName);
     }
 
-
-    public void send(String textMsg) throws Exception {
+    public String send(String textMsg) throws Exception {
 
         Connection connection = null;
         MessageProducer messageProducer = null;
         Session session = null;
+        TextMessage textMessage;
 
         try {
 
@@ -72,7 +72,7 @@ public class ActiveMQProducer extends BaseService {
             messageProducer = session.createProducer(queue);
 
             //5、通过messageProducer生产三条消息发送到MQ消息队列中
-            TextMessage textMessage = session.createTextMessage(textMsg);
+            textMessage =  session.createTextMessage(textMsg);
 
             //6、数据持久化
             messageProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
@@ -93,6 +93,8 @@ public class ActiveMQProducer extends BaseService {
                 connection.close();
             }
         }
+
+        return textMessage.getJMSMessageID();
     }
 
 

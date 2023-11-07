@@ -17,7 +17,7 @@ import javax.annotation.PreDestroy;
  * @author zhangyukang
  */
 @Component
-@ConditionalOnProperty(name = "sync.store.type", havingValue = "rocketmq")
+@ConditionalOnProperty(name = "sync.mq.type", havingValue = "rocketmq")
 public class RocketMQOrderProducer extends BaseService {
 
     private DefaultMQProducer defaultMQProducer;

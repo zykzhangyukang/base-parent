@@ -18,7 +18,7 @@ import java.util.List;
  * @author zhangyukang
  */
 @Component
-@ConditionalOnProperty(name = "sync.store.type", havingValue = "rocketmq")
+@ConditionalOnProperty(name = "sync.mq.type", havingValue = "rocketmq")
 public class RocketMQProducer extends BaseService {
 
     private DefaultMQProducer defaultMQProducer;

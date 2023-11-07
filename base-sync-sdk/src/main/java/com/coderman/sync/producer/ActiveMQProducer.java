@@ -18,7 +18,7 @@ import javax.jms.*;
  * @date ：2023/11/06 9:43
  */
 @Component
-@ConditionalOnProperty(name = "sync.store.type", havingValue = "activemq")
+@ConditionalOnProperty(name = "sync.mq.type", havingValue = "activemq")
 public class ActiveMQProducer extends BaseService {
 
     @Value("${sync.activemq.brokerUrl}")

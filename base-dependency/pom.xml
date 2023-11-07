@@ -45,6 +45,7 @@
         <swagger.annotations.version>1.5.13</swagger.annotations.version>
         <aliyun.oss.version>3.17.1</aliyun.oss.version>
         <activemq.version>5.16.3</activemq.version>
+        <activeio.version>3.1.4</activeio.version>
     </properties>
 
 
@@ -270,6 +271,11 @@
             </dependency>
 
 
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activeio-core</artifactId>
+                <version>${activeio.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

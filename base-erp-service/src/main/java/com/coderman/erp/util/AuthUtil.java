@@ -12,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @author Administrator
+ */
 @Slf4j
 public class AuthUtil {
 

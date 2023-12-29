@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
+/**
+ * @author Administrator
+ */
 public abstract class HttpContextUtil {
 
     public static HttpServletRequest getHttpServletRequest() {

@@ -458,5 +458,5 @@ public interface RedisService {
      * @param topic 主题
      * @param msgObj 消息内容
      */
-    void sendMessage(String topic , Object msgObj);
+    void sendTopicMessage(String topic , Object msgObj);
 }

@@ -1100,7 +1100,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void sendMessage(String topic, Object msgObj) {
+    public void sendTopicMessage(String topic, Object msgObj) {
         redisTemplate.execute(new RedisCallback() {
             @Override
             public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {

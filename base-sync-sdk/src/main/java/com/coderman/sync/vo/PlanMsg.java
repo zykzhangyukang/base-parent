@@ -6,6 +6,9 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author coderman
+ */
 @ApiModel(value = "同步计划对象")
 public class PlanMsg {
 

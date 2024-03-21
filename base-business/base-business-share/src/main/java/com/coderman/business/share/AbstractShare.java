@@ -10,6 +10,9 @@ import org.springframework.beans.BeanUtils;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * @author coderman
+ */
 public abstract class AbstractShare<I, O extends ShareResultDetailVO> {
 
 

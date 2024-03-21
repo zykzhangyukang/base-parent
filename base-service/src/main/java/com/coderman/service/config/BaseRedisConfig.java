@@ -11,6 +11,9 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
 
+/**
+ * @author coderman
+ */
 public abstract class BaseRedisConfig {
 
 

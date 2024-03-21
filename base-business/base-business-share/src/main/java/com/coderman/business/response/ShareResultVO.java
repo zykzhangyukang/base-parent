@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @author coderman
+ */
 @Data
 public class ShareResultVO<T extends ShareResultDetailVO> {
 

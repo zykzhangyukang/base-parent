@@ -1,8 +1,11 @@
 package com.coderman.business.handler;
 
+/**
+ * @author coderman
+ */
 public class DataSourceHolder {
 
-    private static final ThreadLocal<String> dataSourceHolder = new ThreadLocal<>();
+    private static final ThreadLocal<String> DATA_SOURCE_HOLDER = new ThreadLocal<>();
 
 
     /**
@@ -11,7 +14,7 @@ public class DataSourceHolder {
      * @param dataSource
      */
     public static void setDataSource(String dataSource) {
-        dataSourceHolder.set(dataSource);
+        DATA_SOURCE_HOLDER.set(dataSource);
     }
 
 
@@ -21,7 +24,7 @@ public class DataSourceHolder {
      * @return
      */
     public static String getDataSource() {
-        return dataSourceHolder.get();
+        return DATA_SOURCE_HOLDER.get();
     }
 
 
@@ -29,6 +32,6 @@ public class DataSourceHolder {
      * 清除数据源类型
      */
     public static void clearDataSource() {
-        dataSourceHolder.remove();
+        DATA_SOURCE_HOLDER.remove();
     }
 }

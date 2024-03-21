@@ -5,6 +5,7 @@ package com.coderman.log.alarm;
  * 告警参数
  * token: 0bbcbadbfc05e6ef9d93657a43c51df7d1811e91cf806ffa0d7316a3dabb15a7
  * secret: SECc8e5b8c7b4d098bd5464747eaaa82ca65e8be3b2968be8fae399112f6c17bd5a
+ * @author coderman
  */
 public class AlarmMessage {
 

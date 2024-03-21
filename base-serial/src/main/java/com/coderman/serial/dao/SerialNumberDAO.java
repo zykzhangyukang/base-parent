@@ -6,6 +6,9 @@ import com.coderman.serial.model.SerialNumberModel;
 
 import java.util.Map;
 
+/**
+ * @author coderman
+ */
 public interface SerialNumberDAO extends BaseDAO<SerialNumberModel, SerialNumberExample> {
 
     /**

@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * @author coderman
+ */
 @Data
 public class ShareResultDetailVO {
 

@@ -10,6 +10,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author coderman
+ */
 @Component
 @Aspect
 @Order(value = AopConstant.SYNC_EXCEPTION_ASPECT_ORDER)

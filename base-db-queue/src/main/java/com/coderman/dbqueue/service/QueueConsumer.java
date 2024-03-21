@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * 消费者
+ * @author coderman
  */
 public abstract class QueueConsumer {
 

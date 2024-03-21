@@ -11,6 +11,7 @@ import java.util.Objects;
 
 /**
  * UnsynchronizedAppenderBase 用于异步处理，不阻塞主线程, 拦截error日志，并发送到钉钉
+ * @author coderman
  */
 public class DingAlarmAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 

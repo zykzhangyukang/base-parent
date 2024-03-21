@@ -8,6 +8,9 @@ import com.coderman.limiter.resolver.UriKeyResolver;
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author coderman
+ */
 @Documented
 @Inherited
 @Target(ElementType.METHOD)

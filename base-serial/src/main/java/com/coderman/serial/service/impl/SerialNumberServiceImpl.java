@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -36,7 +36,7 @@ public class SerialNumberServiceImpl implements SerialNumberService {
      *
      *
      */
-    @Autowired
+    @Resource
     private SerialNumberDAO serialNumberDAO;
 
 

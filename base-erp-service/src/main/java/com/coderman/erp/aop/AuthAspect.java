@@ -86,7 +86,7 @@ public class AuthAspect {
     /**
      * 保存token与用户的关系
      */
-    public static final Cache<String, AuthUserVO> userTokenCacheMap = CacheBuilder.newBuilder()
+    public static final Cache<String, AuthUserVO> USER_TOKEN_CACHE_MAP = CacheBuilder.newBuilder()
             //设置缓存初始大小
             .initialCapacity(10)
             //最大值
@@ -181,7 +181,7 @@ public class AuthAspect {
         // 用户信息
         AuthUserVO authUserVO = null;
         try {
-            authUserVO = userTokenCacheMap.get(token, () -> {
+            authUserVO = USER_TOKEN_CACHE_MAP.get(token, () -> {
 
                 log.debug("尝试从redis中获取用户信息结果.token:{}", token);
 
@@ -208,7 +208,7 @@ public class AuthAspect {
 
         if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
 
-            userTokenCacheMap.invalidate(token);
+            USER_TOKEN_CACHE_MAP.invalidate(token);
             assert response != null;
             response.setStatus(ResultConstant.RESULT_CODE_401);
             return null;

@@ -3,6 +3,7 @@ package com.coderman.log.alarm;
 /**
  * 告警类型
  *
+ * @author coderman
  */
 public enum AlarmTypeEnum {
     /**

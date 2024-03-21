@@ -4,6 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 
+/**
+ * @author coderman
+ */
 @ApiModel(value = "同步消息体对象")
 public class MsgBody {
 

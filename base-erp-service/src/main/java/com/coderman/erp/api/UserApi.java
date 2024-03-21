@@ -3,6 +3,9 @@ package com.coderman.erp.api;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.erp.vo.AuthUserVO;
 
+/**
+ * @author coderman
+ */
 public interface UserApi {
 
     /**

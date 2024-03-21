@@ -4,6 +4,9 @@ import ch.qos.logback.core.PropertyDefinerBase;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+/**
+ * @author coderman
+ */
 @Component
 public class LogFileDir extends PropertyDefinerBase {
 

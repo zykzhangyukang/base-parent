@@ -12,9 +12,12 @@ import java.util.Map;
 import java.util.Set;
 
 
+/**
+ * @author coderman
+ */
 public class DynamicDataSource extends AbstractRoutingDataSource implements ApplicationContextAware {
 
-    private static final Map<String, String> datasourcePackageMap = new HashMap<>();
+    private static final Map<String, String> DATASOURCE_PACKAGE_MAP = new HashMap<>();
 
     private static String defaultDataSourceName = null;
 
@@ -74,7 +77,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Appl
     }
 
     public static Map<String, String> getDatasourcePackageMap() {
-        return datasourcePackageMap;
+        return DATASOURCE_PACKAGE_MAP;
     }
 
 

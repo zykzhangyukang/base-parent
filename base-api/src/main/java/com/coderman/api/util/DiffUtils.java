@@ -16,6 +16,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+/**
+ * @author coderman
+ */
 public class DiffUtils {
 
     private final static String FILTER_TYPE_INCLUDE = "include";

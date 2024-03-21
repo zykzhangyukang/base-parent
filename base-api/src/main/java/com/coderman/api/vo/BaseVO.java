@@ -3,6 +3,9 @@ package com.coderman.api.vo;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * @author coderman
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseVO {
 

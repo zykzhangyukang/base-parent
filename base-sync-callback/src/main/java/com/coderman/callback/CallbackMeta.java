@@ -2,6 +2,9 @@ package com.coderman.callback;
 
 import lombok.Data;
 
+/**
+ * @author coderman
+ */
 @Data
 public class CallbackMeta {
 

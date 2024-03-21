@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author coderman
+ */
 @Aspect
 @Component
 @Lazy(value = false)

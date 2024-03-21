@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 /**
  * 分摊明细
+ * @author coderman
  */
 @Data
 public class ShareParamDetailVO implements Comparable<ShareParamDetailVO>{

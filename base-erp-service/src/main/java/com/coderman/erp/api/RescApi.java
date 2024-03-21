@@ -5,6 +5,9 @@ import com.coderman.api.vo.ResultVO;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author coderman
+ */
 public interface RescApi {
 
 

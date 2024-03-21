@@ -2,6 +2,9 @@ package com.coderman.limiter.properties;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author coderman
+ */
 public interface LimitProperties {
     /**
      * 令牌桶每秒填充平均速率

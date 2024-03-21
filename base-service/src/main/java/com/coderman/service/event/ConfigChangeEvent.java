@@ -2,6 +2,9 @@ package com.coderman.service.event;
 
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * @author coderman
+ */
 public class ConfigChangeEvent extends ApplicationEvent {
 
     private String changeKey;

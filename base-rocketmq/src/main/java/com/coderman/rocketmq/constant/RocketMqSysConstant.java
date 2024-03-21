@@ -2,6 +2,7 @@ package com.coderman.rocketmq.constant;
 
 /**
  * rocketmq 常量
+ * @author coderman
  */
 public interface RocketMqSysConstant {
 

@@ -1,5 +1,8 @@
 package com.coderman.api.constant;
 
+/**
+ * @author coderman
+ */
 public interface RedisDbConstant {
 
     /**

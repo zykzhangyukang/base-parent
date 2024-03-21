@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 生产者
+ * @author coderman
  */
 public abstract class QueueProducer {
 

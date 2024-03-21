@@ -1,5 +1,9 @@
 package com.coderman.sync.util;
 
+/**
+ * @author coderman
+ */
+
 public enum ProjectEnum {
 
     /**

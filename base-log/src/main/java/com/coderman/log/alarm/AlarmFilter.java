@@ -4,6 +4,9 @@ import ch.qos.logback.classic.filter.LevelFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.FilterReply;
 
+/**
+ * @author coderman
+ */
 public class AlarmFilter extends LevelFilter {
 
     String LOG_SYS_FAIL = " Controller统一异常处理";

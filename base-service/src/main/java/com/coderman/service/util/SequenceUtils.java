@@ -8,6 +8,9 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author coderman
+ */
 public class SequenceUtils {
 
     private static final Object lock = new Object();

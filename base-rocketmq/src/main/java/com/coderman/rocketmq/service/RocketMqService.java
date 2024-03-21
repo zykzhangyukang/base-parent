@@ -3,6 +3,9 @@ package com.coderman.rocketmq.service;
 import com.coderman.rocketmq.vo.BaseMqMessage;
 import org.apache.rocketmq.client.producer.SendResult;
 
+/**
+ * @author coderman
+ */
 public interface RocketMqService {
 
 

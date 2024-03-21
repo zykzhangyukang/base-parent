@@ -6,6 +6,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * @author coderman
+ */
 @Data
 public class ShareParamVO {
 

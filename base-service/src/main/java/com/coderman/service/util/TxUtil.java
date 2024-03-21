@@ -7,6 +7,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * @author coderman
+ */
 @Slf4j
 public class TxUtil {
 

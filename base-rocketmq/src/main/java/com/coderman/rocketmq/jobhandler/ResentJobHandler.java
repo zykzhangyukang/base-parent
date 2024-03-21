@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 /**
  * 失败消息重试
+ * @author coderman
  */
 @JobHandler(value="resentJobHandler")
 @Component

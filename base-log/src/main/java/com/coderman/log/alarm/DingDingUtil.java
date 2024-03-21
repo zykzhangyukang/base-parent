@@ -14,6 +14,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * @author coderman
+ */
 public class DingDingUtil {
 
     private static final Logger log  = LoggerFactory.getLogger(DingDingUtil.class);

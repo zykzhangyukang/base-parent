@@ -1,5 +1,8 @@
 package com.coderman.sync.constant;
 
+/**
+ * @author coderman
+ */
 public interface Constant {
 
     /**

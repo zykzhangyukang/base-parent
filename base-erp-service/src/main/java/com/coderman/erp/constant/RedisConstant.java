@@ -1,5 +1,8 @@
 package com.coderman.erp.constant;
 
+/**
+ * @author coderman
+ */
 public interface RedisConstant {
 
     /**

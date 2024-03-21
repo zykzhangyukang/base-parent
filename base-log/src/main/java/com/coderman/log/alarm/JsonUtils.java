@@ -6,7 +6,7 @@ import java.io.StringWriter;
 
 /**
  * Json 工具类
- * @author yinjihuan
+ * @author zhangyukang
  *
  */
 public class JsonUtils {

@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * @author coderman
+ */
 @EnableAsync
 @Component
 public class ConfigChangePublisher {

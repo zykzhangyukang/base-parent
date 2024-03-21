@@ -30,6 +30,7 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 
 /**
  * 使用Sl4j作为rocketmq的日志
+ * @author coderman
  */
 public class ClientLogger {
 

@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 异常告警
+ * @author coderman
  */
 public class AlarmContext {
 
@@ -19,7 +20,7 @@ public class AlarmContext {
     /**
      * 存储上次告警的时间，Key:名称 Value:时间戳
      */
-    public static final Map<String, AtomicLong> threadPoolExecutorAlarmTimeMap = new ConcurrentHashMap<>();
+    public static final Map<String, AtomicLong> THREAD_POOL_EXECUTOR_ALARM_TIME_MAP = new ConcurrentHashMap<>();
 
 
     /**
@@ -102,7 +103,7 @@ public class AlarmContext {
      */
     public static void sendAlarmMessage(AlarmMessage alarmMessage) {
 
-        AtomicLong alarmTime = threadPoolExecutorAlarmTimeMap.get(alarmMessage.getAlarmName());
+        AtomicLong alarmTime = THREAD_POOL_EXECUTOR_ALARM_TIME_MAP.get(alarmMessage.getAlarmName());
         if (alarmTime != null && (alarmTime.get() + alarmMessage.getAlarmTimeInterval() * 60 * 1000) > System.currentTimeMillis()) {
             return;
         }
@@ -117,8 +118,7 @@ public class AlarmContext {
             DingDingUtil.post(alarmMessage.getApiUrl(), JsonUtils.toJson(data));
         }
 
-        threadPoolExecutorAlarmTimeMap.put(alarmMessage.getAlarmName(), new AtomicLong(System.currentTimeMillis()));
-
+        THREAD_POOL_EXECUTOR_ALARM_TIME_MAP.put(alarmMessage.getAlarmName(), new AtomicLong(System.currentTimeMillis()));
     }
 
 }

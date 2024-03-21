@@ -6,6 +6,9 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
+/**
+ * @author coderman
+ */
 public class MsgBuilder {
 
     private PlanMsg planMsg;

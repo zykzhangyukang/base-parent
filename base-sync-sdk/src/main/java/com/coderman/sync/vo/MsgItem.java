@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * 消息对象
+ * @author coderman
  */
 public class MsgItem {
 

@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Administrator
+ * @author coderman
  */
 @Slf4j
 public class AuthUtil {

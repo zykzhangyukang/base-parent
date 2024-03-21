@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author coderman
+ */
 @Data
 public abstract class BaseMqMessage {
     /**

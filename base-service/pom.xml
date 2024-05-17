@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.coderman</groupId>
         <artifactId>base-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0.RELEASE</version>
     </parent>
 
     <artifactId>base-service</artifactId>

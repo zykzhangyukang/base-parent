@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -19,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
@@ -34,10 +34,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class RocketMqSqlServiceImpl implements RocketMqSqlService {
 
-    @Autowired
+    @Resource
     private MqMsgDAO mqMsgDAO;
 
-    @Autowired
+    @Resource
     private DefaultMQProducer defaultMQProducer;
 
     @Value("${spring.application.name}")

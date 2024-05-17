@@ -1,7 +1,5 @@
 package com.coderman.service.util;
 
-import org.springframework.util.DigestUtils;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

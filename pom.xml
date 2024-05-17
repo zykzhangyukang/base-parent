@@ -29,11 +29,11 @@
 
     <distributionManagement>
         <repository>
-            <id>rdc-releases</id>
+            <id>dev-releases</id>
             <url>https://packages.aliyun.com/maven/repository/2422895-release-1qX72S/</url>
         </repository>
         <snapshotRepository>
-            <id>rdc-snapshots</id>
+            <id>dev-snapshots</id>
             <url>https://packages.aliyun.com/maven/repository/2422895-snapshot-SwD328/</url>
         </snapshotRepository>
     </distributionManagement>

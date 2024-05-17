@@ -11,9 +11,21 @@
     </parent>
 
     <artifactId>base-dependency</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0.RELEASE</version>
     <groupId>com.coderman</groupId>
     <packaging>pom</packaging>
+
+    <distributionManagement>
+        <repository>
+            <id>rdc-releases</id>
+            <url>https://packages.aliyun.com/maven/repository/2422895-release-1qX72S/</url>
+        </repository>
+        <snapshotRepository>
+            <id>rdc-snapshots</id>
+            <url>https://packages.aliyun.com/maven/repository/2422895-snapshot-SwD328/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 
     <properties>
         <fastjson.version>1.2.71</fastjson.version>
@@ -47,7 +59,6 @@
         <activemq.version>5.16.3</activemq.version>
         <activeio.version>3.1.4</activeio.version>
     </properties>
-
 
     <dependencyManagement>
         <dependencies>

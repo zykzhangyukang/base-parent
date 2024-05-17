@@ -45,6 +45,7 @@ public class TransactionConfig {
 
 
     @Bean("txAdvice")
+    @SuppressWarnings("all")
     public TransactionInterceptor transactionInterceptor(@Qualifier(value = "transactionManager") PlatformTransactionManager transactionManager) {
         NameMatchTransactionAttributeSource transactionAttributeSource = new NameMatchTransactionAttributeSource();
         List<RollbackRuleAttribute> rollbackRuleAttributeList = Collections.singletonList(new RollbackRuleAttribute(Throwable.class));

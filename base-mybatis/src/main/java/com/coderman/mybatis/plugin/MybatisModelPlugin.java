@@ -59,7 +59,7 @@ public class MybatisModelPlugin extends PluginAdapter {
         // 公共的Model
         FullyQualifiedJavaType baseJavaType = new FullyQualifiedJavaType(BaseModel.class.getName());
 
-        // 导入包t
+        // 导入包
         topLevelClass.addImportedType(Data.class.getName());
         topLevelClass.addImportedType(EqualsAndHashCode.class.getName());
         topLevelClass.addImportedType(ApiModel.class.getName());

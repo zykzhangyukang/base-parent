@@ -20,6 +20,7 @@
         <module>base-log</module>
         <module>base-redis</module>
         <module>base-sync-callback</module>
+        <module>base-mybatisplus</module>
     </modules>
 
     <groupId>com.coderman</groupId>
@@ -64,6 +65,13 @@
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>base-mybatis</artifactId>
+                <version>${base.version}</version>
+            </dependency>
+
+            <!-- 基础mybatis模块 -->
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>base-mybatisplus</artifactId>
                 <version>${base.version}</version>
             </dependency>
 
@@ -206,16 +214,17 @@
                         <!-- 覆盖生成文件 -->
                         <overwrite>true</overwrite>
                         <!-- 定义配置文件 -->
-                        <configurationFile>  ${env.MAVEN_HOME}/conf/mybatis/mybatis-generator.xml</configurationFile>
+                        <configurationFile>  ${env.MAVEN_HOME}/conf/mybatisplus/mybatis-generator.xml</configurationFile>
                     </configuration>
                     <dependencies>
                         <dependency>
                             <groupId>com.coderman</groupId>
-                            <artifactId>base-mybatis</artifactId>
+                            <artifactId>base-mybatisplus</artifactId>
                             <version>${base.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
+
                 <!-- 打包源码插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

@@ -31,6 +31,7 @@
         <fastjson.version>1.2.71</fastjson.version>
         <mysql.connector.version>8.0.19</mysql.connector.version>
         <mybatis.boot.starter>2.2.2</mybatis.boot.starter>
+        <mybatis.plus.boot.version>3.1.2</mybatis.plus.boot.version>
         <pagehelper.boot.starter>1.4.1</pagehelper.boot.starter>
         <druid.boot.starter>1.1.13</druid.boot.starter>
         <mybatis.generator.version>1.3.2</mybatis.generator.version>
@@ -112,6 +113,19 @@
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.boot.starter}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>${mybatis.plus.boot.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.github.pagehelper</groupId>

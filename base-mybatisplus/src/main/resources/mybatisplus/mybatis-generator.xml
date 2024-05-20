@@ -7,11 +7,11 @@
     <!-- 外部文件引入 -->
     <properties resource="mybatis-generator.properties"/>
 
-    <context id="default" targetRuntime="com.coderman.mybatisplus.MybatisTargetRuntime" defaultModelType="flat">
+    <context id="default" targetRuntime="com.coderman.mybatisplus.plugin.MybatisTargetRuntime" defaultModelType="flat">
         <!-- 自定义生成model的插件 -->
-        <plugin type="com.coderman.mybatisplus.MybatisModelPlugin"/>
+        <plugin type="com.coderman.mybatisplus.plugin.MybatisModelPlugin"/>
         <!-- 解决mybatis生成重复生成xml内容 -->
-        <plugin type="com.coderman.mybatisplus.UnmergeableXmlMappersPlugin"/>
+        <plugin type="com.coderman.mybatisplus.plugin.UnmergeableXmlMappersPlugin"/>
 
         <!-- 不希望生成的注释中包含时间戳 -->
         <commentGenerator>
@@ -24,7 +24,7 @@
                         userId="${jdbc.username}" password="${jdbc.password}">
         </jdbcConnection>
 
-        <javaTypeResolver type="com.coderman.mybatisplus.TypeResolverDefaultImpl">
+        <javaTypeResolver type="com.coderman.mybatisplus.plugin.TypeResolverDefaultImpl">
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 

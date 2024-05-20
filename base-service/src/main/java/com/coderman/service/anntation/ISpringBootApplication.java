@@ -29,7 +29,7 @@ import java.lang.annotation.*;
 @ComponentScan(basePackages = {CommonConstant.BASE_PACKAGE},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
                 @ComponentScan.Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)})
-@MapperScan(basePackages = {CommonConstant.BASE_DAO_PACKAGE})
+@MapperScan(basePackages = {CommonConstant.BASE_DAO_PACKAGE, CommonConstant.BASE_MAPPER_PACKAGE})
 public @interface ISpringBootApplication {
 
 }

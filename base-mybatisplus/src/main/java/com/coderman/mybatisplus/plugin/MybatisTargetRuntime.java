@@ -1,4 +1,4 @@
-package com.coderman.mybatisplus;
+package com.coderman.mybatisplus.plugin;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.ProgressCallback;

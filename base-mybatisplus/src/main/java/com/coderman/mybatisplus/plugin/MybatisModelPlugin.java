@@ -1,6 +1,7 @@
-package com.coderman.mybatisplus;
+package com.coderman.mybatisplus.plugin;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.swagger.annotations.ApiModel;
@@ -102,6 +103,8 @@ public class MybatisModelPlugin extends PluginAdapter {
 
         // 当前字段是否为主键
         boolean isPrimary = false;
+        String actualColumnName = introspectedColumn.getActualColumnName();
+
         List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
         for (IntrospectedColumn primaryKeyColumn : primaryKeyColumns) {
             if (field.getName().equals(primaryKeyColumn.getJavaProperty())) {
@@ -116,18 +119,22 @@ public class MybatisModelPlugin extends PluginAdapter {
             remarks = StringUtils.EMPTY;
         }
 
+        if(isPrimary){
+            String tableIdAnnotation = "@" + TableId.class.getSimpleName() + "(value = \"" + actualColumnName + "\")";
+            field.addAnnotation(tableIdAnnotation);
+        }
+
         // 备注里面可能有特殊字符，这里进行转义一下
         field.addAnnotation("@" + ApiModelProperty.class.getSimpleName() + "(value = \"" + remarks + "\")");
 
         // 为主键时添加一行换行
         if (isPrimary) {
-            field.addJavaDocLine(StringUtils.LF);
+            field.addJavaDocLine(StringUtils.EMPTY);
         }
 
         boolean needTableField = false;
 
         // 如果字段里面没有下划线，并且是驼峰命名的，需要加上 @TableField 注解进行标示. (或者存在数值的情况)
-        String actualColumnName = introspectedColumn.getActualColumnName();
         boolean c1 = !StringUtils.contains(actualColumnName, "_") && isCamelCase(actualColumnName);
         boolean c2 = StringUtils.contains(actualColumnName, "_") && actualColumnName.matches(".*\\d+.*");
         if (c1 || c2) {
@@ -142,6 +149,7 @@ public class MybatisModelPlugin extends PluginAdapter {
 
         // 导入包
         topLevelClass.addImportedType(ApiModelProperty.class.getName());
+        topLevelClass.addImportedType(TableId.class.getName());
 
         // 改变实体类中的属性,
         if (c1) {

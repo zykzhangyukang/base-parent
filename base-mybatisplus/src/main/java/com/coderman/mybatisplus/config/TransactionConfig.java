@@ -1,4 +1,4 @@
-package com.coderman.mybatis.config;
+package com.coderman.mybatisplus.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;

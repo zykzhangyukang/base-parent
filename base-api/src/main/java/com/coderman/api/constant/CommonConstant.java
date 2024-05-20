@@ -19,6 +19,11 @@ public interface CommonConstant {
     String BASE_DAO_PACKAGE= "com.coderman.*.dao";
 
     /**
+     * 基础的mapper包名称
+     */
+    String BASE_MAPPER_PACKAGE= "com.coderman.*.mapper";
+
+    /**
      * 用户会话key
      */
     String USER_SESSION_KEY = "auth.user.info";

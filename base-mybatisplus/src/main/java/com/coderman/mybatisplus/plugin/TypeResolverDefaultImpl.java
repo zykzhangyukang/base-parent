@@ -1,4 +1,4 @@
-package com.coderman.mybatisplus;
+package com.coderman.mybatisplus.plugin;
 
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
 import org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl;

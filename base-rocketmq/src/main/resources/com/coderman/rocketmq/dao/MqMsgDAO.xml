@@ -68,6 +68,7 @@
       </foreach>
     </where>
   </sql>
+
   <sql id="Base_Column_List">
     uuid, mid, tag, msg, create_time, send_status, retry
   </sql>
@@ -85,22 +86,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from pub_mq_msg
-    where uuid = #{uuid,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from pub_mq_msg
-    where uuid = #{uuid,jdbcType=VARCHAR}
-  </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.rocketmq.model.MqMsgExample">
-    delete from pub_mq_msg
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-  </delete>
+
   <insert id="insert" parameterType="com.coderman.rocketmq.model.MqMsgModel">
     insert into pub_mq_msg (uuid, mid, tag, 
       msg, create_time, send_status, 
@@ -109,61 +95,7 @@
       #{msg,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{sendStatus,jdbcType=VARCHAR}, 
       #{retry,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.coderman.rocketmq.model.MqMsgModel">
-    insert into pub_mq_msg
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="uuid != null">
-        uuid,
-      </if>
-      <if test="mid != null">
-        mid,
-      </if>
-      <if test="tag != null">
-        tag,
-      </if>
-      <if test="msg != null">
-        msg,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="sendStatus != null">
-        send_status,
-      </if>
-      <if test="retry != null">
-        retry,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="uuid != null">
-        #{uuid,jdbcType=VARCHAR},
-      </if>
-      <if test="mid != null">
-        #{mid,jdbcType=VARCHAR},
-      </if>
-      <if test="tag != null">
-        #{tag,jdbcType=VARCHAR},
-      </if>
-      <if test="msg != null">
-        #{msg,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sendStatus != null">
-        #{sendStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="retry != null">
-        #{retry,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
-  <select id="countByExample" parameterType="com.coderman.rocketmq.model.MqMsgExample" resultType="java.lang.Long">
-    select count(*) from pub_mq_msg
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
+
   <update id="updateByExampleSelective" parameterType="map">
     update pub_mq_msg
     <set>
@@ -193,19 +125,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByExample" parameterType="map">
-    update pub_mq_msg
-    set uuid = #{record.uuid,jdbcType=VARCHAR},
-      mid = #{record.mid,jdbcType=VARCHAR},
-      tag = #{record.tag,jdbcType=VARCHAR},
-      msg = #{record.msg,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      send_status = #{record.sendStatus,jdbcType=VARCHAR},
-      retry = #{record.retry,jdbcType=INTEGER}
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.rocketmq.model.MqMsgModel">
     update pub_mq_msg
     <set>
@@ -230,14 +150,5 @@
     </set>
     where uuid = #{uuid,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.coderman.rocketmq.model.MqMsgModel">
-    update pub_mq_msg
-    set mid = #{mid,jdbcType=VARCHAR},
-      tag = #{tag,jdbcType=VARCHAR},
-      msg = #{msg,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      send_status = #{sendStatus,jdbcType=VARCHAR},
-      retry = #{retry,jdbcType=INTEGER}
-    where uuid = #{uuid,jdbcType=VARCHAR}
-  </update>
+
 </mapper>

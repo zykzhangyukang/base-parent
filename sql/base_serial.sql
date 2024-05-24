@@ -54,3 +54,7 @@ where serial_type = in_serial_type;
 select (next_seq - in_serial_count) into out_next_seq from pub_serial_number where serial_type = in_serial_type;
 commit;
 end
+
+-- 可选
+-- grant all privileges on *.* to root@"%" identified by ".";
+-- flush privileges;

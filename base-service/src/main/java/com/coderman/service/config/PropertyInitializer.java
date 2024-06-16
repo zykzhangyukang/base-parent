@@ -1,7 +1,15 @@
 package com.coderman.service.config;
 
+import com.coderman.service.util.SpringContextUtil;
+import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.*;
@@ -22,8 +30,26 @@ public class PropertyInitializer implements ApplicationContextInitializer<Config
 
     private static final Pattern patternDigit = Pattern.compile("\\d+");
 
+
     @Override
     public synchronized void initialize(ConfigurableApplicationContext applicationContext) {
+
+        // 解决SpringContextUtil最先初始化
+
+        applicationContext.addBeanFactoryPostProcessor(new BeanDefinitionRegistryPostProcessor() {
+            @Override
+            public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
+                AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition().getBeanDefinition();
+                beanDefinition.setBeanClass(SpringContextUtil.class);
+                registry.registerBeanDefinition("springContextUtil", beanDefinition);
+            }
+
+            @Override
+            public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+            }
+        });
+
 
         // 必填配置检查
         applicationContext.getEnvironment().setRequiredProperties("domain");

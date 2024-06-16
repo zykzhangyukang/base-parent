@@ -2,6 +2,7 @@ package com.coderman.service.config;
 
 import com.coderman.service.publisher.ConfigChangePublisher;
 import com.coderman.service.util.SpringContextUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,9 +15,11 @@ import java.util.Map;
 @Slf4j
 public class PropertyConfig {
 
+    @Getter
     private static Map<String,String> configMap = new HashMap<>();
 
 
+    @Getter
     private static Map<String,Map<String,String>> dictMap =  new HashMap<>();
 
     /**
@@ -108,16 +111,8 @@ public class PropertyConfig {
         configMap.remove(key);
     }
 
-    public static Map<String, String> getConfigMap() {
-        return configMap;
-    }
-
     public static void setConfigMap(Map<String, String> configMap) {
         PropertyConfig.configMap = configMap;
-    }
-
-    public static Map<String, Map<String, String>> getDictMap() {
-        return dictMap;
     }
 
     public static void setDictMap(Map<String, Map<String, String>> dictMap) {

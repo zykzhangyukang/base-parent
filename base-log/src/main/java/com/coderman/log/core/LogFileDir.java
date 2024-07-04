@@ -14,7 +14,7 @@ public class LogFileDir extends PropertyDefinerBase {
     @Override
     public String getPropertyValue() {
 
-        System.setProperty("server.tomcat.accesslog.pattern","%v %{X-Forwarded-For}i %l %{Cdn-Src-Ip}i %u %h %t \"%r\"%{Referer}i\" \"{User-Agent}i\" %s %b %T %D}");
+        System.setProperty("server.tomcat.accesslog.pattern","%v %{X-Forwarded-For}i %l %{Cdn-Src-Ip}i %u %h %t \"%r\"%{Referer}i\" \"{User-Agent}i\" %s %b %T %D");
 
         String logFile = System.getProperty("log.file");
 

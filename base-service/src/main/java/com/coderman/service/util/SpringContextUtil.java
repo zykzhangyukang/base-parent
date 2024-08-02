@@ -56,6 +56,6 @@ public class SpringContextUtil implements ApplicationContextAware, DisposableBea
 
     @Override
     public void destroy() throws Exception {
-
+        applicationContext = null;
     }
 }

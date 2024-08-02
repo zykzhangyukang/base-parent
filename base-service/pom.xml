@@ -23,7 +23,7 @@
 
         <dependency>
             <groupId>com.coderman</groupId>
-            <artifactId>base-mybatisplus</artifactId>
+            <artifactId>base-mybatis</artifactId>
         </dependency>
 
         <dependency>

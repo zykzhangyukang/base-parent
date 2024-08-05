@@ -298,6 +298,7 @@
                     <exclude>**/*.woff2</exclude>
                     <exclude>**/*.ttf</exclude>
                     <exclude>**/*.eot</exclude>
+                    <exclude>**/*.db</exclude>
                 </excludes>
             </resource>
             <resource>
@@ -308,6 +309,7 @@
                     <include>**/*.woff2</include>
                     <include>**/*.ttf</include>
                     <include>**/*.eot</include>
+                    <include>**/*.db</include>
                 </includes>
             </resource>
         </resources>

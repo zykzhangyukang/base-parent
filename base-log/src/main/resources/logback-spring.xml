@@ -58,12 +58,34 @@
         </filter>
     </appender>
 
+    <!--输出到文件ERROR-->
+    <appender name="LOG_FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${log.file}/ERROR</file>
+        <encoder>
+            <pattern>${log.file.pattern}</pattern>
+            <charset>UTF-8</charset> <!-- 设置字符集 -->
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.file}/ERROR.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
 
     <!-- dev环境打印控制台 -->
     <springProfile name="dev">
         <root level="info">
             <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
+            <appender-ref ref="LOG_FILE_ERROR" />
         </root>
 
         <logger name="java.sql.Connection" level="DEBUG" additivity="false"/>
@@ -77,6 +99,7 @@
         <root level="info">
             <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
+            <appender-ref ref="LOG_FILE_ERROR" />
         </root>
 
         <logger name="java.sql.Connection" level="INFO" additivity="false"/>
@@ -91,6 +114,7 @@
         <root level="info">
             <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
+            <appender-ref ref="LOG_FILE_ERROR" />
         </root>
 
         <logger name="java.sql.Connection" level="INFO" additivity="false"/>
@@ -106,6 +130,7 @@
             <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
             <appender-ref ref="LOG_DING_ALARM"/>
+            <appender-ref ref="LOG_FILE_ERROR" />
         </root>
 
         <logger name="java.sql.Connection" level="ERROR" additivity="false"/>

@@ -208,7 +208,7 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
                         <!-- 输出详细信息 -->
                         <verbose>true</verbose>
                         <!-- 覆盖生成文件 -->

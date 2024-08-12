@@ -7,19 +7,19 @@ package com.coderman.sync.util;
 public enum ProjectEnum {
 
     /**
-     * 权限系统
+     * 后台系统
      */
-    AUTH("auth"),
+    ADMIN("admin"),
 
     /**
-     * 课程系统
+     * 后台sync系统
      */
-    BIZEDU("bizedu"),
+    SYNC("sync"),
 
     /**
-     * 权限系统-sync
+     * 后台日志系统
      */
-    AUTH_SYNC("auth_sync");
+    LOG("log");
 
 
     private String key;

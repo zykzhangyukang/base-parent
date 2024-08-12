@@ -21,4 +21,9 @@ public interface Constant {
     public static final String MSG_DEAL_STATUS_SUCCESS = "success";
     public static final String MSG_DEAL_STATUS_FAIL = "fail";
     public static final String MSG_DEAL_STATUS_NONEED = "noneed";
+    /**
+     * 消息队列类型
+     */
+    public static final String MQ_TYPE_ACTIVEMQ = "activemq";
+    public static final String MQ_TYPE_ROCKETMQ = "rocketmq";
 }

@@ -2,12 +2,13 @@ package com.coderman.sync.producer;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 
-import javax.annotation.PreDestroy;
+import java.nio.charset.StandardCharsets;
 
 /**
  * rocketMQ生产者
@@ -60,9 +61,9 @@ public class RocketMQOrderProducer  {
         log.info("rocketMQ有序生产者[productOrderGroup:{},instantName:{}]销毁", this.producerOrderGroup, this.instantName);
     }
 
-    public SendResult send(Message message, String key) throws Exception {
-
-        return this.defaultMQProducer.send(message, (mqs, msg, arg) -> {
+    public SendResult send(String msg, String planCode, String key) throws Exception {
+        Message message = new Message(syncOrderTopic, StringUtils.EMPTY, planCode, msg.getBytes(StandardCharsets.UTF_8));
+        return this.defaultMQProducer.send(message, (mqs, m, arg) -> {
             int select = Math.abs(arg.hashCode());
             if(select <0){
                 select = 0;

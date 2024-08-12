@@ -30,10 +30,10 @@ public class ActiveMQProducer {
     @ApiModelProperty(value = "是否启用")
     private boolean enable;
 
-    public Message sendMessage(String messageContent) throws JMSException {
+    public Message send(String msg) throws JMSException {
         JmsTemplate jmsTemplate = SpringContextUtil.getBean(JmsTemplate.class);
         ActiveMQTextMessage message = new ActiveMQTextMessage();
-        message.setText(messageContent);
+        message.setText(msg);
         jmsTemplate.convertAndSend(message);
         return message;
     }

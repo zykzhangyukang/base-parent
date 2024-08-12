@@ -6,6 +6,7 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.sync.constant.Constant;
+import com.coderman.sync.producer.ActiveMQProducer;
 import com.coderman.sync.producer.RocketMQOrderProducer;
 import com.coderman.sync.producer.RocketMQProducer;
 import com.coderman.sync.vo.MsgBody;
@@ -13,13 +14,12 @@ import com.coderman.sync.vo.PlanMsg;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
-import java.nio.charset.StandardCharsets;
+import javax.jms.Message;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -58,19 +58,30 @@ public class SyncUtil {
     private final static String UPDATE_FINAL_SQL = "update pub_mq_message set send_status = ?,mid=?,send_time = ? where send_status='" + Constant.MSG_SEND_STATUS_SENDING + "' and uuid = ?";
 
 
-    private static JdbcTemplate jdbcTemplate;
+    private static final JdbcTemplate jdbcTemplate;
 
+    public static String mq;
     private static RocketMQProducer rocketMQProducer;
     private static RocketMQOrderProducer rocketMQOrderProducer;
+    private static ActiveMQProducer activeMQProducer;
 
     static {
 
-        try {
+        jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
+        mq = SpringContextUtil.getApplicationContext().getEnvironment().getProperty("sync.mq");
 
-            jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
+        if (StringUtils.equals(mq, Constant.MQ_TYPE_ACTIVEMQ)) {
+
+            activeMQProducer = SpringContextUtil.getBean(ActiveMQProducer.class);
+
+        } else if (StringUtils.equals(mq, Constant.MQ_TYPE_ROCKETMQ)) {
             rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
             rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
+        }else {
+            throw new IllegalArgumentException("请配置同步队列的类型 [sync.type=[activemq/rocketmq]]");
+        }
 
+        try {
             // 初始化队列
             List<Map<String, Object>> resultList = jdbcTemplate.queryForList(INIT_SQL);
 
@@ -295,20 +306,28 @@ public class SyncUtil {
             String orderlyMsgKey = create(msgBody.getMsg()).getOrderlyMsgKey();
 
             // 发送到队列,如果返回的结果不为空,则认为发送的消息已经到了队列中,将发送状态改为成功
-            if (rocketMQOrderProducer != null && orderlyMsgKey != null) {
+            if (StringUtils.equals(mq, Constant.MQ_TYPE_ROCKETMQ)) {
 
-                Message message = new Message(rocketMQOrderProducer.getSyncOrderTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
-                sendResult = rocketMQOrderProducer.send(message, orderlyMsgKey);
+                if (rocketMQOrderProducer != null && orderlyMsgKey != null) {
 
-            } else if (rocketMQProducer != null){
+                    sendResult = rocketMQOrderProducer.send(msgBody.getMsg(), msgBody.getPlanCode(), orderlyMsgKey);
 
-                Message message = new Message(rocketMQProducer.getSyncTopic(), StringUtils.EMPTY, msgBody.getPlanCode(), msgBody.getMsg().getBytes(StandardCharsets.UTF_8));
-                sendResult = rocketMQProducer.send(message);
-            }
+                } else if (rocketMQProducer != null) {
 
-            if (null != sendResult) {
+                    sendResult = rocketMQProducer.send(msgBody.getMsg(), msgBody.getPlanCode());
+                }
 
-                mid = sendResult.getMsgId();
+                if (null != sendResult) {
+
+                    mid = sendResult.getMsgId();
+                }
+
+            } else if (StringUtils.equals(mq, Constant.MQ_TYPE_ACTIVEMQ)) {
+
+                Message message = activeMQProducer.send(msgBody.getMsg());
+                if (null != message) {
+                    mid = message.getJMSMessageID();
+                }
             }
 
         } catch (Exception e) {
@@ -386,7 +405,7 @@ public class SyncUtil {
 
         builder.append("],");
 
-        if(StringUtils.isNotBlank(planMsg.getOrderlyMsgKey())){
+        if (StringUtils.isNotBlank(planMsg.getOrderlyMsgKey())) {
 
             builder.append("\"orderlyMsgKey\":\"").append(planMsg.getOrderlyMsgKey()).append("\",");
         }

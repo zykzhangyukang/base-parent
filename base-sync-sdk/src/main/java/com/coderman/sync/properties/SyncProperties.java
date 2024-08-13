@@ -49,6 +49,21 @@ public class SyncProperties {
 
         @ApiModelProperty(value = "生产者主[顺序]")
         private String producerOrderGroup;
+
+        /**
+         * 消费者配置
+         */
+        @ApiModelProperty(value = "消费者组")
+        private String consumerGroup;
+
+        @ApiModelProperty(value = "消费者组[顺序]")
+        private String consumerOrderGroup;
+
+        @ApiModelProperty(value = "消费者最小线程数")
+        private Integer consumeThreadMin;
+
+        @ApiModelProperty(value = "消费者最大线程数")
+        private Integer consumeThreadMax;
     }
 
     @Data

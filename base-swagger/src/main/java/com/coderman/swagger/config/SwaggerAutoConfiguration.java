@@ -24,7 +24,7 @@ import java.util.List;
  * @author zhangyukang
  */
 @EnableSwagger2
-@ConditionalOnProperty(name = "swagger.enabled", matchIfMissing = false)
+@ConditionalOnProperty(name = "swagger.enabled", havingValue = "true")
 public class SwaggerAutoConfiguration {
 
     /*** 默认的排除路径，排除Spring Boot默认的错误处理路径和端点*/

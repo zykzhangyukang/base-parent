@@ -3,7 +3,7 @@ package com.coderman.swagger.config;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  * @author coderman
  * @description: swagger 属性
  */
-@Configuration
+@Component
 @ConfigurationProperties(prefix = "swagger")
 @Data
 public class SwaggerProperties {

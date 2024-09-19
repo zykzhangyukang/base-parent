@@ -53,22 +53,18 @@ public class RedisServiceImpl implements RedisService {
         RedisServiceImpl.host = hostName;
     }
 
-    @SuppressWarnings("unchecked")
     public byte[] serializeKey(String key) {
         return redisTemplate.getKeySerializer().serialize(key);
     }
 
-    @SuppressWarnings("unchecked")
     private byte[] serializeValue(Object obj) {
         return redisTemplate.getValueSerializer().serialize(obj);
     }
 
-    @SuppressWarnings("unchecked")
     private byte[] serializeHashValue(Object obj) {
         return this.redisTemplate.getHashValueSerializer().serialize(obj);
     }
 
-    @SuppressWarnings("unchecked")
     private byte[] serializeHashKey(Object obj) {
         return this.redisTemplate.getHashKeySerializer().serialize(obj);
     }

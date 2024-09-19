@@ -11,7 +11,6 @@ import java.util.List;
  *
  * @param <I> 需要在链中传递的对象
  */
-@SuppressWarnings("all")
 public abstract class ShareChain<I> {
 
     private final List<AbstractShare> filters = new ArrayList<>();

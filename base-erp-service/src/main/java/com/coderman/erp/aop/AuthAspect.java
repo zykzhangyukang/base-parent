@@ -305,7 +305,6 @@ public class AuthAspect {
     }
 
 
-    @SuppressWarnings("all")
     private void getAllAuthByHttp(String domain) {
 
         this.checkAuthErpConfig();

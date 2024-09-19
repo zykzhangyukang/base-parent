@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @Data
-@SuppressWarnings("all")
 @ConfigurationProperties(prefix = "job")
 @ConditionalOnProperty(prefix = "job",name = "enable",havingValue = "true")
 public class JobConfig {

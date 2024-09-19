@@ -73,7 +73,6 @@ public abstract class BaseRedisConfig implements EnvironmentAware {
     }
 
 
-    @SuppressWarnings("all")
     public RedisTemplate createRedisTemplate(JedisConnectionFactory connectionFactory) {
 
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();

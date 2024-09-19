@@ -114,7 +114,6 @@ public abstract class IpUtil {
      * @param request
      * @return
      */
-    @SuppressWarnings("all")
     public static String getIpAddr(HttpServletRequest request) {
         String ipAddress;
         try {
@@ -169,7 +168,6 @@ public abstract class IpUtil {
     }
 
 
-    @SuppressWarnings("all")
     public static String getClientDeviceInfo(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         String os = "Unknown";

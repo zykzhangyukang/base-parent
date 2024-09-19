@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 @Order(value = AopConstant.RESULT_ASPECT_ORDER)
-@SuppressWarnings("all")
 public class ResultAspect {
 
 

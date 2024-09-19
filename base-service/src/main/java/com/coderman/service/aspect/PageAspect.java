@@ -29,7 +29,6 @@ import java.util.List;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class PageAspect {
 
-    @SuppressWarnings("all")
     @Around("@annotation(com.coderman.service.anntation.PageLimit) && @annotation(com.coderman.swagger.annotation.ApiReturnParams) && (execution(* com.coderman..controller..*(..)) || execution(* com.coderman..api..*(..)))")
     public Object around(ProceedingJoinPoint point) throws Throwable {
 

@@ -11,15 +11,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@SuppressWarnings("all")
 @Slf4j
 public class RedisLockServiceImpl implements RedisLockService {
 
 
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
 

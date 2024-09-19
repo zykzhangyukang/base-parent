@@ -34,3 +34,19 @@ mybatis:
 #  nameServer: 127.0.0.1:9876
 #  producer:
 #    group: boot-demo
+
+
+# swagger
+#swagger:
+#  enabled: false
+#  title: 通用后台管理系统
+#  description: 一款功能强大且易于扩展的后台管理解决方案，适用于各类企业和开发者。该系统采用主流技术栈，提供丰富的管理功能和高度的自定义能力，帮助用户快速搭建稳定、高效的后台系统。
+#  version: 2.0.0
+#  contact:
+#    name: coderman
+#    email: 3053161401@qq.com
+#    url: https://github.com/zykzhangyukang
+#  exclude-auth:
+#    - /auth/user/login
+#    - /auth/user/logout
+#    - /auth/const/all

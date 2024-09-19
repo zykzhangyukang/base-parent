@@ -19,7 +19,6 @@ import java.util.List;
 /**
  * @author coderman
  */
-@SuppressWarnings("unchecked")
 @RestController
 @RequestMapping(value = "/${domain}/callback")
 public class CallbackController {

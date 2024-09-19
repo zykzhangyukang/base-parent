@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  * @date 2022/6/1814:41
  */
 @Configuration
-@SuppressWarnings("all")
 public class NamedJdbcTemplateConfig {
 
 

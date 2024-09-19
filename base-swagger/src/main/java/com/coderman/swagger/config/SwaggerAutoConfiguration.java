@@ -1,9 +1,9 @@
 package com.coderman.swagger.config;
 
-import com.coderman.swagger.condition.SwaggerEnabledCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.util.AntPathMatcher;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -17,21 +17,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
- *
  * Swagger 自动配置类
  * @version: V1.0
  * @author zhangyukang
- * matchIfMissing属性：
- * 用来指定如果配置文件中未进行对应属性配置时的默认处理：默认情况下matchIfMissing为false，也就是说如果未进行属性配置，则自动配置不生效。
- * 如果matchIfMissing为true，则表示如果没有对应的属性配置，则自动配置默认生效。
- * 该属性为true时，配置文件中缺少对应的value或name的对应的属性值，也会注入成功
- * name : 用来设置是否开启swagger ui
  */
 @EnableSwagger2
-@Conditional(value = {SwaggerEnabledCondition.class})
+@ConditionalOnProperty(name = "swagger.enabled", matchIfMissing = false)
 public class SwaggerAutoConfiguration {
 
     /*** 默认的排除路径，排除Spring Boot默认的错误处理路径和端点*/
@@ -47,40 +40,34 @@ public class SwaggerAutoConfiguration {
 
     @Bean
     public Docket api(SwaggerProperties swaggerProperties) {
-        // base-path处理
         if (swaggerProperties.getBasePath().isEmpty()) {
             swaggerProperties.getBasePath().add(BASE_PATH);
         }
-        // noinspection unchecked
-        List<Predicate<String>> basePath = new ArrayList<Predicate<String>>();
-        swaggerProperties.getBasePath().forEach(path -> basePath.add(PathSelectors.ant(path)));
 
-        // exclude-path处理
         if (swaggerProperties.getExcludePath().isEmpty()) {
             swaggerProperties.getExcludePath().addAll(DEFAULT_EXCLUDE_PATH);
         }
 
-        List<Predicate<String>> excludePath = new ArrayList<>();
-        swaggerProperties.getExcludePath().forEach(path -> excludePath.add(PathSelectors.ant(path)));
-
-        // 指定生成的文档的类型是Swagger2
-        ApiSelectorBuilder builder = new Docket(DocumentationType.SWAGGER_2).host(swaggerProperties.getHost())
-                // 配置文档页面的基本信息内容
-                .apiInfo(apiInfo(swaggerProperties)).select()
-                // 指定扫描包路径
+        ApiSelectorBuilder builder = new Docket(DocumentationType.SWAGGER_2)
+                .host(swaggerProperties.getHost())
+                .apiInfo(apiInfo(swaggerProperties))
+                .select()
                 .apis(RequestHandlerSelectors.basePackage(swaggerProperties.getBasePackage()));
 
         swaggerProperties.getBasePath().forEach(p -> builder.paths(PathSelectors.ant(p)));
         swaggerProperties.getExcludePath().forEach(p -> builder.paths(PathSelectors.ant(p).negate()));
 
-        return builder.build().securitySchemes(securitySchemes()).securityContexts(securityContexts()).pathMapping("/");
+        return builder.build()
+                .securitySchemes(securitySchemes())
+                .securityContexts(securityContexts(swaggerProperties))
+                .pathMapping("/");
     }
 
     /**
      * 安全模式，这里指定token通过Authorization头请求头传递
      */
     private List<SecurityScheme> securitySchemes() {
-        List<SecurityScheme> apiKeyList = new ArrayList<SecurityScheme>();
+        List<SecurityScheme> apiKeyList = new ArrayList<>();
         apiKeyList.add(new ApiKey("Authorization", "Authorization", "header"));
         return apiKeyList;
     }
@@ -88,12 +75,20 @@ public class SwaggerAutoConfiguration {
     /**
      * 安全上下文
      */
-    private List<SecurityContext> securityContexts() {
+    private List<SecurityContext> securityContexts(SwaggerProperties swaggerProperties) {
         List<SecurityContext> securityContexts = new ArrayList<>();
+        AntPathMatcher pathMatcher = new AntPathMatcher();
         securityContexts.add(
                 SecurityContext.builder()
                         .securityReferences(defaultAuth())
-                        .operationSelector(o -> o.requestMappingPattern().matches("/.*"))
+                        .operationSelector(o -> {
+                            for (String path : swaggerProperties.getExcludeAuth()) {
+                                if (pathMatcher.match(path, o.requestMappingPattern())) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        })
                         .build());
         return securityContexts;
     }

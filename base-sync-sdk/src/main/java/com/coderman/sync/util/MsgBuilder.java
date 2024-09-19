@@ -140,7 +140,6 @@ public class MsgBuilder {
 
 
 
-    @SuppressWarnings("all")
     private MsgBuilder addWithMustAffectRows(String code, Collection uniques,Integer mustAffectRows){
 
         if(CollectionUtils.isEmpty(uniques)){

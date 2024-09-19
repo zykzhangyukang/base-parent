@@ -28,7 +28,6 @@ public class ConstLifecycle implements SmartLifecycle {
 
 
     @Override
-    @SuppressWarnings("all")
     public void start() {
 
         if (this.initialized.compareAndSet(false, true)) {

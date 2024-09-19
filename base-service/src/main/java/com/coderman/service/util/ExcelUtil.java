@@ -293,7 +293,6 @@ public class ExcelUtil {
      * @param <T>
      * @return
      */
-    @SuppressWarnings("all")
     private static <T> ResultVO<List<T>> parse(Class<T> clazz, FileInputStream fileInputStream, int dataRow, boolean isHasTitle, String excelType, Integer sheetNumber) throws Exception {
 
         Workbook workbook = null;

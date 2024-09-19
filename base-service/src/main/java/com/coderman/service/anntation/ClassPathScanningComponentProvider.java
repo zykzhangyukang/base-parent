@@ -201,7 +201,6 @@ public class ClassPathScanningComponentProvider implements EnvironmentCapable, R
      * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
      *
      */
-    @SuppressWarnings("unchecked")
     protected void registerDefaultFilters() {
         this.includeFilters.add(new AnnotationTypeFilter(Component.class));
         ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();

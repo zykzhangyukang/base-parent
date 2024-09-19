@@ -30,7 +30,6 @@ public class SpringContextUtil implements ApplicationContextAware, DisposableBea
     }
 
 
-    @SuppressWarnings("all")
     public static <T> T getBean(String beanName){
         checkApplicationContext();
         return (T) applicationContext.getBean(beanName);

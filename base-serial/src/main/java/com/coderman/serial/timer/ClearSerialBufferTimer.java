@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.Scheduled;
  */
 @Configuration
 @EnableScheduling
-@SuppressWarnings("all")
 public class ClearSerialBufferTimer {
 
     @Autowired

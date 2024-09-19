@@ -134,7 +134,6 @@ public class QueueDAO {
      * @param queueNodeList
      * @return
      */
-    @SuppressWarnings("all")
     public int insertOfMap(List<QueueNode> queueNodeList){
 
         if(!CollectionUtils.isEmpty(queueNodeList)){

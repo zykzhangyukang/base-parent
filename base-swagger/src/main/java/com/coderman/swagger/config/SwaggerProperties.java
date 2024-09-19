@@ -3,7 +3,7 @@ package com.coderman.swagger.config;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,8 @@ import java.util.List;
  * @author coderman
  * @description: swagger 属性
  */
-@Component
-@ConfigurationProperties("swagger")
+@Configuration
+@ConfigurationProperties(prefix = "swagger")
 @Data
 public class SwaggerProperties {
 
@@ -28,6 +28,9 @@ public class SwaggerProperties {
 
     @ApiModelProperty(value = "在basePath基础上需要排除的url规则")
     private List<String> excludePath = new ArrayList<>();
+
+    @ApiModelProperty(value = "不需要鉴权即可访问的接口")
+    private List<String> excludeAuth = new ArrayList<>();
 
     @ApiModelProperty(value = "标题")
     private String title = "";
@@ -53,8 +56,6 @@ public class SwaggerProperties {
     @ApiModelProperty(value = "联系人信息")
     private Contact contact = new Contact();
 
-    @ApiModelProperty(value = "全局统一鉴权配置")
-    private Authorization authorization = new Authorization();
 
     @Data
     public static class Contact {
@@ -67,33 +68,5 @@ public class SwaggerProperties {
 
         @ApiModelProperty(value = "联系人email")
         private String email = "";
-
-    }
-
-    @Data
-    public static class Authorization {
-
-        @ApiModelProperty(value = "鉴权策略ID，需要和SecurityReferences ID保持一致")
-        private String name = "";
-
-        @ApiModelProperty(value = "需要开启鉴权URL的正则")
-        private String authRegex = "^.*$";
-
-        @ApiModelProperty(value = "鉴权作用域列表")
-        private List<AuthorizationScope> authorizationScopeList = new ArrayList<>();
-
-        private List<String> tokenUrlList = new ArrayList<>();
-
-    }
-
-    @Data
-    public static class AuthorizationScope {
-
-        @ApiModelProperty(value = "作用域名称")
-        private String scope = "";
-
-        @ApiModelProperty(value = "作用域描述")
-        private String description = "";
-
     }
 }

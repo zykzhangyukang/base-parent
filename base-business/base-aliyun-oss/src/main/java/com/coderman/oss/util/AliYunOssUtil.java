@@ -8,12 +8,11 @@ import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.model.*;
 import com.coderman.oss.config.AliYunOssProperties;
 import com.coderman.oss.enums.FileModuleEnum;
+import com.coderman.service.util.SpringContextUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.io.InputStream;
@@ -29,33 +28,40 @@ import java.util.Optional;
  * @author ：zhangyukang
  * @date ：2023/09/25 10:40
  */
-@Component
 public class AliYunOssUtil {
 
     private final AliYunOssProperties aliYunOssProperties;
-
     /**
      * 获取阿里云OSS客户端对象
      */
-    private OSSClient ossClient;
-
-    @Value("${spring.application.name:app}")
-    private String applicationName;
-
+    private  static OSSClient ossClient;
+    /**
+     * 应用名称
+     */
+    private final String applicationName;
     /**
      * 允许文件覆盖写
      */
     public static String FORBID_OVERWRITE_HEADER = "x-oss-forbid-overwrite";
 
-    public AliYunOssUtil(AliYunOssProperties aliYunOssProperties) {
-        this.aliYunOssProperties = aliYunOssProperties;
+    private static class Holder {
+        private static final AliYunOssUtil INSTANCE = new AliYunOssUtil();
     }
 
+    private AliYunOssUtil() {
+        aliYunOssProperties = SpringContextUtil.getBean(AliYunOssProperties.class);
+        applicationName = SpringContextUtil.getApplicationContext().getEnvironment().getProperty("spring.application.name","app");
+        this.initOssClient();
+    }
+
+    public static AliYunOssUtil getInstance() {
+        return Holder.INSTANCE;
+    }
 
     /**
      * 获取阿里云OSS客户端对象
      */
-    private OSSClient getOssClient(){
+    private OSSClient initOssClient(){
         if(ossClient == null){
             ClientConfiguration conf = new ClientConfiguration();
             //设置OSSClient允许打开的最大HTTP连接数，默认为1024个。
@@ -64,7 +70,8 @@ public class AliYunOssUtil {
             conf.setSocketTimeout(50000);
             //OssApiUtil设置建立连接的超时时间，默认为50000毫秒。
             conf.setConnectionTimeout(50000);
-            ossClient = new OSSClient(aliYunOssProperties.getEndPoint(), new DefaultCredentialProvider(aliYunOssProperties.getAccessKeyId() ,aliYunOssProperties.getAccessKeySecret()), conf);
+            DefaultCredentialProvider credentialProvider = new DefaultCredentialProvider(aliYunOssProperties.getAccessKeyId(), aliYunOssProperties.getAccessKeySecret());
+            ossClient = new OSSClient(aliYunOssProperties.getEndPoint(), credentialProvider, conf);
         }
         return ossClient;
     }
@@ -160,7 +167,7 @@ public class AliYunOssUtil {
     protected PutObjectResult uploadFile(InputStream inputStream, String path, boolean overWrite) {
 
         // 创建OSSClient的实例
-        OSSClient ossClient = getOssClient();
+        OSSClient ossClient = initOssClient();
         if (!overWrite) {
             boolean exist = this.existFile(aliYunOssProperties.getBucketName(), path);
             if (exist) {
@@ -184,7 +191,7 @@ public class AliYunOssUtil {
      * @return
      */
     public boolean existFile(String bucketName, String fullPath) {
-        OSSClient ossClient = getOssClient();
+        OSSClient ossClient = initOssClient();
         return ossClient.doesObjectExist(bucketName, fullPath);
     }
 
@@ -195,7 +202,7 @@ public class AliYunOssUtil {
      */
     public String createBucketName(String bucketName) {
         // 存储空间
-        OSSClient ossClient = getOssClient();
+        OSSClient ossClient = initOssClient();
         GenericResult result = null;
         try {
             // 创建CreateBucketRequest对象。
@@ -211,6 +218,23 @@ public class AliYunOssUtil {
             this.ossConClose(result);
         }
         return bucketName;
+    }
+
+
+    /**
+     * 获取分片上传任务id
+     *
+     * @param objectName 对象名称
+     * @return
+     */
+    public String getUploadId(String objectName) {
+        OSSClient ossClient = initOssClient();
+        // 创建InitiateMultipartUploadRequest对象。
+        InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(aliYunOssProperties.getBucketName(), objectName);
+        // 初始化分片。
+        InitiateMultipartUploadResult result = ossClient.initiateMultipartUpload(request);
+        // 返回uploadId。
+        return result.getUploadId();
     }
 
     /**

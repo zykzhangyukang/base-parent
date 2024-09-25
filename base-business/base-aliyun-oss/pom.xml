@@ -42,6 +42,11 @@
             <artifactId>aliyun-sdk-oss</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-service</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

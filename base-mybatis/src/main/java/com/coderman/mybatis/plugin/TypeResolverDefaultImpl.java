@@ -17,6 +17,9 @@ public class TypeResolverDefaultImpl extends JavaTypeResolverDefaultImpl {
         //把数据库的 TINYINT 映射成 Integer
         super.typeMap.put(Types.TINYINT, new JavaTypeResolverDefaultImpl.JdbcTypeInformation("TINYINT", new FullyQualifiedJavaType(Integer.class.getName())));
         super.typeMap.put(Types.SMALLINT, new JavaTypeResolverDefaultImpl.JdbcTypeInformation("SMALLINT", new FullyQualifiedJavaType(Integer.class.getName())));
+        //加一段bit的映射
+        typeMap.put(Types.BIT, new JavaTypeResolverDefaultImpl.JdbcTypeInformation("BIT", new FullyQualifiedJavaType(Integer.class.getName())));
+
     }
 
 }

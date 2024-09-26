@@ -5,6 +5,7 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author coderman
@@ -172,6 +173,27 @@ public class ResultUtil {
 
         return t;
     }
+
+    public static <K, V> ResultVO<Map<K, V>> getMap(Class<?> clazz, int code, String msg, Map<K, V> map) {
+        ResultVO<Map<K, V>> result = new ResultVO<>();
+        result.setCode(code);
+        result.setMsg(msg);
+        result.setResult(map);
+        return result;
+    }
+
+    public static <K, V> ResultVO<Map<K, V>> getSuccessMap(Class<?> clazz, Map<K, V> map) {
+        return getMap(clazz, ResultConstant.RESULT_CODE_200, null, map);
+    }
+
+    public static <K, V> ResultVO<Map<K, V>> getFailMap(Class<?> clazz, Map<K, V> map, String msg) {
+        return getMap(clazz, ResultConstant.RESULT_CODE_402, msg, map);
+    }
+
+    public static <K, V> ResultVO<Map<K, V>> getWarnMap(Class<?> clazz, Map<K, V> map, String msg) {
+        return getMap(clazz, ResultConstant.RESULT_CODE_405, msg, map);
+    }
+
 
 
     public static <T> ResultVO<PageVO<List<T>>> getSuccessPage(Class<T> clazz, PageVO<List<T>> page) {

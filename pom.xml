@@ -28,17 +28,6 @@
     <version>1.0.0.RELEASE</version>
     <packaging>pom</packaging>
 
-    <distributionManagement>
-        <repository>
-            <id>dev-releases</id>
-            <url>https://packages.aliyun.com/maven/repository/2422895-release-1qX72S/</url>
-        </repository>
-        <snapshotRepository>
-            <id>dev-snapshots</id>
-            <url>https://packages.aliyun.com/maven/repository/2422895-snapshot-SwD328/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 基础项目版本 -->

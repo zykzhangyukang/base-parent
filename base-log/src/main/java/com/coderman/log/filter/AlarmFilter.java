@@ -1,4 +1,4 @@
-package com.coderman.log.alarm;
+package com.coderman.log.filter;
 
 import ch.qos.logback.classic.filter.LevelFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;

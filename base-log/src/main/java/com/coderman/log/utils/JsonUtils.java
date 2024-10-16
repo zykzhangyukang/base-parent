@@ -1,4 +1,4 @@
-package com.coderman.log.alarm;
+package com.coderman.log.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

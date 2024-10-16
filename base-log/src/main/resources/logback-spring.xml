@@ -23,7 +23,7 @@
     <!--输出到控制台-->
     <appender name="LOG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>${log.file.pattern}</Pattern>
+            <Pattern>${log.console.pattern}</Pattern>
             <!-- 设置字符集 -->
             <charset>UTF-8</charset>
         </encoder>
@@ -47,11 +47,11 @@
     </appender>
 
     <!-- 输出到钉钉告警 -->
-    <appender name="LOG_DING_ALARM" class="com.coderman.log.alarm.DingAlarmAppender">
+    <appender name="LOG_DING_ALARM" class="com.coderman.log.appender.DingAlarmAppender">
         <accessKeyId>0bbcbadbfc05e6ef9d93657a43c51df7d1811e91cf806ffa0d7316a3dabb15a7</accessKeyId>
         <accessKeySecret>SECc8e5b8c7b4d098bd5464747eaaa82ca65e8be3b2968be8fae399112f6c17bd5a</accessKeySecret>
         <alarmTimeInterval>2</alarmTimeInterval>
-        <filter class="com.coderman.log.alarm.AlarmFilter">
+        <filter class="com.coderman.log.filter.AlarmFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
@@ -86,6 +86,7 @@
             <appender-ref ref="LOG_CONSOLE" />
             <appender-ref ref="LOG_FILE" />
             <appender-ref ref="LOG_FILE_ERROR" />
+            <appender-ref ref="LOG_DING_ALARM"/>
         </root>
 
         <logger name="java.sql.Connection" level="DEBUG" additivity="false"/>

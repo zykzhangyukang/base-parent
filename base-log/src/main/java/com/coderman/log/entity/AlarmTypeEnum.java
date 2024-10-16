@@ -1,4 +1,4 @@
-package com.coderman.log.alarm;
+package com.coderman.log.entity;
 
 /**
  * 告警类型

@@ -38,33 +38,43 @@ public class DingAlarmAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
     protected void append(ILoggingEvent iLoggingEvent) {
 
         try {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(iLoggingEvent.getFormattedMessage()).append("\n");
+
+            StringBuilder logMessage = new StringBuilder();
+            logMessage.append("===== Log Start =====").append("\n");
+
+            logMessage.append("Message: ").append(iLoggingEvent.getFormattedMessage()).append("\n");
 
             IThrowableProxy throwableProxy = iLoggingEvent.getThrowableProxy();
             if (Objects.nonNull(throwableProxy)) {
-                // 添加报错时间
-                stringBuilder.append("\n报错时间:").append(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+                String errorTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+                logMessage.append("\n=== Error Information ===").append("\n")
+                        .append("Error Timestamp: ").append(errorTime).append("\n");
 
-                // 添加异常类型和异常信息
-                stringBuilder.append("\n异常类型:").append(throwableProxy.getClassName()).append("\n");
-                stringBuilder.append("异常信息:").append(throwableProxy.getMessage()).append("\n");
+                logMessage.append("Exception Type: ").append(throwableProxy.getClassName()).append("\n")
+                        .append("Exception Message: ").append(throwableProxy.getMessage()).append("\n");
 
-                // 添加堆栈信息（仅前4行）
-                StackTraceElementProxy[] stackTraceElementProxyArray = throwableProxy.getStackTraceElementProxyArray();
-                if (stackTraceElementProxyArray != null && stackTraceElementProxyArray.length > 0) {
-                    stringBuilder.append("堆栈信息:\n");
-                    for (int i = 0; i < stackTraceElementProxyArray.length && i < 4; i++) {
-                        stringBuilder.append(stackTraceElementProxyArray[i].getSTEAsString()).append("\n");
+                StackTraceElementProxy[] stackTraceElements = throwableProxy.getStackTraceElementProxyArray();
+                if (stackTraceElements != null && stackTraceElements.length > 0) {
+                    StackTraceElement firstElement = stackTraceElements[0].getStackTraceElement();
+                    logMessage.append("Error Occurred at: ")
+                            .append(firstElement).append(" (Line: ")
+                            .append(firstElement.getLineNumber()).append(")\n");
+
+                    logMessage.append("\n--- Stack Trace (Top 10) ---").append("\n");
+                    for (int i = 0; i < Math.min(10, stackTraceElements.length); i++) {
+                        StackTraceElement element = stackTraceElements[i].getStackTraceElement();
+                        logMessage.append("\t").append(element);
                     }
                 }
             }
 
+            logMessage.append("===== Log End =====").append("\n");
+
             // 构建告警消息
             AlarmMessage alarmMessage = new AlarmMessage();
-            alarmMessage.setAlarmName(iLoggingEvent.getMessage());
+            alarmMessage.setAlarmName(iLoggingEvent.getFormattedMessage());
             alarmMessage.setAlarmType(AlarmTypeEnum.DING_TALK);
-            alarmMessage.setMessage(stringBuilder.toString());
+            alarmMessage.setMessage(logMessage.toString());
             alarmMessage.setAccessToken(this.accessKeyId);
             alarmMessage.setAccessKeySecret(this.accessKeySecret);
             alarmMessage.setAlarmTimeInterval(this.alarmTimeInterval);

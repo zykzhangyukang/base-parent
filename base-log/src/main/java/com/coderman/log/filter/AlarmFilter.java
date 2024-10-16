@@ -9,7 +9,7 @@ import ch.qos.logback.core.spi.FilterReply;
  */
 public class AlarmFilter extends LevelFilter {
 
-    String LOG_SYS_FAIL = " Controller统一异常处理";
+    String LOG_SYS_FAIL = "Controller统一异常处理";
     String LOG_SYS_CLASS = "com.coderman.service.aop.GlobalExceptionHandler";
 
     @Override

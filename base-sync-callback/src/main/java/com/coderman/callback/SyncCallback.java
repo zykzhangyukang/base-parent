@@ -12,6 +12,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SyncCallback {
 
-
+    /**
+     * 同步回调code
+     * @return
+     */
     public String value();
 }

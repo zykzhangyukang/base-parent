@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -104,7 +105,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 redisConnection.expire(serializeKey(key), seconds);
@@ -119,7 +120,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 return redisConnection.incrBy(serializeKey(key), value);
@@ -138,11 +139,10 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-                Long aLong = redisConnection.incr(serializeKey(key));
-                return aLong;
+                return redisConnection.incr(serializeKey(key));
             }
         });
 
@@ -156,14 +156,12 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public long hIncrBy(String key, String field, long value, int db) {
 
-
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-                Long aLong = redisConnection.hIncrBy(serializeKey(key), serializeHashKey(field), value);
-                return aLong;
+                return redisConnection.hIncrBy(serializeKey(key), serializeHashKey(field), value);
             }
         });
 
@@ -178,14 +176,12 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public long hSize(String key, int db) {
 
-
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-                Long aLong = redisConnection.hLen(serializeKey(key));
-                return aLong;
+                return redisConnection.hLen(serializeKey(key));
             }
         });
 
@@ -200,14 +196,12 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> long lSize(String key, int db) {
 
-
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-                Long aLong = redisConnection.lLen(serializeKey(key));
-                return aLong;
+                return redisConnection.lLen(serializeKey(key));
             }
         });
 
@@ -224,11 +218,10 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-                Long aLong = redisConnection.dbSize();
-                return aLong;
+                return redisConnection.dbSize();
             }
         });
 
@@ -245,7 +238,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 return redisConnection.del(serializeKey(key));
@@ -265,17 +258,13 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-
                 Long delNums = 0L;
-
                 for (String key : keys) {
                     delNums += redisConnection.del(serializeKey(key));
                 }
-
-
                 return delNums;
             }
         });
@@ -293,7 +282,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 redisConnection.hDel(serializeKey(hashKey), serializeHashKey(field));
@@ -309,7 +298,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
 
@@ -330,7 +319,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 return deserializeValue(redisConnection.get(serializeKey(key)));
@@ -349,10 +338,9 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public String getStringBySameStrategy(String key, int db) {
 
-
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 return deserializeKey(redisConnection.get(serializeKey(key)));
@@ -372,7 +360,7 @@ public class RedisServiceImpl implements RedisService {
 
         redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 Boolean set = redisConnection.set(serializeKey(key), serializeValue(string));
@@ -388,7 +376,7 @@ public class RedisServiceImpl implements RedisService {
 
         redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 Boolean set = redisConnection.set(serializeKey(key), serializeKey(string));
@@ -401,7 +389,7 @@ public class RedisServiceImpl implements RedisService {
     public <T> void setString(String key, String string, int seconds, int db) {
         Object execute = this.redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 Boolean set = connection.setEx(serializeKey(key), seconds, serializeValue(string));
@@ -415,7 +403,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object execute = this.redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 Object obj = deserializeValue(connection.getSet(serializeKey(key), serializeValue(string)));
@@ -438,7 +426,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object execute = this.redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 connection.set(serializeKey(key), serializeValue(obj));
@@ -452,7 +440,7 @@ public class RedisServiceImpl implements RedisService {
     public <T> void setObject(String key, T obj, int seconds, int db) {
         Object execute = this.redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 connection.setEx(serializeKey(key), seconds, serializeValue(obj));
@@ -466,7 +454,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object execute = this.redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 return deserializeValue(connection.get(serializeKey(key)));
@@ -486,17 +474,15 @@ public class RedisServiceImpl implements RedisService {
 
         List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 if (obj instanceof List) {
-
                     List objList = (List) obj;
                     for (Object objVal : objList) {
                         redisConnection.sAdd(serializeKey(key), serializeValue(objVal));
                     }
                 } else {
-
                     redisConnection.sAdd(serializeKey(key), serializeValue(obj));
                 }
 
@@ -524,7 +510,7 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.delete(key);
         List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
 
@@ -543,7 +529,7 @@ public class RedisServiceImpl implements RedisService {
 
         redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 redisConnection.sAdd(serializeKey(key), serializeValue(obj));
@@ -556,9 +542,8 @@ public class RedisServiceImpl implements RedisService {
     public <T> boolean isSetMember(String key, T obj, int db) {
 
         Object object = redisTemplate.execute(new RedisCallback<Boolean>() {
-
             @Override
-            public Boolean doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Boolean doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
                 redisConnection.select(db);
                 return redisConnection.sIsMember(serializeKey(key), serializeValue(obj));
             }
@@ -577,7 +562,7 @@ public class RedisServiceImpl implements RedisService {
         Object object = redisTemplate.execute(new RedisCallback<Object>() {
 
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
                 redisConnection.select(db);
                 redisConnection.sRem(serializeKey(key), serializeValue(obj));
                 return null;
@@ -591,7 +576,7 @@ public class RedisServiceImpl implements RedisService {
 
         List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
 
@@ -609,7 +594,7 @@ public class RedisServiceImpl implements RedisService {
     public <T> void delRListData(String key, int size, int db) {
         List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
 
@@ -628,7 +613,7 @@ public class RedisServiceImpl implements RedisService {
 
         List result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 if (obj instanceof List) {
@@ -664,7 +649,7 @@ public class RedisServiceImpl implements RedisService {
 
         redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 Set<Map.Entry<String, T>> set = map.entrySet();
@@ -685,7 +670,7 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 List<T> resultList = new ArrayList<>();
@@ -694,10 +679,8 @@ public class RedisServiceImpl implements RedisService {
                 Cursor<byte[]> cursor = redisConnection.sScan(serializeKey(key), scanOptions);
 
                 while (cursor.hasNext()) {
-
                     resultList.add((T) deserializeValue(cursor.next()));
                 }
-
 
                 return resultList;
             }
@@ -708,39 +691,32 @@ public class RedisServiceImpl implements RedisService {
             return (List<T>) obj;
         }
 
-
         return null;
     }
 
     @Override
     public <T> Set<T> getSet(String key, Class<T> clas, int db) {
 
-
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 Set<T> resultSet = new HashSet<>();
 
                 ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
                 Cursor<byte[]> cursor = redisConnection.sScan(serializeKey(key), scanOptions);
-
                 while (cursor.hasNext()) {
-
                     resultSet.add((T) deserializeValue(cursor.next()));
                 }
-
 
                 return resultSet;
             }
         });
 
         if (obj != null && obj instanceof Set) {
-
             return (Set<T>) obj;
         }
-
 
         return null;
 
@@ -751,15 +727,13 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 List<T> resultList = new ArrayList<>();
 
                 List<byte[]> tempList = redisConnection.lRange(serializeKey(key), 0, -1);
                 for (byte[] tempByte : tempList) {
-
-
                     resultList.add((T) deserializeValue(tempByte));
                 }
 
@@ -768,7 +742,6 @@ public class RedisServiceImpl implements RedisService {
         });
 
         if (obj != null && obj instanceof List) {
-
             return (List<T>) obj;
         }
 
@@ -778,15 +751,12 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> List<T> getList(List<String> filterKey, Class<T> cls, int db) {
 
-
         List<T> result = redisTemplate.executePipelined(new RedisCallback<List<T>>() {
             @Override
-            public List<T> doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public List<T> doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 for (String key : filterKey) {
-
-
                     if (StringUtils.isBlank(key)) {
                         continue;
                     }
@@ -804,20 +774,16 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> Map<String, T> getMapOfList(List<String> filterKeys, Class<T> clas, int db) {
 
-
         Map<String, T> map = new HashMap<>();
         List<Object> result = redisTemplate.executePipelined(new RedisCallback<List<Object>>() {
             @Override
-            public List<Object> doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public List<Object> doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
                 for (String key : filterKeys) {
-
-
                     if (StringUtils.isBlank(key)) {
                         continue;
                     }
-
                     redisConnection.get(serializeKey(key));
                 }
 
@@ -828,7 +794,6 @@ public class RedisServiceImpl implements RedisService {
         List<T> listTmp = (List<T>) result;
         int i = 0;
         for (String key : filterKeys) {
-
             if (StringUtils.isBlank(key)) {
                 continue;
             }
@@ -844,12 +809,11 @@ public class RedisServiceImpl implements RedisService {
     public <T> void setHash(String key, String filed, T obj, int db) {
         this.redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
                 connection.select(db);
                 return connection.hSet(serializeKey(key), serializeHashKey(filed), serializeHashValue(obj));
             }
         });
-
     }
 
 
@@ -858,25 +822,19 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
 
                 byte[] k = serializeKey(key);
                 byte[] v = serializeHashKey(filed);
-
                 byte[] bytes = redisConnection.hGet(k, v);
-
                 return deserializeHashValue(bytes);
             }
         });
-
         if (obj != null) {
-
             return (T) obj;
         }
-
-
         return null;
     }
 
@@ -885,11 +843,9 @@ public class RedisServiceImpl implements RedisService {
 
         redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
                 redisConnection.select(db);
                 Set<Map.Entry<String, T>> set = map.entrySet();
-
-
                 for (Map.Entry<String, T> entry : set) {
 
                     redisConnection.hSet(serializeKey(key), serializeHashKey(entry.getKey()),
@@ -908,44 +864,36 @@ public class RedisServiceImpl implements RedisService {
 
         Object result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
 
                 for (String field : filterField) {
-
                     if (StringUtils.isBlank(field)) {
                         continue;
                     }
 
                     redisConnection.hGet(serializeKey(key), serializeHashKey(field));
                 }
-
                 return null;
             }
         });
-
-
         return (List<T>) result;
     }
 
     @Override
     public <T> Map<String, T> getMapOfHash(String key, List<String> filterField, Class<T> clas, int db) {
 
-
         Map<String, T> map = new HashMap<>();
         List<T> result = redisTemplate.executePipelined(new RedisCallback<List<T>>() {
             @Override
-            public List<T> doInRedis(RedisConnection redisConnection) throws DataAccessException {
+            public List<T> doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 
                 redisConnection.select(db);
-
                 for (String field : filterField) {
-
                     if (StringUtils.isBlank(field)) {
                         continue;
                     }
-
                     redisConnection.hGet(serializeKey(key), serializeHashKey(field));
                 }
 
@@ -955,15 +903,12 @@ public class RedisServiceImpl implements RedisService {
 
         int i = 0;
         for (String field : filterField) {
-
             if (StringUtils.isBlank(field)) {
                 continue;
             }
-
             map.put(field, result.get(i));
             i++;
         }
-
         return map;
     }
 
@@ -973,23 +918,20 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 List<T> list = new ArrayList<>();
-
 
                 ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
                 Cursor<Map.Entry<byte[], byte[]>> cursor = connection.hScan(serializeKey(key), scanOptions);
 
                 while (cursor.hasNext()) {
 
-
                     Map.Entry<byte[], byte[]> entry = cursor.next();
                     byte[] key = serializeHashKey(entry.getKey());
 
                     if (key != null) {
-
                         list.add((T) deserializeHashValue(entry.getValue()));
                     }
                 }
@@ -997,9 +939,7 @@ public class RedisServiceImpl implements RedisService {
             }
         });
 
-
         if (obj != null) {
-
             return (List) obj;
         }
 
@@ -1013,23 +953,20 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 Map<String, T> map = new HashMap<>();
-
 
                 ScanOptions scanOptions = ScanOptions.scanOptions().count(2000).build();
                 Cursor<Map.Entry<byte[], byte[]>> cursor = connection.hScan(serializeKey(key), scanOptions);
 
                 while (cursor.hasNext()) {
 
-
                     Map.Entry<byte[], byte[]> entry = cursor.next();
                     byte[] key = serializeHashKey(entry.getKey());
 
                     if (key != null) {
-
                         map.put(key.toString(), (T) deserializeHashValue(entry.getValue()));
                     }
                 }
@@ -1060,7 +997,6 @@ public class RedisServiceImpl implements RedisService {
         Object obj = redisTemplate.execute(redisScript, redisTemplate.getStringSerializer(), redisTemplate.getStringSerializer(), keys, args);
 
         if (obj != null) {
-
             return (List<Long>) obj;
         }
 
@@ -1072,37 +1008,39 @@ public class RedisServiceImpl implements RedisService {
 
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
 
                 connection.select(db);
                 Set<String> resultSet = new HashSet<>();
-
                 Set<byte[]> keys = connection.keys(serializeKey(key));
-                if (CollectionUtils.isNotEmpty(keys)) {
 
+                if (CollectionUtils.isNotEmpty(keys)) {
                     Iterator<byte[]> iterator = keys.iterator();
                     while (iterator.hasNext()) {
-
                         resultSet.add((String) deserializeKey(iterator.next()));
                     }
                 }
-
                 return resultSet;
             }
         });
-
-
         return (Set<String>) obj;
     }
 
     @Override
+    public <T> void zSetAdd(String key, T obj, double score, int db) {
+
+        redisTemplate.execute((RedisCallback<Object>) connection -> {
+            connection.select(db);
+            // 插入数据到 ZSet，并返回操作结果
+            return connection.zAdd(serializeKey(key), score, serializeValue(obj));
+        });
+    }
+
+    @Override
     public void sendTopicMessage(String topic, Object msgObj) {
-        redisTemplate.execute(new RedisCallback() {
-            @Override
-            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
-                Long publish = redisConnection.publish(serializeKey(topic), serializeValue(msgObj));
-                return null;
-            }
+        redisTemplate.execute(redisConnection -> {
+            Long publish = redisConnection.publish(serializeKey(topic), serializeValue(msgObj));
+            return null;
         }, true);
     }
 }

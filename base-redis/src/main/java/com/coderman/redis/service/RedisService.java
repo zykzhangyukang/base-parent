@@ -453,6 +453,17 @@ public interface RedisService {
 
 
     /**
+     * 向指定的 ZSet 集合中添加元素。
+     *
+     * @param key   ZSet 集合的键名
+     * @param obj   要插入的元素，支持任意类型，将序列化存储在 ZSet 中
+     * @param score 元素的分数，确定元素在 ZSet 中的排序
+     * @param db    数据库索引，用于指定目标 Redis 数据库
+     * @param <T>   要添加对象的类型，确保类型安全
+     */
+    <T> void zSetAdd(String key, T obj, double score, int db);
+
+    /**
      * 发布订阅消息
      *
      * @param topic 主题

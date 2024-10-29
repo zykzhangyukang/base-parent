@@ -1073,6 +1073,31 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public <T> Set<T> zRevRange(String key, Class<T> clazz, int beginIndex, int endIndex, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
+
+                connection.select(db);
+                Set<T> set = new LinkedHashSet<>();
+                Set<byte[]> bytes = connection.zRevRange(serializeKey(key), beginIndex, endIndex);
+                for (byte[] aByte : bytes) {
+                    T o = (T) deserializeHashValue(aByte);
+                    set.add(o);
+                }
+                return set;
+            }
+        });
+
+        if(obj!=null){
+            return (Set<T>) obj;
+        }
+
+        return null;
+    }
+
+    @Override
     public <T> Set<T> zRevRangeByScore(String key, Class<T> clazz, double min, double max, int db) {
 
         Object obj = redisTemplate.execute(new RedisCallback() {

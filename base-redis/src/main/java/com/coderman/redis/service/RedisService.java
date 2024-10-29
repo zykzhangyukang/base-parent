@@ -488,6 +488,18 @@ public interface RedisService {
     <T> Set<T> zRange(String key, Class<T> clazz, int beginIndex, int endIndex, int db);
 
     /**
+     * 从指定的 ZSet 集合中获取一定范围内的元素，按照分数从高到低的顺序返回。
+     *
+     * @param key        ZSet 集合的键名
+     * @param beginIndex 起始索引（包含），表示获取范围的起点
+     * @param endIndex   结束索引（包含），表示获取范围的终点。-1 表示获取到集合的末尾
+     * @param db         数据库索引，用于指定目标 Redis 数据库
+     * @param <T>        返回的元素类型
+     * @return 返回指定范围内的元素集合，按分数升序排列
+     */
+    <T> Set<T> zRevRange(String key, Class<T> clazz, int beginIndex, int endIndex, int db);
+
+    /**
      * 根据分数范围获取指定 ZSet 集合中的元素，返回符合分数区间 [min, max] 的元素集合，按分数升序排列。
      *
      * @param key   ZSet 集合的键名
@@ -511,7 +523,7 @@ public interface RedisService {
      * @param <T>   返回的元素类型，确保类型安全
      * @return      返回符合分数区间的元素集合，按分数降序排列
      */
-    <T> Set<T> zRevRangeByScore(String key, Class<T> clazz, double max, double min, int db);
+    <T> Set<T> zRevRangeByScore(String key, Class<T> clazz, double min, double max, int db);
 
 
     /**

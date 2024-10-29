@@ -42,14 +42,14 @@ public class GlobalExceptionHandler extends BaseService {
         if (e instanceof BusinessException) {
 
             resultVO.setMsg(e.getMessage());
-            resultVO.setCode((Optional.ofNullable(((BusinessException) e).getErrorCode()).orElse(ResultConstant.RESULT_CODE_429)));
-            log.error("业务异常处理:{},url:{}", e.getMessage(), request.getRequestURI());
+            resultVO.setCode((Optional.ofNullable(((BusinessException) e).getErrorCode()).orElse(ResultConstant.RESULT_CODE_402)));
+            log.error("业务异常处理:{},url:{}", e.getMessage(), request.getRequestURI(), e);
 
         } else if (e instanceof RateLimitException) {
 
             resultVO.setMsg("请求过于频繁！");
             resultVO.setCode(ResultConstant.RESULT_CODE_429);
-            log.error("请求过于频繁,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI());
+            log.error("请求过于频繁,ip:{} , url:{}", IpUtil.getIpAddr(), request.getRequestURI(), e);
 
 
         } else if (e instanceof HttpRequestMethodNotSupportedException ||
@@ -59,13 +59,13 @@ public class GlobalExceptionHandler extends BaseService {
 
             resultVO.setMsg("请求错误！");
             resultVO.setCode(ResultConstant.RESULT_CODE_400);
-            log.error("非法请求:{},url:{}", e.getMessage(), request.getRequestURI());
+            log.error("非法请求:{},url:{}", e.getMessage(), request.getRequestURI(), e);
 
         }else if(e instanceof NoHandlerFoundException){
 
             resultVO.setMsg("接口不存在！");
             resultVO.setCode(ResultConstant.RESULT_CODE_404);
-            log.error("接口不存在:{},url:{}", e.getMessage(), request.getRequestURI());
+            log.error("接口不存在:{},url:{}", e.getMessage(), request.getRequestURI(), e);
 
         } else {
 

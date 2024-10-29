@@ -21,6 +21,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /**
  * @author coderman
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler extends BaseService {
         if (e instanceof BusinessException) {
 
             resultVO.setMsg(e.getMessage());
-            resultVO.setCode(ResultConstant.RESULT_CODE_402);
+            resultVO.setCode((Optional.ofNullable(((BusinessException) e).getErrorCode()).orElse(ResultConstant.RESULT_CODE_429)));
 
         } else if (e instanceof RateLimitException) {
 

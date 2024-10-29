@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
@@ -1034,6 +1035,85 @@ public class RedisServiceImpl implements RedisService {
             // 插入数据到 ZSet，并返回操作结果
             return connection.zAdd(serializeKey(key), score, serializeValue(obj));
         });
+    }
+
+    @Override
+    public <T> void zAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db) {
+
+        redisTemplate.execute((RedisCallback<Object>) connection -> {
+            connection.select(db);
+            // 插入数据到 ZSet，并返回操作结果
+            return connection.zAdd(serializeKey(key), tuples);
+        });
+    }
+
+    @Override
+    public <T> Set<T> zRange(String key, Class<T> clazz, int beginIndex, int endIndex, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
+
+                connection.select(db);
+                Set<T> set = new LinkedHashSet<>();
+                Set<byte[]> bytes = connection.zRange(serializeKey(key), beginIndex, endIndex);
+                for (byte[] aByte : bytes) {
+                    T o = (T) deserializeHashValue(aByte);
+                    set.add(o);
+                }
+                return set;
+            }
+        });
+
+        if(obj!=null){
+            return (Set<T>) obj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public <T> Set<T> zRevRangeByScore(String key, Class<T> clazz, double min, double max, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
+                connection.select(db);
+                Set<T> set = new LinkedHashSet<>();
+                Set<byte[]> bytes = connection.zRevRangeByScore(serializeKey(key), min, max);
+                for (byte[] aByte : bytes) {
+                    T o = (T) deserializeHashValue(aByte);
+                    set.add(o);
+                }
+                return set;
+            }
+        });
+        if(obj!=null){
+            return (Set<T>) obj;
+        }
+        return null;
+    }
+
+    @Override
+    public <T> Set<T> zRangeByScore(String key, Class<T> clazz, double min, double max, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
+                connection.select(db);
+                Set<T> set = new LinkedHashSet<>();
+                Set<byte[]> bytes = connection.zRangeByScore(serializeKey(key), min, max);
+                for (byte[] aByte : bytes) {
+                    T o = (T) deserializeHashValue(aByte);
+                    set.add(o);
+                }
+                return set;
+            }
+        });
+        if(obj!=null){
+            return (Set<T>) obj;
+        }
+        return null;
     }
 
     @Override

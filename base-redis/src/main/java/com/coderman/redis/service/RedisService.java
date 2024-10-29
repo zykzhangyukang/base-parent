@@ -1,5 +1,6 @@
 package com.coderman.redis.service;
 
+import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
@@ -462,6 +463,56 @@ public interface RedisService {
      * @param <T>   要添加对象的类型，确保类型安全
      */
     <T> void zSetAdd(String key, T obj, double score, int db);
+
+    /**
+     * 向指定的 ZSet 集合中添加多个元素。
+     *
+     * @param key     ZSet 集合的键名
+     * @param tuples  包含要插入元素及其分数的集合，支持任意类型的对象，元素会被序列化存储在 ZSet 中
+     * @param db      数据库索引，用于指定目标 Redis 数据库
+     * @param <T>     要添加对象的类型，确保类型安全
+     */
+    <T> void zAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db);
+
+
+    /**
+     * 从指定的 ZSet 集合中获取一定范围内的元素，按照分数从低到高的顺序返回。
+     *
+     * @param key        ZSet 集合的键名
+     * @param beginIndex 起始索引（包含），表示获取范围的起点
+     * @param endIndex   结束索引（包含），表示获取范围的终点。-1 表示获取到集合的末尾
+     * @param db         数据库索引，用于指定目标 Redis 数据库
+     * @param <T>        返回的元素类型
+     * @return 返回指定范围内的元素集合，按分数升序排列
+     */
+    <T> Set<T> zRange(String key, Class<T> clazz, int beginIndex, int endIndex, int db);
+
+    /**
+     * 根据分数范围获取指定 ZSet 集合中的元素，返回符合分数区间 [min, max] 的元素集合，按分数升序排列。
+     *
+     * @param key   ZSet 集合的键名
+     * @param clazz 返回的元素类型，用于反序列化每个元素
+     * @param min   分数区间的最小值，包含此分数
+     * @param max   分数区间的最大值，包含此分数
+     * @param db    数据库索引，用于指定目标 Redis 数据库
+     * @param <T>   返回的元素类型，确保类型安全
+     * @return 返回符合分数区间的元素集合，按分数升序排列
+     */
+    <T> Set<T> zRangeByScore(String key, Class<T> clazz, double min, double max, int db);
+
+    /**
+     * 根据分数范围获取指定 ZSet 集合中的元素，返回符合分数区间 [min, max] 的元素集合，按分数降序排列。
+     *
+     * @param key   ZSet 集合的键名
+     * @param clazz 返回的元素类型，用于反序列化每个元素
+     * @param max   分数区间的最大值，包含此分数
+     * @param min   分数区间的最小值，包含此分数
+     * @param db    数据库索引，用于指定目标 Redis 数据库
+     * @param <T>   返回的元素类型，确保类型安全
+     * @return      返回符合分数区间的元素集合，按分数降序排列
+     */
+    <T> Set<T> zRevRangeByScore(String key, Class<T> clazz, double max, double min, int db);
+
 
     /**
      * 发布订阅消息

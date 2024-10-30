@@ -1028,23 +1028,35 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public <T> void zSetAdd(String key, T obj, double score, int db) {
+    public <T> Boolean zSetAdd(String key, T obj, double score, int db) {
 
-        redisTemplate.execute((RedisCallback<Object>) connection -> {
+        Object object = redisTemplate.execute((RedisCallback<Object>) connection -> {
             connection.select(db);
             // 插入数据到 ZSet，并返回操作结果
             return connection.zAdd(serializeKey(key), score, serializeValue(obj));
         });
+
+        if(object!=null){
+            return (Boolean) object;
+        }
+
+        return null;
     }
 
     @Override
-    public <T> void zAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db) {
+    public <T> Boolean zSetAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db) {
 
-        redisTemplate.execute((RedisCallback<Object>) connection -> {
+        Object obj = redisTemplate.execute((RedisCallback<Object>) connection -> {
             connection.select(db);
             // 插入数据到 ZSet，并返回操作结果
             return connection.zAdd(serializeKey(key), tuples);
         });
+
+        if(obj!=null){
+            return (Boolean) obj;
+        }
+
+        return null;
     }
 
     @Override

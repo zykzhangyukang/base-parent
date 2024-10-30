@@ -462,7 +462,7 @@ public interface RedisService {
      * @param db    数据库索引，用于指定目标 Redis 数据库
      * @param <T>   要添加对象的类型，确保类型安全
      */
-    <T> void zSetAdd(String key, T obj, double score, int db);
+    <T> Boolean zSetAdd(String key, T obj, double score, int db);
 
     /**
      * 向指定的 ZSet 集合中添加多个元素。
@@ -472,7 +472,7 @@ public interface RedisService {
      * @param db      数据库索引，用于指定目标 Redis 数据库
      * @param <T>     要添加对象的类型，确保类型安全
      */
-    <T> void zAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db);
+    <T> Boolean zSetAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db);
 
 
     /**

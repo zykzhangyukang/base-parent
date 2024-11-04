@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +24,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -66,6 +70,18 @@ public class GlobalExceptionHandler extends BaseService {
             resultVO.setMsg("接口不存在！");
             resultVO.setCode(ResultConstant.RESULT_CODE_404);
             log.error("接口不存在:{},url:{}", e.getMessage(), request.getRequestURI(), e);
+
+        }else if(e instanceof MethodArgumentNotValidException){
+
+            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            String errorMessage = fieldErrors.stream()
+                    .findFirst()
+                    .map(FieldError::getDefaultMessage)
+                    .orElse("参数校验错误");
+            resultVO.setMsg(errorMessage);
+            resultVO.setCode(ResultConstant.RESULT_CODE_400);
+            log.error("参数校验不通过:{},url:{}", e.getMessage(), request.getRequestURI(), e);
 
         } else {
 

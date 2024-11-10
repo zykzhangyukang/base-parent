@@ -28,7 +28,9 @@ public class RocketMQAutoConfiguration {
                 properties.getInstantName(),
                 properties.getSyncOrderTopic(),
                 properties.getSendMsgTimeoutMillis(),
-                properties.getRetryTimes()
+                properties.getRetryTimes(),
+                properties.getUsername(),
+                properties.getPassword()
         );
     }
 
@@ -43,7 +45,9 @@ public class RocketMQAutoConfiguration {
                 properties.getInstantName(),
                 properties.getSyncTopic(),
                 properties.getSendMsgTimeoutMillis(),
-                properties.getRetryTimes()
+                properties.getRetryTimes(),
+                properties.getUsername(),
+                properties.getPassword()
         );
     }
 }

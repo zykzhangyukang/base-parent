@@ -25,6 +25,11 @@
             <artifactId>rocketmq-client</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-acl</artifactId>
+        </dependency>
+
         <!-- activemq -->
         <dependency>
             <groupId>org.springframework</groupId>

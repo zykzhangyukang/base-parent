@@ -3,10 +3,13 @@ package com.coderman.sync.producer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.acl.common.AclClientRPCHook;
+import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.RPCHook;
 
 import java.nio.charset.StandardCharsets;
 
@@ -32,20 +35,29 @@ public class RocketMQOrderProducer  {
 
     private int retryTimes;
 
+    private String username;
+
+    private String password;
+
     public RocketMQOrderProducer() {
     }
 
-    public RocketMQOrderProducer(String producerOrderGroup, String namesrvAddr, String instantName, String syncOrderTopic, int sendMsgTimeoutMillis, int retryTimes) {
+    public RocketMQOrderProducer(String producerOrderGroup, String namesrvAddr, String instantName, String syncOrderTopic, int sendMsgTimeoutMillis, int retryTimes, String username, String password) {
         this.producerOrderGroup = producerOrderGroup;
         this.namesrvAddr = namesrvAddr;
         this.instantName = instantName;
         this.syncOrderTopic = syncOrderTopic;
         this.sendMsgTimeoutMillis = sendMsgTimeoutMillis;
         this.retryTimes = retryTimes;
+        this.username = username;
+        this.password = password;
     }
 
     public void start() throws MQClientException {
-        this.defaultMQProducer = new DefaultMQProducer(this.producerOrderGroup);
+
+        RPCHook rpcHook = new AclClientRPCHook(new SessionCredentials(this.username, this.password));
+
+        this.defaultMQProducer = new DefaultMQProducer(this.producerOrderGroup, rpcHook);
         defaultMQProducer.setNamesrvAddr(this.namesrvAddr);
         defaultMQProducer.setCreateTopicKey(this.syncOrderTopic);
         defaultMQProducer.setInstanceName(this.instantName);

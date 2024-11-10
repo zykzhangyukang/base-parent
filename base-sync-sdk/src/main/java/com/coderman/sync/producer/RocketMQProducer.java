@@ -3,10 +3,13 @@ package com.coderman.sync.producer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.acl.common.AclClientRPCHook;
+import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.RPCHook;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -33,20 +36,29 @@ public class RocketMQProducer  {
 
     private int retryTimes;
 
-    public RocketMQProducer(String producerGroup, String namesrvAddr, String instantName, String syncTopic, int sendMsgTimeoutMillis, int retryTimes) {
+    private String username;
+
+    private String password;
+
+    public RocketMQProducer(String producerGroup, String namesrvAddr, String instantName, String syncTopic, int sendMsgTimeoutMillis, int retryTimes, String username, String password) {
         this.producerGroup = producerGroup;
         this.namesrvAddr = namesrvAddr;
         this.instantName = instantName;
         this.syncTopic = syncTopic;
         this.sendMsgTimeoutMillis = sendMsgTimeoutMillis;
         this.retryTimes = retryTimes;
+        this.username = username;
+        this.password = password;
     }
 
     public RocketMQProducer() {
     }
 
     public void start() throws MQClientException {
-        this.defaultMQProducer = new DefaultMQProducer(this.producerGroup);
+
+        RPCHook rpcHook = new AclClientRPCHook(new SessionCredentials(this.username, this.password));
+
+        this.defaultMQProducer = new DefaultMQProducer(this.producerGroup, rpcHook);
         defaultMQProducer.setNamesrvAddr(this.namesrvAddr);
         defaultMQProducer.setInstanceName(this.instantName);
         defaultMQProducer.setCreateTopicKey(this.syncTopic);

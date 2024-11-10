@@ -32,6 +32,12 @@ public class SyncProperties {
         @ApiModelProperty(value = "namesrv地址")
         private String namesrvAddr;
 
+        @ApiModelProperty(value = "用户名")
+        private String username;
+
+        @ApiModelProperty(value = "密码")
+        private String password;
+
         @ApiModelProperty(value = "发送超时时间")
         private int sendMsgTimeoutMillis;
 

@@ -65,7 +65,7 @@ public class CallbackController {
             // 调用回调方法并返回结果
             return (ResultVO<Void>) method.invoke(SpringContextUtil.getBean(callbackMeta.getInstantClass()), syncMsg);
 
-        } catch (NoSuchMethodException e) {
+        } catch (IllegalArgumentException | NoSuchMethodException e) {
             logger.error("回调方法不存在: ", e);
             return ResultUtil.getFail("回调方法不存在");
         } catch (IllegalAccessException | InvocationTargetException e) {

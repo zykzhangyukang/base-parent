@@ -19,7 +19,12 @@ public enum ProjectEnum {
     /**
      * 后台日志系统
      */
-    LOG("log");
+    LOG("log"),
+
+    /**
+     * 销售系统
+     */
+    SMS("sms");
 
 
     private String key;

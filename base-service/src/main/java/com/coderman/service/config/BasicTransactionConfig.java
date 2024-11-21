@@ -42,12 +42,12 @@ public abstract class BasicTransactionConfig {
         requiredTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         requiredTx.setRollbackRules(rollbackRuleAttributeList);
 
-        transactionAttributeSource.addTransactionalMethod("create*",requiredTx);
+//        transactionAttributeSource.addTransactionalMethod("create*",requiredTx);
         transactionAttributeSource.addTransactionalMethod("insert*", requiredTx);
         transactionAttributeSource.addTransactionalMethod("update*", requiredTx);
-        transactionAttributeSource.addTransactionalMethod("modify*", requiredTx);
+//        transactionAttributeSource.addTransactionalMethod("modify*", requiredTx);
         transactionAttributeSource.addTransactionalMethod("delete*", requiredTx);
-        transactionAttributeSource.addTransactionalMethod("remove*", requiredTx);
+//        transactionAttributeSource.addTransactionalMethod("remove*", requiredTx);
 
         // 使用事务
         RuleBasedTransactionAttribute requiredNewTx = new RuleBasedTransactionAttribute();

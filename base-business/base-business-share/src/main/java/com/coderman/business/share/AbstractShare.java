@@ -11,225 +11,172 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * @author coderman
+ * 均摊算法抽象类，提供通用分摊逻辑
+ *
+ * @param <I> 自定义输入类型
+ * @param <O> 继承自 ShareResultDetailVO 的输出类型
  */
 public abstract class AbstractShare<I, O extends ShareResultDetailVO> {
-
 
     /**
      * 准备分摊数据
      *
-     * @param i
-     * @return
+     * @param i 自定义入参
+     * @return 待分摊参数列表
      */
     protected abstract List<ShareParamVO> prepareShare(I i);
 
-
     /**
-     * 本次是否要执行分摊算法
+     * 是否需要执行分摊算法
      *
-     * @param i
-     * @return
+     * @param i 自定义入参
+     * @return 是否执行
      */
     protected boolean needShare(I i) {
         return true;
     }
 
-
     /**
-     * 分摊
+     * 分摊主流程
      *
      * @param i 自定义入参
      * @return 分摊结果
      */
     public ShareResultVO<O> share(I i) {
-
         ShareResultVO<O> shareResultVO = new ShareResultVO<>();
         List<O> shareResultDetailVOList = new ArrayList<>();
         shareResultVO.setShareResultDetailVOList(shareResultDetailVOList);
 
-        // 本次不需要执行分摊逻辑 直接转到下一次
+        // 如果本次不需要执行分摊逻辑，直接返回
         if (!needShare(i)) {
-
             return this.afterShare(i, shareResultVO);
         }
 
-        // 取得待分摊参数
+        // 获取待分摊参数
         List<ShareParamVO> shareParamVOList = this.prepareShare(i);
-
         if (CollectionUtils.isEmpty(shareParamVOList)) {
-
             return this.afterShare(i, shareResultVO);
         }
-
 
         for (ShareParamVO shareParam : shareParamVOList) {
-
-
-            // 待分摊总数
+            // 获取待分摊金额
             BigDecimal waitShare = shareParam.getWaitShare();
-
             List<ShareParamDetailVO> shareMoneyDetailVOS = shareParam.getShareParamDetailList();
 
             if (CollectionUtils.isEmpty(shareMoneyDetailVOS)) {
                 continue;
             }
 
-            // 分摊项分子正序
+            // 正序排序，使较小的分摊项优先计算
             Collections.sort(shareMoneyDetailVOS);
 
-            // 待分摊分母
+            // 获取待分摊分母
             BigDecimal waitShareDenominator = shareParam.getWaitShareDenominator();
 
-
-            // 剩余分摊数
+            // 剩余可分摊金额
             BigDecimal restShare = waitShare;
 
-
             int shareCount = 0;
-
-            // key 明细id v分摊结果
             Map<Integer, ShareResultDetailVO> shareResultDetailMap = new HashMap<>();
 
-
+            // 计算每个分摊项的金额
             for (ShareParamDetailVO shareParamDetailVO : shareMoneyDetailVOS) {
-
-
                 shareCount++;
-
-
                 O shareResultDetailVO = createResultDetailVO();
-
-                // 映射入参合出参的属性
                 BeanUtils.copyProperties(shareParamDetailVO, shareResultDetailVO);
-
                 shareResultDetailMap.put(shareParamDetailVO.getShareDetailId(), shareResultDetailVO);
 
-                // 分子为0 直接返回0
+                // 如果分子为 0，则该项分摊金额为 0
                 if (shareParamDetailVO.getShareNumerator().compareTo(BigDecimal.ZERO) <= 0) {
-
                     shareResultDetailVO.setShareValue(BigDecimal.ZERO);
                     continue;
                 }
 
-                // 待分摊分子 / 分母 明细占比
-                BigDecimal scale = shareParamDetailVO.getShareNumerator().divide(waitShareDenominator, 2, BigDecimal.ROUND_HALF_UP);
+                // 计算分摊比例 = (分子 / 分母)
+                BigDecimal scale = shareParamDetailVO.getShareNumerator()
+                        .divide(waitShareDenominator, 2, BigDecimal.ROUND_HALF_UP);
 
-                // 根据占比 算出应该要分摊多少待分摊项
+                // 计算当前项应该分摊的金额
                 BigDecimal shareValue = scale.multiply(waitShare).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                // 如果待分摊项都需要摊在明细上 这里是需要倒减的 如果只是拆出去一部分 不需要倒减
-                if (shareParam.getIsShareAll()) {
-
-                    if (shareCount == shareMoneyDetailVOS.size()) {
-
-                        shareValue = restShare;
-                    }
-
-                }
-
-                // 分摊金额 是否大于了最大允许分摊金额
-                if (shareValue.compareTo(shareParamDetailVO.getShareLimit()) > 0) {
-
-                    shareValue = shareParamDetailVO.getShareLimit();
-                }
-
-                // 分摊金额 大于剩余可分摊金额
-                if (shareValue.compareTo(restShare) > 0) {
-
+                // 如果是完全摊分 (`isShareAll`)，最后一个元素要调整到剩余金额
+                if (shareParam.getIsShareAll() && shareCount == shareMoneyDetailVOS.size()) {
                     shareValue = restShare;
                 }
 
+                // 不能超过该项允许的最大分摊金额 `shareLimit`
+                if (shareValue.compareTo(shareParamDetailVO.getShareLimit()) > 0) {
+                    shareValue = shareParamDetailVO.getShareLimit();
+                }
+
+                // 不能超过剩余可分摊金额
+                if (shareValue.compareTo(restShare) > 0) {
+                    shareValue = restShare;
+                }
+
+                // 更新剩余待分摊金额
                 restShare = restShare.subtract(shareValue);
 
+                // 记录最终分摊金额
                 shareResultDetailVO.setShareValue(shareValue);
                 shareResultDetailVOList.add(shareResultDetailVO);
-
             }
 
-
-            // 由于做了shareValue 不能大于shareLimit 的限制 所以可能会出现 waiteShareMoney 非分摊完的情况,这里在做一次补偿
+            // **补偿逻辑**：如果 `isShareAll = true` 且仍有剩余金额，则补偿
             if (shareParam.getIsShareAll() && restShare.compareTo(BigDecimal.ZERO) > 0) {
-
-
-                // 上面已经正序排列了 这里倒叙循环
                 for (int j = shareMoneyDetailVOS.size() - 1; j >= 0; j--) {
-
                     ShareParamDetailVO shareParamDetailVO = shareMoneyDetailVOS.get(j);
-                    // 明细分摊到的金额
                     ShareResultDetailVO shareDetailResult = shareResultDetailMap.get(shareParamDetailVO.getShareDetailId());
 
-                    //如果分摊金额 已经达到最大允许分摊金额
+                    // 如果该项已达到 `shareLimit`，则跳过
                     if (shareParamDetailVO.getShareLimit().compareTo(shareDetailResult.getShareValue()) == 0) {
-
-
                         continue;
                     }
 
-                    // 分摊到的金额 + 剩余金额
+                    // 计算补偿后的金额
                     BigDecimal compareShare = shareDetailResult.getShareValue().add(restShare);
-                    if (shareParamDetailVO.getShareLimit().compareTo(compareShare) >= 0) {
 
-                        // 最大允许金额 依然满足
+                    // 如果补偿后金额仍然小于等于 `shareLimit`，直接补偿
+                    if (shareParamDetailVO.getShareLimit().compareTo(compareShare) >= 0) {
                         shareDetailResult.setShareValue(compareShare);
+                        restShare = BigDecimal.ZERO;
                         break;
                     } else {
-
-
-                        BigDecimal tempShare = shareParamDetailVO.getShareLimit().subtract(shareDetailResult.getShareValue());
+                        // 如果超出了 `shareLimit`，只补偿 `shareLimit` 允许的部分
+                        BigDecimal tempShare = shareParamDetailVO.getShareLimit()
+                                .subtract(shareDetailResult.getShareValue());
                         restShare = restShare.subtract(tempShare);
                         shareDetailResult.setShareValue(shareParamDetailVO.getShareLimit());
                     }
-
                 }
-
-
             }
-
-
         }
-
 
         return this.afterShare(i, shareResultVO);
     }
 
-
     /**
-     * 实例化一个返回对象 如果有继承ShareResultDetailVO 返回子类
+     * 创建返回对象，子类需要实现此方法
      *
-     * @return
+     * @return 返回对象
      */
     protected abstract O createResultDetailVO();
 
     /**
-     * 分摊后处理
+     * 分摊后处理方法，子类可以重写此方法
      *
      * @param i             初始入参
      * @param shareResultVO 分摊结果
      * @return 分摊结果
      */
     protected ShareResultVO<O> afterShare(I i, ShareResultVO<O> shareResultVO) {
-
         return shareResultVO;
     }
 
-
     /**
-     * 调整拆分折扣金额
-     * @param i
+     * 额外的业务逻辑
+     *
+     * @param i 自定义入参
      */
     public abstract void raise(I i);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

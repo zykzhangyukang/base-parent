@@ -1,5 +1,6 @@
 package com.coderman.service.config;
 
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.service.util.DesUtil;
 import com.ulisesbocchio.jasyptspringboot.EncryptablePropertyResolver;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,7 @@ public class EncryptPropertyConfig {
                 return value;
             }
 
-            String crypyKey = System.getProperty("secret.key");
+            String crypyKey = CommonConstant.SECRET_KEY;
 
             if (value.trim().startsWith("DES@") && StringUtils.isBlank(crypyKey)) {
 

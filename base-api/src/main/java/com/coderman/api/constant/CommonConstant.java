@@ -54,4 +54,9 @@ public interface CommonConstant {
      */
     Integer SYS_PAGE_SIZE = 30;
     String SYS_PAGE_LIMIT = "30000";
+
+    /**
+     * 全局秘钥
+     */
+    String SECRET_KEY = System.getProperty("secret.key");
 }

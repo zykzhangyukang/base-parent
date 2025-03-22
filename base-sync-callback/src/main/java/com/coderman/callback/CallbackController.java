@@ -3,6 +3,7 @@ package com.coderman.callback;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
@@ -90,7 +91,7 @@ public class CallbackController {
             throw new BusinessException("【验签失败】非法回调请求！");
         }
 
-        if (!StringUtils.equals(sign, DesUtil.encrypt((msg + nonce + timestamp), System.getProperty("secret.key")))) {
+        if (!StringUtils.equals(sign, DesUtil.encrypt((msg + nonce + timestamp), CommonConstant.SECRET_KEY))) {
             throw new BusinessException("【验签失败】请求签名错误！");
         }
 

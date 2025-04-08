@@ -821,7 +821,7 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> T getHash(String key, String filed, Class<T> clas, int db) {
 
-        Object obj = redisTemplate.executePipelined(new RedisCallback<Object>() {
+        Object obj = redisTemplate.execute(new RedisCallback<Object>() {
             @Override
             public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
 

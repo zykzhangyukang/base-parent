@@ -14,7 +14,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -235,6 +237,27 @@ public class AliYunOssUtil {
         InitiateMultipartUploadResult result = ossClient.initiateMultipartUpload(request);
         // 返回uploadId。
         return result.getUploadId();
+    }
+
+    /**
+     * 上传分片
+     *
+     * @param file       文件
+     * @param path       路径
+     * @param uploadId   任务id
+     * @param partNumber 分片序号
+     * @return
+     * @throws IOException
+     */
+    public UploadPartResult uploadPart(MultipartFile file, String path, String uploadId, Integer partNumber) throws IOException {
+        UploadPartRequest uploadRequest = new UploadPartRequest();
+        uploadRequest.setBucketName(aliYunOssProperties.getBucketName());
+        uploadRequest.setKey(path);
+        uploadRequest.setUploadId(uploadId);
+        uploadRequest.setInputStream(file.getInputStream());
+        uploadRequest.setPartSize(file.getSize());
+        uploadRequest.setPartNumber(partNumber);
+        return ossClient.uploadPart(uploadRequest);
     }
 
     /**

@@ -240,19 +240,57 @@ public class AliYunOssUtil {
     }
 
     /**
+     * 根据文件名 + 文件 hash 生成唯一且稳定的 OSS objectName
+     *
+     * @param fileName   原始文件名
+     * @param fileHash   文件内容 hash（MD5/SHA256）
+     * @param moduleEnum 上传模块（用于分类）
+     * @return OSS objectName
+     */
+    @SneakyThrows
+    public String genStableObjectName(String fileName, String fileHash, FileModuleEnum moduleEnum) {
+        moduleEnum = Optional.ofNullable(moduleEnum).orElse(FileModuleEnum.COMMON_MODULE);
+        Assert.isTrue(StringUtils.isNotBlank(fileName), "文件名不能为空！");
+        Assert.isTrue(StringUtils.isNotBlank(fileHash), "文件 hash 不能为空！");
+
+        int index = fileName.lastIndexOf(".");
+        Assert.isTrue(index > 0, String.format("无法识别文件类型：%s", fileName));
+
+        // 提取文件扩展名
+        String fileType = fileName.substring(index + 1).toLowerCase();
+
+        // 当前日期，用于分类（可选）
+        String day = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+
+        // 对文件名进行 URL 编码，避免中文/特殊字符冲突
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.name());
+
+        // 构建稳定路径
+        return String.format("%s/%s/%s/%s/%s_%s.%s",
+                applicationName,
+                moduleEnum.getCode(),
+                day,
+                fileType,
+                fileHash,
+                encodedFileName,
+                fileType
+        );
+    }
+
+    /**
      * 上传分片
      *
      * @param file       文件
-     * @param path       路径
+     * @param objectName       路径
      * @param uploadId   任务id
      * @param partNumber 分片序号
      * @return
      * @throws IOException
      */
-    public UploadPartResult uploadPart(MultipartFile file, String path, String uploadId, Integer partNumber) throws IOException {
+    public UploadPartResult uploadPart(MultipartFile file, String objectName, String uploadId, Integer partNumber) throws IOException {
         UploadPartRequest uploadRequest = new UploadPartRequest();
         uploadRequest.setBucketName(aliYunOssProperties.getBucketName());
-        uploadRequest.setKey(path);
+        uploadRequest.setKey(objectName);
         uploadRequest.setUploadId(uploadId);
         uploadRequest.setInputStream(file.getInputStream());
         uploadRequest.setPartSize(file.getSize());

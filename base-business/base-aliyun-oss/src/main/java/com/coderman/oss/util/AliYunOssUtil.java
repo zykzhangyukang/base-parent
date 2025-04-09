@@ -21,8 +21,10 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author ：zhangyukang
@@ -291,12 +293,7 @@ public class AliYunOssUtil {
     /**
      * 完成分片上传
      */
-    public CompleteMultipartUploadResult completeMultipartUpload(String objectName, String uploadId, Map<String, String> partETags) {
-        List<PartETag> partETagList = partETags.entrySet().stream()
-                .map(entry -> new PartETag(Integer.parseInt(entry.getKey()), entry.getValue()))
-                .sorted(Comparator.comparingInt(PartETag::getPartNumber))
-                .collect(Collectors.toList());
-
+    public CompleteMultipartUploadResult completeMultipartUpload(String objectName, String uploadId, List<PartETag> partETagList) {
         CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(aliYunOssProperties.getBucketName(),
                 objectName, uploadId, partETagList);
         return ossClient.completeMultipartUpload(request);

@@ -84,6 +84,10 @@ public class RedisServiceImpl implements RedisService {
         return this.redisTemplate.getHashValueSerializer().deserialize(bytes);
     }
 
+    private Object deserializeHashKey(byte[] bytes){
+        return this.redisTemplate.getHashKeySerializer().deserialize(bytes);
+    }
+
 
     @Override
     public boolean exists(String key, int db) {
@@ -930,9 +934,8 @@ public class RedisServiceImpl implements RedisService {
                 while (cursor.hasNext()) {
 
                     Map.Entry<byte[], byte[]> entry = cursor.next();
-                    byte[] key = serializeHashKey(entry.getKey());
-
-                    if (key != null) {
+                    Object hashKey = deserializeHashKey(entry.getKey());
+                    if (hashKey != null) {
                         list.add((T) deserializeHashValue(entry.getValue()));
                     }
                 }
@@ -963,12 +966,10 @@ public class RedisServiceImpl implements RedisService {
                 Cursor<Map.Entry<byte[], byte[]>> cursor = connection.hScan(serializeKey(key), scanOptions);
 
                 while (cursor.hasNext()) {
-
                     Map.Entry<byte[], byte[]> entry = cursor.next();
-                    byte[] key = serializeHashKey(entry.getKey());
-
-                    if (key != null) {
-                        map.put(key.toString(), (T) deserializeHashValue(entry.getValue()));
+                    Object hashKey = deserializeHashKey(entry.getKey());
+                    if (hashKey != null) {
+                        map.put((String) hashKey, (T) deserializeHashValue(entry.getValue()));
                     }
                 }
                 return map;

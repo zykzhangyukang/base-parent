@@ -239,14 +239,6 @@ public class AliYunOssUtil {
         return result.getUploadId();
     }
 
-    /**
-     * 根据文件名 + 文件 hash 生成唯一且稳定的 OSS objectName
-     *
-     * @param fileName   原始文件名
-     * @param fileHash   文件内容 hash（MD5/SHA256）
-     * @param moduleEnum 上传模块（用于分类）
-     * @return OSS objectName
-     */
     @SneakyThrows
     public String genStableObjectName(String fileName, String fileHash, FileModuleEnum moduleEnum) {
         moduleEnum = Optional.ofNullable(moduleEnum).orElse(FileModuleEnum.COMMON_MODULE);
@@ -263,7 +255,7 @@ public class AliYunOssUtil {
         String day = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
 
         // 对文件名进行 URL 编码，避免中文/特殊字符冲突
-        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.name());
+        String encodedFileName = URLEncoder.encode(fileName.substring(0, index), StandardCharsets.UTF_8.name());
 
         // 构建稳定路径
         return String.format("%s/%s/%s/%s/%s_%s.%s",

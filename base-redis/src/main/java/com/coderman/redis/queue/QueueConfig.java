@@ -13,4 +13,5 @@ public class QueueConfig {
     private final String queue;
     private final int maxRetries;
     private final long retryDelay;
+    private final int threadCount;
 }

@@ -35,7 +35,7 @@ public class QueueWorkerPool {
 
             String queue = ann.queue();
             handlerMap.put(queue, (QueueMessageHandler) listener);
-            queueConfigMap.put(queue, new QueueConfig(queue, ann.maxRetries(), ann.retryDelay()));
+            queueConfigMap.put(queue, new QueueConfig(queue, ann.maxRetries(), ann.retryDelay(),ann.threadCount()));
 
             log.info("Registered QueueListener for queue [{}]", queue);
         }
@@ -50,7 +50,11 @@ public class QueueWorkerPool {
             try {
                 QueueMessage msg = redisService.rightPopList(queueKey, QueueMessage.class, 0);
                 if (msg != null) {
-                    taskExecutor.submit(new QueueWorker(queue, msg, handlerMap.get(queue), queueConfigMap.get(queue), redisService));
+                    QueueConfig queueConfig = queueConfigMap.get(queue);
+                    int threadCount = queueConfig.getThreadCount();
+                    for (int i = 0; i < threadCount; i++) {
+                        taskExecutor.submit(new QueueWorker(queue, msg, handlerMap.get(queue), queueConfig, redisService));
+                    }
                 }
             } catch (Exception e) {
                 log.error("Failed to poll queue [{}]: {}", queue, e.getMessage(), e);

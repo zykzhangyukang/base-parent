@@ -1,4 +1,4 @@
-package com.coderman.redis.annotaion;
+package com.coderman.redis.queue;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

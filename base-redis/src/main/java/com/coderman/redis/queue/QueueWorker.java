@@ -5,57 +5,31 @@ import com.coderman.redis.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * @author ：zhangyukang
- * @date ：2025/04/22 10:59
- */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class QueueWorker implements Runnable {
 
     private final String queue;
+    private final QueueMessage msg;
     private final QueueMessageHandler handler;
+    private final QueueConfig config;
     private final RedisService redisService;
-    private final int maxRetries;
-    private final long retryDelay;
-
-    private volatile boolean running = true;
-
-    public void shutdown() {
-        running = false;
-    }
 
     @Override
     public void run() {
-        String queueKey = "rqueue:queue:" + queue;
-        while (running && !Thread.currentThread().isInterrupted()) {
-            try {
-                QueueMessage msg = redisService.rightPopList(queueKey, QueueMessage.class, RedisDbConstant.REDIS_DB_DEFAULT);
-                if (msg == null){
-                    TimeUnit.SECONDS.sleep(1);
-                    continue;
-                }
-
-                try {
-                    handler.handle(msg);
-                    log.debug("Processed message: {}", msg.getId());
-                } catch (Exception ex) {
-                    log.warn("Handler error on message {}: {}", msg.getId(), ex.getMessage(), ex);
-                    if (msg.getRetryCount() < maxRetries) {
-                        msg.setRetryCount(msg.getRetryCount() + 1);
-                        long score = System.currentTimeMillis() + retryDelay;
-                        redisService.zSetAdd("rqueue:delayed:" + queue, msg, score, RedisDbConstant.REDIS_DB_DEFAULT);
-                        log.warn("Message {} retry #{} delayed", msg.getId(), msg.getRetryCount());
-                    }
-                }
-
-            } catch (Exception e) {
-                log.error("QueueWorker error: {}", e.getMessage(), e);
+        try {
+            handler.handle(msg);
+            log.debug("Processed message from [{}]: {}", queue, msg.getId());
+        } catch (Exception ex) {
+            log.warn("Handler error on message [{}]: {}", msg.getId(), ex.getMessage(), ex);
+            if (msg.getRetryCount() < config.getMaxRetries()) {
+                msg.setRetryCount(msg.getRetryCount() + 1);
+                long retryTime = System.currentTimeMillis() + config.getRetryDelay();
+                redisService.zSetAdd("rqueue:delayed:" + queue, msg, retryTime, RedisDbConstant.REDIS_DB_DEFAULT);
+                log.info("Message [{}] scheduled for retry #{}, delay {}ms", msg.getId(), msg.getRetryCount(), config.getRetryDelay());
+            } else {
+                log.error("Message [{}] exceeded max retries. Dropping or moving to dead-letter queue", msg.getId());
             }
         }
-
-        log.info("QueueWorker for queue '{}' stopped", queue);
     }
 }

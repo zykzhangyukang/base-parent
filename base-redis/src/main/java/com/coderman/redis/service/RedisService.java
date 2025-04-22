@@ -241,7 +241,7 @@ public interface RedisService {
      * @param obj 要存储的obj
      * @param db  数据库索引
      */
-    <T> void addToSet(String key, T obj, int db);
+    <T> Boolean addToSet(String key, T obj, int db);
 
 
     /**
@@ -301,6 +301,16 @@ public interface RedisService {
      */
     <T> void setList(Map<String, T> map, int db);
 
+    /**
+     * 从队列中取出元素
+     *
+     * @param key  键名
+     * @param clas 元素的类
+     * @param db   数据库索引
+     * @param <T>
+     * @return
+     */
+    <T> T rightPopList(String key, Class<T> clas, int db);
 
     /**
      * 获取 Redis 集合中的元素列表。
@@ -473,6 +483,17 @@ public interface RedisService {
      * @param <T>     要添加对象的类型，确保类型安全
      */
     <T> Boolean zSetAdd(String key, Set<RedisZSetCommands.Tuple> tuples, int db);
+
+    /**
+     * 从指定的 ZSet 集合中移除元素。
+     *
+     * @param key   ZSet 集合的键名
+     * @param obj   要移除的元素，支持任意类型，将序列化后与 ZSet 中的元素匹配
+     * @param db    数据库索引，用于指定目标 Redis 数据库
+     * @param <T>   要移除对象的类型，确保类型安全
+     * @return      如果成功移除元素返回 true，否则返回 false
+     */
+    <T> Boolean zSetRemove(String key, T obj, int db);
 
 
     /**

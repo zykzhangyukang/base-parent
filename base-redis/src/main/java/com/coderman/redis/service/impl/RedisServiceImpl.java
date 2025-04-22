@@ -84,7 +84,7 @@ public class RedisServiceImpl implements RedisService {
         return this.redisTemplate.getHashValueSerializer().deserialize(bytes);
     }
 
-    private Object deserializeHashKey(byte[] bytes){
+    private Object deserializeHashKey(byte[] bytes) {
         return this.redisTemplate.getHashKeySerializer().deserialize(bytes);
     }
 
@@ -530,17 +530,18 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public <T> void addToSet(String key, T obj, int db) {
-
-        redisTemplate.executePipelined(new RedisCallback<Object>() {
+    public <T> Boolean addToSet(String key, T object, int db) {
+        Object obj = redisTemplate.execute(new RedisCallback<Boolean>() {
             @Override
-            public Object doInRedis(@NonNull RedisConnection redisConnection) throws DataAccessException {
-
-                redisConnection.select(db);
-                redisConnection.sAdd(serializeKey(key), serializeValue(obj));
-                return null;
+            public Boolean doInRedis(@NonNull RedisConnection connection) throws DataAccessException {
+                connection.select(db);
+                return connection.sAdd(serializeKey(key), serializeValue(object)) == 1L;
             }
         });
+        if (obj != null) {
+            return (Boolean) obj;
+        }
+        return null;
     }
 
     @Override
@@ -648,6 +649,28 @@ public class RedisServiceImpl implements RedisService {
 
         return 0;
     }
+
+    @Override
+    public <T> T rightPopList(String key, Class<T> clas, int db) {
+
+        Object obj = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.select(db);
+                List<T> resultList = new ArrayList<>();
+
+                byte[] bytes = connection.rPop(serializeKey(key));
+                return deserializeValue(bytes);
+            }
+        });
+
+        if (obj != null) {
+            return (T) obj;
+        }
+
+        return null;
+    }
+
 
     @Override
     public <T> void setList(Map<String, T> map, int db) {
@@ -1037,7 +1060,7 @@ public class RedisServiceImpl implements RedisService {
             return connection.zAdd(serializeKey(key), score, serializeValue(obj));
         });
 
-        if(object!=null){
+        if (object != null) {
             return (Boolean) object;
         }
 
@@ -1053,12 +1076,27 @@ public class RedisServiceImpl implements RedisService {
             return connection.zAdd(serializeKey(key), tuples);
         });
 
-        if(obj!=null){
+        if (obj != null) {
             return (Boolean) obj;
         }
 
         return null;
     }
+
+    @Override
+    public <T> Boolean zSetRemove(String key, T obj, int db) {
+        Object res = redisTemplate.execute((RedisCallback<Object>) connection -> {
+            connection.select(db);
+            return connection.zRem(serializeKey(key), serializeValue(obj));
+        });
+
+        if (res instanceof Long) {
+            return ((Long) res) > 0;
+        }
+
+        return false;
+    }
+
 
     @Override
     public <T> Set<T> zRange(String key, Class<T> clazz, int beginIndex, int endIndex, int db) {
@@ -1078,7 +1116,7 @@ public class RedisServiceImpl implements RedisService {
             }
         });
 
-        if(obj!=null){
+        if (obj != null) {
             return (Set<T>) obj;
         }
 
@@ -1103,7 +1141,7 @@ public class RedisServiceImpl implements RedisService {
             }
         });
 
-        if(obj!=null){
+        if (obj != null) {
             return (Set<T>) obj;
         }
 
@@ -1126,7 +1164,7 @@ public class RedisServiceImpl implements RedisService {
                 return set;
             }
         });
-        if(obj!=null){
+        if (obj != null) {
             return (Set<T>) obj;
         }
         return null;
@@ -1148,7 +1186,7 @@ public class RedisServiceImpl implements RedisService {
                 return set;
             }
         });
-        if(obj!=null){
+        if (obj != null) {
             return (Set<T>) obj;
         }
         return null;
